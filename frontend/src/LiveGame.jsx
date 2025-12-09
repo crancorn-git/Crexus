@@ -17,7 +17,7 @@ export default function LiveGame({ puuid, region, onBack }) {
         setSpells(spellsRes.data.data);
 
         // 2. Fetch Live Game
-        const res = await axios.get(`https://crexus-backend.vercel.app/api/live/${puuid}?region=${region}`);
+        const res = await axios.get(`https://crexusback.vercel.app/api/live/${puuid}?region=${region}`);
         setGame(res.data);
       } catch (err) {
         setError(err.response?.status === 404 ? "Player is not in a game right now." : "Failed to load live game.");

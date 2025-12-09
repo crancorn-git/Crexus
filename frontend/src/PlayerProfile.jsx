@@ -100,11 +100,11 @@ export default function PlayerProfile({ onLiveClick }) {
     }
 
     try {
-      const playerRes = await axios.get(`https://crexus-backend.vercel.app/api/player/${name}/${tag}?region=${region}`);
+      const playerRes = await axios.get(`https://crexusback.vercel.app/api/player/${name}/${tag}?region=${region}`);
       setData(playerRes.data);
 
       if (playerRes.data.account.puuid) {
-        const matchRes = await axios.get(`https://crexus-backend.vercel.app/api/matches/${playerRes.data.account.puuid}?region=${region}`);
+        const matchRes = await axios.get(`https://crexusback.vercel.app/api/matches/${playerRes.data.account.puuid}?region=${region}`);
         setMatches(matchRes.data);
       }
     } catch (err) {
