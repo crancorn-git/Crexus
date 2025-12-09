@@ -155,4 +155,6 @@ if (process.env.NODE_ENV !== 'production') {
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
 }
+
+// Export the app so Vercel can run it as a serverless function
 module.exports = app;
