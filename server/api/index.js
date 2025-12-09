@@ -1,4 +1,5 @@
 const express = require('express');
+const app = express();
 const axios = require('axios');
 const cors = require('cors');
 require('dotenv').config();
@@ -35,6 +36,7 @@ const riotRequest = async (url) => {
 };
 
 // API 1: Get Player Profile
+
 
 
 app.get('/api/player/:name/:tag', async (req, res) => {
@@ -145,6 +147,12 @@ app.get('/api/live/:puuid', async (req, res) => {
     }
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+app.get('/', (req, res) => {
+    res.send('Crexus Backend is Online!');
+});
+
+if (process.env.NODE_ENV !== 'production') {
+    const PORT = process.env.PORT || 5000;
+    app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
+}
 module.exports = app;
