@@ -3,8 +3,12 @@ const axios = require('axios');
 const cors = require('cors');
 require('dotenv').config();
 
-const app = express();
-app.use(cors());
+
+app.use(cors({
+    origin: "*", // Allow any website to connect (Easiest fix)
+    methods: ["GET", "POST", "OPTIONS"], // Allow these connection types
+    allowedHeaders: ["Content-Type", "Authorization"]
+}));
 
 // PASTE YOUR KEY HERE
 const API_KEY = "RGAPI-893c883c-59ec-4413-9672-15abf30b634c"; 
