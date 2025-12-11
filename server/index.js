@@ -12,7 +12,7 @@ app.use(cors({
 }));
 
 // PASTE YOUR KEY HERE
-const API_KEY = "RGAPI-893c883c-59ec-4413-9672-15abf30b634c"; 
+const API_KEY = "RGAPI-e488b5ec-a306-4094-b9e3-ff3c24c2ee2f"; 
 
 const getBroadRegion = (platform) => {
     const map = {
