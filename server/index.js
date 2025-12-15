@@ -4,15 +4,14 @@ const axios = require('axios');
 const cors = require('cors');
 require('dotenv').config();
 
-
 app.use(cors({
-    origin: "*", // Allow any website to connect (Easiest fix)
-    methods: ["GET", "POST", "OPTIONS"], // Allow these connection types
+    origin: "*", 
+    methods: ["GET", "POST", "OPTIONS"], 
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 // PASTE YOUR KEY HERE
-const API_KEY = "RGAPI-e488b5ec-a306-4094-b9e3-ff3c24c2ee2f"; 
+const API_KEY = "RGAPI-93f5dd6c-7247-4ca2-99ff-4c15bf0e23ee"; 
 
 const getBroadRegion = (platform) => {
     const map = {
@@ -26,7 +25,6 @@ const getBroadRegion = (platform) => {
 const riotRequest = async (url) => {
     try {
         const fullUrl = `${url}${url.includes('?') ? '&' : '?'}api_key=${API_KEY}`;
-        // console.log(`Fetching: ${fullUrl}`); // Commented out to reduce noise
         const response = await axios.get(fullUrl);
         return response.data;
     } catch (err) {
@@ -36,9 +34,6 @@ const riotRequest = async (url) => {
 };
 
 // API 1: Get Player Profile
-
-
-
 app.get('/api/player/:name/:tag', async (req, res) => {
     const { name, tag } = req.params;
     const platform = req.query.region || 'na1';
@@ -73,7 +68,6 @@ app.get('/api/player/:name/:tag', async (req, res) => {
             try {
                 const clashUrl = `https://${platform}.api.riotgames.com/lol/clash/v1/players/by-puuid/${accountData.puuid}`;
                 const clashData = await riotRequest(clashUrl);
-                // Clash returns an array of registrations. Take the first one.
                 if (clashData && clashData.length > 0 && clashData[0].summonerId) {
                     encryptedSummonerId = clashData[0].summonerId;
                     console.log("✅ Recovered ID via Clash!");
@@ -112,8 +106,6 @@ app.get('/api/player/:name/:tag', async (req, res) => {
     }
 });
 
-
-
 // API 2: Matches
 app.get('/api/matches/:puuid', async (req, res) => {
     const { puuid } = req.params;
@@ -137,13 +129,123 @@ app.get('/api/matches/:puuid', async (req, res) => {
 app.get('/api/live/:puuid', async (req, res) => {
     const { puuid } = req.params;
     const platform = req.query.region || 'na1';
+    
     try {
         const url = `https://${platform}.api.riotgames.com/lol/spectator/v5/active-games/by-summoner/${puuid}`;
         const gameData = await riotRequest(url);
+        
+        const participantsWithStats = await Promise.all(gameData.participants.map(async (p) => {
+            let rank = "Unranked";
+            let tags = [];
+            let mastery = 0;
+
+            try {
+                const rankUrl = `https://${platform}.api.riotgames.com/lol/league/v4/entries/by-summoner/${p.summonerId}`;
+                const ranks = await riotRequest(rankUrl);
+                const solo = ranks.find(r => r.queueType === "RANKED_SOLO_5x5");
+                if (solo) {
+                    rank = `${solo.tier} ${solo.rank}`;
+                    const wr = (solo.wins / (solo.wins + solo.losses)) * 100;
+                    if (wr > 70 && (solo.wins + solo.losses) > 10) tags.push("SMURF");
+                }
+            } catch (e) {}
+
+            try {
+                const masteryUrl = `https://${platform}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/${p.puuid}/by-champion/${p.championId}`;
+                const masteryData = await riotRequest(masteryUrl);
+                mastery = masteryData.championPoints;
+                if (mastery > 1000000) tags.push("GOD"); 
+                else if (mastery > 500000) tags.push("OTP"); 
+                else if (mastery < 5000) tags.push("NEW"); 
+            } catch (e) {}
+
+            return { ...p, rank, tags, mastery };
+        }));
+
+        gameData.participants = participantsWithStats;
         res.json(gameData);
+
     } catch (error) {
         if (error.response?.status === 404) return res.status(404).json({ error: "Not in game" });
         res.status(500).json({ error: "Failed" });
+    }
+});
+
+// API 4: Server Status & Free Rotation
+app.get('/api/status', async (req, res) => {
+    const platform = req.query.region || 'na1'; 
+    try {
+        const statusUrl = `https://${platform}.api.riotgames.com/lol/status/v4/platform-data`;
+        const statusData = await riotRequest(statusUrl);
+
+        const rotationUrl = `https://${platform}.api.riotgames.com/lol/platform/v3/champion-rotations`;
+        const rotationData = await riotRequest(rotationUrl);
+
+        res.json({
+            status: statusData,
+            rotation: rotationData.freeChampionIds
+        });
+    } catch (error) {
+        console.error("Status check failed");
+        res.status(500).json({ error: "Failed to fetch status" });
+    }
+});
+
+// API 5: Challenger Leaderboard
+app.get('/api/leaderboard', async (req, res) => {
+    const platform = req.query.region || 'na1';
+    const region = getBroadRegion(platform);
+    
+    try {
+        const url = `https://${platform}.api.riotgames.com/lol/league/v4/challengerleagues/by-queue/RANKED_SOLO_5x5`;
+        const data = await riotRequest(url);
+        
+        const topPlayers = data.entries
+            .sort((a, b) => b.leaguePoints - a.leaguePoints)
+            .slice(0, 10);
+
+        const enrichedPlayers = await Promise.all(topPlayers.map(async (player) => {
+            if (!player.summonerId) {
+                return { ...player, gameName: "Unknown User", tagLine: "???" };
+            }
+
+            try {
+                const sumUrl = `https://${platform}.api.riotgames.com/lol/summoner/v4/summoners/${player.summonerId}`;
+                const sumData = await riotRequest(sumUrl);
+                
+                const accUrl = `https://${region}.api.riotgames.com/riot/account/v1/accounts/by-puuid/${sumData.puuid}`;
+                const accData = await riotRequest(accUrl);
+
+                return {
+                    ...player,
+                    gameName: accData.gameName,
+                    tagLine: accData.tagLine
+                };
+            } catch (err) {
+                return { ...player, gameName: "Hidden User", tagLine: "" };
+            }
+        }));
+
+        res.json(enrichedPlayers);
+    } catch (error) {
+        console.error("Leaderboard error:", error.message);
+        res.status(500).json({ error: "Failed to fetch leaderboard" });
+    }
+});
+
+// API 6: Match Timeline
+app.get('/api/match/:matchId/timeline', async (req, res) => {
+    const { matchId } = req.params;
+    const platform = req.query.region || 'na1'; 
+    const region = getBroadRegion(platform);
+    
+    try {
+        const url = `https://${region}.api.riotgames.com/lol/match/v5/matches/${matchId}/timeline`;
+        const timelineData = await riotRequest(url);
+        res.json(timelineData);
+    } catch (error) {
+        console.error("Timeline failed:", error.message);
+        res.status(500).json({ error: "Timeline not found" });
     }
 });
 
@@ -156,5 +258,4 @@ if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => console.log(`Backend running on port ${PORT}`));
 }
 
-// Export the app so Vercel can run it as a serverless function
 module.exports = app;
