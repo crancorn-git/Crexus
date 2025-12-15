@@ -6,13 +6,15 @@ const VERSION = "14.3.1";
 const DDRAGON_BASE = `https://ddragon.leagueoflegends.com/cdn/${VERSION}`;
 const DDRAGON_IMG = `https://ddragon.leagueoflegends.com/cdn/img`;
 
-export default function PlayerProfile({ onLiveClick }) {
+// UPDATE 1: Added onLobbyClick to props
+export default function PlayerProfile({ onLiveClick, onLobbyClick }) {
   const [input, setInput] = useState("Faker#KR1"); 
   const [region, setRegion] = useState("kr"); 
   const [data, setData] = useState(null);
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(false);
   const [expandedMatch, setExpandedMatch] = useState(null);
+  const [recentSearches, setRecentSearches] = useState([]);
 
   // Static Data
   const [queues, setQueues] = useState({});
@@ -42,6 +44,8 @@ export default function PlayerProfile({ onLiveClick }) {
         console.error("Failed to load static assets:", err);
       }
     };
+    const saved = JSON.parse(localStorage.getItem('crexus_recents') || '[]');
+    setRecentSearches(saved);
     fetchStaticData();
   }, []);
 
@@ -71,10 +75,16 @@ export default function PlayerProfile({ onLiveClick }) {
     setExpandedMatch(expandedMatch === matchId ? null : matchId);
   };
 
+  const addToHistory = (name, tag, region, iconId) => {
+      const newEntry = { name, tag, region, iconId };
+      const updated = [newEntry, ...recentSearches.filter(i => i.name !== name)].slice(0, 5);
+      setRecentSearches(updated);
+      localStorage.setItem('crexus_recents', JSON.stringify(updated));
+  };
+
   // --- NEW: SMART RANK SELECTOR ---
   const getBestRank = (ranks) => {
     if (!ranks || ranks.length === 0) return null;
-    // Prioritize Solo > Flex > Arena
     const solo = ranks.find(r => r.queueType === "RANKED_SOLO_5x5");
     const flex = ranks.find(r => r.queueType === "RANKED_FLEX_SR");
     const arena = ranks.find(r => r.queueType === "CHERRY");
@@ -102,6 +112,8 @@ export default function PlayerProfile({ onLiveClick }) {
     try {
       const playerRes = await axios.get(`https://crexusback.vercel.app/api/player/${name}/${tag}?region=${region}`);
       setData(playerRes.data);
+      addToHistory(playerRes.data.account.gameName, playerRes.data.account.tagLine, region, playerRes.data.summoner.profileIconId);
+      
 
       if (playerRes.data.account.puuid) {
         const matchRes = await axios.get(`https://crexusback.vercel.app/api/matches/${playerRes.data.account.puuid}?region=${region}`);
@@ -126,9 +138,14 @@ export default function PlayerProfile({ onLiveClick }) {
     return null;
   };
 
-  // Pre-calculate the rank to display
   const displayRank = data ? getBestRank(data.ranks) : null;
-
+  const copyLink = () => {
+    const url = `${window.location.origin}?s=${input}&r=${region}`;
+    // Since we don't have URL routing set up yet, we'll just copy the text for now
+    // Or simpler: Just copy the player name
+    navigator.clipboard.writeText(`${input} (${region})`);
+    alert("Player Name copied to clipboard!");
+};
   return (
     <div className="min-h-screen bg-[#0a0e13] text-gray-200 font-sans p-8">
       {/* NAVBAR */}
@@ -150,12 +167,43 @@ export default function PlayerProfile({ onLiveClick }) {
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === 'Enter' && searchPlayer()}
         />
+        
+        {/* EXISTING SEARCH BUTTON */}
         <button onClick={searchPlayer} className="bg-red-600 hover:bg-red-700 text-white px-8 rounded-lg font-bold transition shadow-[0_0_15px_rgba(220,38,38,0.5)]">
           SCOUT
+        </button>
+
+        {/* UPDATE 2: NEW LOBBY BUTTON */}
+        <button 
+            onClick={onLobbyClick} 
+            className="bg-[#1f2933] hover:bg-gray-700 text-gray-300 px-4 rounded-lg font-bold transition border border-gray-700 whitespace-nowrap"
+            title="Multi-Search"
+        >
+            📋 LOBBY
         </button>
       </div>
 
       {loading && <div className="text-center text-xl text-red-500 animate-pulse font-mono tracking-widest">SCOUTING RIFT...</div>}
+      
+      {!data && !loading && (
+        <div className="max-w-2xl mx-auto mt-10">
+            <h3 className="text-gray-500 font-bold mb-4 uppercase tracking-widest text-sm">Recent Scouts</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {recentSearches.map((item, idx) => (
+                    <div key={idx} 
+                        onClick={() => { setInput(`${item.name}#${item.tag}`); setRegion(item.region); searchPlayer(); }}
+                        className="bg-[#161d23] p-3 rounded-lg flex items-center gap-3 cursor-pointer hover:bg-[#1f2933] border border-gray-800 transition"
+                    >
+                        <img src={`${DDRAGON_BASE}/img/profileicon/${item.iconId}.png`} className="w-10 h-10 rounded-full" />
+                        <div>
+                            <div className="text-white font-bold">{item.name} <span className="text-gray-500">#{item.tag}</span></div>
+                            <div className="text-xs text-gray-500 uppercase">{item.region}</div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+      )}
 
       {data && (
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -183,17 +231,21 @@ export default function PlayerProfile({ onLiveClick }) {
             >
                 LIVE SCOUT
             </button>
+            {/* SHARE BUTTON */}
+<button 
+    onClick={copyLink}
+    className="mt-2 w-full bg-[#1f2933] hover:bg-gray-700 text-gray-400 font-bold py-2 rounded-lg transition border border-gray-700 text-sm flex items-center justify-center gap-2"
+>
+    <span>🔗</span> SHARE PROFILE
+</button>
             
-            {/* UPDATED RANK CARD */}
+            {/* RANK CARD */}
             {displayRank ? (
               <div className="mt-8 bg-[#0a0e13] p-6 rounded-xl border border-gray-800 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-50"></div>
-                
-                {/* Queue Label (NEW) */}
                 <div className="text-xs text-gray-500 uppercase font-bold tracking-widest mb-1">
                     {formatQueueType(displayRank.queueType)}
                 </div>
-
                 <p className="text-2xl font-black text-gray-100 tracking-wider">
                     {displayRank.tier} {displayRank.rank}
                 </p>
@@ -244,7 +296,6 @@ export default function PlayerProfile({ onLiveClick }) {
               const queueName = queues[match.info.queueId] || "Normal";
               const formatQueue = (name) => name.replace("5v5 Ranked Solo games", "Ranked Solo").replace("5v5 Ranked Flex games", "Ranked Flex").replace("games", "");
               
-              // Graph Data
               const isExpanded = expandedMatch === match.metadata.matchId;
               const chartData = match.info.participants.map(p => ({
                 name: p.championName,
