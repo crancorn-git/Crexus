@@ -12,7 +12,7 @@ app.use(cors({
 
 const API_KEY = process.env.RIOT_API_KEY;
 
-const APP_VERSION = process.env.APP_VERSION || '0.3.3';
+const APP_VERSION = process.env.APP_VERSION || '0.3.4';
 const DEPLOY_TIME = process.env.VERCEL_GIT_COMMIT_SHA ? 'vercel' : new Date().toISOString();
 const DEBUG_TOKEN = process.env.CREXUS_DEBUG_TOKEN;
 
