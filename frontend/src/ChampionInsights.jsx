@@ -200,21 +200,19 @@ export default function ChampionInsights({ onBack, playerData = null, matches = 
 
   return (
     <div className="min-h-screen text-gray-200">
-      <div className="mx-auto max-w-7xl p-4 md:p-6 lg:p-8">
-        <header className="mb-6 flex items-center justify-between gap-4 px-1 py-2">
-          <div className="flex items-center gap-4">
-            <img src="/crexus-logo.png" alt="Crexus logo" className="h-12 w-12 rounded-2xl object-contain shadow-[0_0_28px_rgba(239,68,68,0.18)]" />
-            <div>
-              <h1 className="text-3xl font-black uppercase tracking-[0.18em] text-white md:text-4xl">Crexus</h1>
-              <div className="mt-1 text-[11px] font-black uppercase tracking-[0.28em] text-red-300">v0.6 · Champion Insights & Draft Tools</div>
-            </div>
-          </div>
+      <div className="crexus-page">
+        <header className="crexus-card mb-6 rounded-2xl p-5 md:p-7">
           <BackButton onClick={onBack} />
+          <div className="mt-4">
+            <div className="crexus-kicker">Crexus Champions</div>
+            <h1 className="crexus-page-title mt-2">Champions</h1>
+            <p className="crexus-copy mt-2 max-w-3xl">Champion profiles, matchup notes, and draft checks for the selected player sample.</p>
+          </div>
         </header>
 
         <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="crexus-card rounded-[28px] p-5">
-            <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">v0.6.0 Champion Profile Pages</div>
+          <div className="crexus-card rounded-2xl p-5">
+            <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">Champion Profiles</div>
             <h2 className="mt-2 text-2xl font-black text-white">Champion profiles</h2>
             <p className="mt-2 text-sm leading-6 text-gray-400">Search a champion to view a clean profile, common roles, strength/weakness reads, and personal stats when a player sample is loaded.</p>
             <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search champion" className="mt-4 w-full rounded-2xl border border-white/10 bg-[#0b0d12] px-4 py-3 text-white outline-none focus:border-red-500/30" />
@@ -229,7 +227,7 @@ export default function ChampionInsights({ onBack, playerData = null, matches = 
           </div>
 
           {selectedChampion && profile && (
-            <div className="crexus-card rounded-[28px] p-5 md:p-6">
+            <div className="crexus-card rounded-2xl p-5 md:p-6">
               <div className="flex flex-col gap-5 md:flex-row md:items-start">
                 <img src={`${ddragonBase}/img/champion/${selectedChampion.image.full}`} alt={selectedChampion.name} className="h-24 w-24 rounded-3xl border border-red-500/20 shadow-[0_0_28px_rgba(239,68,68,0.18)]" />
                 <div className="flex-1">
@@ -280,8 +278,8 @@ export default function ChampionInsights({ onBack, playerData = null, matches = 
         </div>
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-          <div className="crexus-card rounded-[28px] p-5 md:p-6">
-            <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">v0.6.1 Champion Matchup Memory</div>
+          <div className="crexus-card rounded-2xl p-5 md:p-6">
+            <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">Matchup Memory</div>
             <h2 className="mt-2 text-2xl font-black text-white">Personal matchup memory</h2>
             <p className="mt-2 text-sm leading-6 text-gray-400">Tracks who the player performed well into, struggled against, and which bans or counterpicks deserve attention.</p>
             <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -306,8 +304,8 @@ export default function ChampionInsights({ onBack, playerData = null, matches = 
             </div>
           </div>
 
-          <div className="crexus-card rounded-[28px] p-5 md:p-6">
-            <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">v0.6.2 Draft Read / Pick-Ban Helper</div>
+          <div className="crexus-card rounded-2xl p-5 md:p-6">
+            <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">Draft Read</div>
             <h2 className="mt-2 text-2xl font-black text-white">Draft read</h2>
             <p className="mt-2 text-sm leading-6 text-gray-400">Enter visible picks to get suggested bans, comfort pick warnings, counterpick warnings, and comp checks before lock-in.</p>
             <div className="mt-5 grid grid-cols-1 gap-3 md:grid-cols-2">

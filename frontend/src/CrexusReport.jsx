@@ -11,10 +11,9 @@ export default function CrexusReport({ intelligence, matches, puuid }) {
       <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-70" />
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
-          <h2 className="text-xl font-black text-white uppercase tracking-wide">Crexus AI Player Report</h2>
+          <h2 className="text-xl font-black text-white uppercase tracking-wide">Crexus Player Report</h2>
           <p className="text-sm text-gray-400 mt-1">Plain-English read combining profile, lane, timeline and match patterns.</p>
         </div>
-        <div className="text-3xl">🧠</div>
       </div>
       <p className="text-gray-200 leading-relaxed text-sm md:text-base">{report}</p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-5">

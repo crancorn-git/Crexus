@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { REGION_OPTIONS } from './regions';
+import { clearLinkedAccount, readLinkedAccount, writeLinkedAccount } from './accountLink';
 
 import { BackButton } from './CrexusShell';
 const readStorage = (key, fallback) => {
@@ -42,22 +43,22 @@ function StatCard({ label, value, detail, accent = false }) {
   );
 }
 
-function AccountRow({ account, snapshot, onOpenAccount, onRemove, onPin, onSelect, pinned }) {
+function AccountRow({ account, snapshot, onOpenAccount, onRemove, onPin, onSelect, onLink, linked, pinned }) {
   const scoreChange = getChange(readStorage('crexus_progress', {})[accountKey(account)], 'crexusScore');
   return (
-    <div onClick={onSelect} className="cursor-pointer rounded-[28px] border border-white/10 bg-[#11141b] p-4 transition hover:border-red-500/25">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <button onClick={(event) => { event.stopPropagation(); onOpenAccount(account); }} className="flex items-center gap-4 text-left">
+    <div onClick={onSelect} className="cursor-pointer rounded-2xl border border-white/10 bg-[#11141b] p-4 transition hover:border-red-500/25">
+      <div className="grid gap-4 xl:grid-cols-[minmax(220px,1fr)_minmax(420px,1.4fr)] xl:items-center">
+        <button onClick={(event) => { event.stopPropagation(); onOpenAccount(account); }} className="flex min-w-0 items-center gap-4 text-left">
           <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-red-500/20 bg-red-500/10 text-xl font-black text-red-200">
             {pinned ? '★' : account.name?.[0]?.toUpperCase() || 'C'}
           </div>
-          <div>
-            <div className="text-lg font-black text-white">{account.name}<span className="text-gray-500">#{account.tag}</span></div>
+          <div className="min-w-0">
+            <div className="truncate text-lg font-black text-white">{account.name}<span className="text-gray-500">#{account.tag}</span>{linked && <span className="ml-2 rounded-full border border-red-500/20 bg-red-500/10 px-2 py-0.5 text-[10px] text-red-200">Linked</span>}</div>
             <div className="mt-1 text-xs font-black uppercase tracking-[0.18em] text-gray-500">{formatRegion(account.region)}</div>
           </div>
         </button>
 
-        <div className="grid grid-cols-2 gap-2 text-sm md:grid-cols-5 md:text-right">
+        <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4 xl:grid-cols-[repeat(4,minmax(70px,1fr))_auto] xl:text-right">
           <div>
             <div className="text-[10px] font-black uppercase tracking-[0.18em] text-gray-500">Score</div>
             <div className="font-black text-white">{snapshot ? `${snapshot.crexusScore}/100` : '—'}</div>
@@ -76,9 +77,10 @@ function AccountRow({ account, snapshot, onOpenAccount, onRemove, onPin, onSelec
               {scoreChange === null ? '—' : `${scoreChange > 0 ? '+' : ''}${scoreChange}`}
             </div>
           </div>
-          <div className="flex items-center justify-end gap-2">
+          <div className="col-span-2 flex flex-wrap items-center gap-2 sm:col-span-4 xl:col-span-1 xl:justify-end">
             <button onClick={(event) => { event.stopPropagation(); onOpenAccount(account); }} className="rounded-xl bg-red-600 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-white hover:bg-red-500">Refresh</button>
             <button onClick={(event) => { event.stopPropagation(); onPin(account); }} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-gray-300 hover:border-red-500/30 hover:text-white">Pin</button>
+            <button onClick={(event) => { event.stopPropagation(); onLink(account); }} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-gray-300 hover:border-red-500/30 hover:text-white">Link</button>
             <button onClick={(event) => { event.stopPropagation(); onRemove(account); }} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-gray-500 hover:border-red-500/30 hover:text-red-200">Remove</button>
           </div>
         </div>
@@ -111,7 +113,7 @@ function ProgressHistory({ selectedKey, progress }) {
         <StatCard label="Form" value={latest.recentForm || 'Stable'} detail={`Tilt risk: ${latest.tiltRisk || 'Unknown'}`} />
       </div>
 
-      <div className="rounded-[28px] border border-white/10 bg-[#0d1017] p-5">
+      <div className="rounded-2xl border border-white/10 bg-[#0d1017] p-5">
         <div className="flex items-center justify-between gap-3">
           <div>
             <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">Progress Over Time</div>
@@ -134,7 +136,7 @@ function ProgressHistory({ selectedKey, progress }) {
       </div>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <div className="rounded-[28px] border border-white/10 bg-white/5 p-5">
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
           <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">Champion Pool Changes</div>
           <div className="mt-4 flex flex-wrap gap-2">
             {(latest.topChampions || []).map((champ) => (
@@ -142,7 +144,7 @@ function ProgressHistory({ selectedKey, progress }) {
             ))}
           </div>
         </div>
-        <div className="rounded-[28px] border border-white/10 bg-white/5 p-5">
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-5">
           <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">Suggested Focus</div>
           <p className="mt-3 text-sm leading-6 text-gray-300">
             {latest.tiltRisk === 'High'
@@ -162,6 +164,7 @@ function ProgressHistory({ selectedKey, progress }) {
 export default function AccountDashboard({ onBack, onOpenAccount, onCompareClick }) {
   const [favorites, setFavorites] = useState(() => readStorage('crexus_favorites', []));
   const [pinned, setPinned] = useState(() => readStorage('crexus_pinned', null));
+  const [linkedAccount, setLinkedAccount] = useState(() => readLinkedAccount());
   const [progress, setProgress] = useState(() => readStorage('crexus_progress', {}));
   const [selectedKey, setSelectedKey] = useState(() => {
     const saved = readStorage('crexus_favorites', []);
@@ -202,6 +205,15 @@ export default function AccountDashboard({ onBack, onOpenAccount, onCompareClick
     setSelectedKey(accountKey(account));
   };
 
+  const linkAccount = (account) => {
+    setLinkedAccount(writeLinkedAccount(account));
+  };
+
+  const unlinkAccount = () => {
+    clearLinkedAccount();
+    setLinkedAccount(null);
+  };
+
   const clearProgress = () => {
     if (!selectedKey) return;
     const next = { ...progress };
@@ -212,17 +224,25 @@ export default function AccountDashboard({ onBack, onOpenAccount, onCompareClick
 
   return (
     <div className="min-h-screen text-gray-200">
-      <div className="mx-auto max-w-7xl p-4 md:p-6 lg:p-8">
-        <header className="mb-6 flex items-center justify-between gap-4 px-1 py-2">
-          <div className="flex items-center gap-4">
-            <img src="/crexus-logo.png" alt="Crexus logo" className="h-12 w-12 rounded-2xl object-contain shadow-[0_0_28px_rgba(239,68,68,0.18)]" />
-            <div>
-              <h1 className="text-3xl font-black uppercase tracking-[0.18em] text-white md:text-4xl">Crexus</h1>
-              <div className="mt-1 text-[11px] font-black uppercase tracking-[0.28em] text-red-300">v1.1.0 · Account Tracking</div>
-            </div>
-          </div>
+      <div className="crexus-page">
+        <header className="crexus-card mb-6 rounded-2xl p-5 md:p-7">
           <BackButton onClick={onBack} />
+          <div className="mt-4">
+            <div className="crexus-kicker">Crexus Dashboard</div>
+            <h1 className="crexus-page-title mt-2">Dashboard</h1>
+            <p className="crexus-copy mt-2 max-w-3xl">Saved players, linked account, progress history, and quick refresh controls.</p>
+          </div>
         </header>
+
+        {linkedAccount && (
+          <div className="mb-6 flex flex-col gap-3 rounded-2xl border border-red-500/20 bg-red-500/10 p-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <div className="text-[10px] font-black uppercase tracking-[0.18em] text-red-200">Linked account</div>
+              <div className="mt-1 text-sm font-bold text-white">{linkedAccount.name}<span className="text-gray-400">#{linkedAccount.tag}</span> · {formatRegion(linkedAccount.region)}</div>
+            </div>
+            <button type="button" onClick={unlinkAccount} className="crexus-btn crexus-btn-secondary min-h-0 px-4 py-2 text-[10px]">Unlink</button>
+          </div>
+        )}
 
         <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
           <StatCard label="Saved accounts" value={accounts.length} detail="Favourites and pinned players" accent />
@@ -232,7 +252,7 @@ export default function AccountDashboard({ onBack, onOpenAccount, onCompareClick
         </div>
 
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-[0.9fr_1.1fr]">
-          <section className="crexus-card rounded-[32px] p-5 md:p-6">
+          <section className="crexus-card rounded-2xl p-5 md:p-6">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
                 <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">Saved Accounts</div>
@@ -251,7 +271,9 @@ export default function AccountDashboard({ onBack, onOpenAccount, onCompareClick
                   onOpenAccount={onOpenAccount}
                   onRemove={removeAccount}
                   onPin={pinAccount}
+                  onLink={linkAccount}
                   onSelect={() => setSelectedKey(accountKey(account))}
+                  linked={linkedAccount && accountKey(linkedAccount) === accountKey(account)}
                   pinned={pinned && accountKey(pinned) === accountKey(account)}
                 />
               )) : (
@@ -262,7 +284,7 @@ export default function AccountDashboard({ onBack, onOpenAccount, onCompareClick
             </div>
           </section>
 
-          <section className="crexus-card rounded-[32px] p-5 md:p-6">
+          <section className="crexus-card rounded-2xl p-5 md:p-6">
             <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
                 <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">Progress Over Time</div>

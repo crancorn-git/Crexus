@@ -4,14 +4,22 @@ import { API_BASE } from './config';
 import { analyzePlayerIntelligence } from './intelligence';
 import { IntelligencePills, IntelligenceMiniRead } from './IntelligencePills';
 import { ScoutTeamRead } from './ScoutTeamRead';
-import { REGION_OPTIONS } from './regions';
+import { REGION_OPTIONS, getRegionLabel } from './regions';
+import { readLinkedAccount } from './accountLink';
 
 import { BackButton } from './CrexusShell';
 export default function Lobby({ onBack }) {
-  const [text, setText] = useState('');
-  const [region, setRegion] = useState('na1');
+  const linkedAccount = readLinkedAccount();
+  const [text, setText] = useState(() => linkedAccount ? `${linkedAccount.name}#${linkedAccount.tag}` : '');
+  const [region, setRegion] = useState(() => linkedAccount?.region || localStorage.getItem('crexus_region') || 'na1');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+
+  const useLinkedAccount = () => {
+    if (!linkedAccount) return;
+    setText(`${linkedAccount.name}#${linkedAccount.tag}`);
+    setRegion(linkedAccount.region);
+  };
 
   const scoutLobby = async () => {
     setLoading(true);
@@ -50,7 +58,7 @@ export default function Lobby({ onBack }) {
 
   return (
     <div className="min-h-screen text-gray-200">
-      <div className="mx-auto max-w-6xl p-4 md:p-6 lg:p-8">
+      <div className="crexus-page">
         <div className="crexus-card mb-6 rounded-2xl border border-red-500/10 p-5 md:p-7">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
@@ -58,14 +66,19 @@ export default function Lobby({ onBack }) {
               <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Crexus Live Game</div>
               <h1 className="mt-2 text-3xl font-black tracking-tight text-white md:text-4xl">Live game team read</h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-400">
-                Paste Riot IDs from a lobby or live game to build a clean team read with ranks, recent form, and risk tags.
+                Paste Riot IDs from a lobby or live game to build a clean team read with ranks, recent form, and risk tags. Your linked account is used by default when set.
               </p>
+              {linkedAccount && (
+                <button type="button" onClick={useLinkedAccount} className="crexus-btn crexus-btn-secondary mt-4 min-h-0 px-4 py-2 text-[10px]">
+                  Use linked account · {linkedAccount.name}#{linkedAccount.tag} · {getRegionLabel(linkedAccount.region)}
+                </button>
+              )}
             </div>
 
             <select
               value={region}
               onChange={(e) => setRegion(e.target.value)}
-              className="rounded-2xl border border-white/10 bg-[#0b0d12] px-4 py-4 text-sm font-black uppercase tracking-[0.18em] text-white outline-none transition hover:border-red-500/30 focus:border-red-500/40"
+              className="crexus-input text-sm font-black uppercase tracking-[0.18em]"
             >
               {REGION_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>{option.label}</option>
@@ -76,7 +89,7 @@ export default function Lobby({ onBack }) {
 
         <div className="crexus-card mb-6 rounded-2xl p-5 md:p-6">
           <textarea
-            className="h-40 w-full resize-none rounded-2xl border border-white/10 bg-[#0b0d12] p-4 text-sm text-gray-200 outline-none placeholder:text-gray-600 transition focus:border-red-500/40"
+            className="h-40 w-full resize-none rounded-xl border border-white/10 bg-[#0b0d12] p-4 text-sm text-gray-200 outline-none placeholder:text-gray-600 transition focus:border-red-500/40"
             placeholder="Paste Riot IDs, one per line, for example: PlayerName#TAG"
             value={text}
             onChange={(e) => setText(e.target.value)}
@@ -84,7 +97,7 @@ export default function Lobby({ onBack }) {
           <button
             onClick={scoutLobby}
             disabled={loading || !text.trim()}
-            className="mt-4 w-full rounded-2xl bg-red-600 px-8 py-4 text-sm font-black uppercase tracking-[0.2em] text-white shadow-[0_0_26px_rgba(239,68,68,0.35)] transition hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-gray-500 disabled:shadow-none"
+            className="crexus-btn crexus-btn-primary mt-4 w-full disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-gray-500"
           >
             {loading ? 'Checking players...' : 'Check live game'}
           </button>

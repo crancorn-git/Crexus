@@ -82,18 +82,35 @@ export default function LiveGame({ puuid, region, onBack }) {
   };
 
   // --- RENDER ---
-  if (loading) return <div className="text-center text-red-300 animate-pulse mt-20 text-2xl font-bold">CHECKING LIVE GAME...{scoutStatus && <div className="text-sm text-gray-400 mt-2">{scoutStatus}</div>}</div>;
-  if (error) return <div className="text-center mt-20 text-red-500 font-bold text-xl">{error}</div>;
+  if (loading) return (
+    <div className="crexus-page">
+      <div className="crexus-card rounded-2xl p-8 text-center">
+        <div className="text-sm font-black uppercase tracking-[0.18em] text-red-300 animate-pulse">Checking live game...</div>
+        {scoutStatus && <div className="mt-2 text-sm text-gray-400">{scoutStatus}</div>}
+      </div>
+    </div>
+  );
+  if (error) return (
+    <div className="crexus-page">
+      <BackButton onClick={onBack} />
+      <div className="crexus-card mt-4 rounded-2xl p-8 text-center">
+        <div className="text-xl font-black text-red-300">{error}</div>
+        <p className="mt-2 text-sm text-gray-400">Try Player Search, then open Live Game from the profile again.</p>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="max-w-7xl mx-auto p-6 animate-in fade-in zoom-in duration-300">
-      <BackButton onClick={onBack} />
-
-      {/* HEADER */}
-      <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-gray-800 pb-6">
-        <div>
-            <h1 className="text-4xl font-black text-white italic">LIVE GAME</h1>
-            <span className="bg-red-600 text-white px-3 py-1 rounded text-sm font-bold animate-pulse">{game.gameMode}</span>
+    <div className="crexus-page animate-in fade-in zoom-in duration-300">
+      <div className="crexus-card mb-6 rounded-2xl p-5 md:p-7">
+        <BackButton onClick={onBack} />
+        <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div>
+            <div className="crexus-kicker">Crexus Live Game</div>
+            <h1 className="crexus-page-title mt-2">Live game</h1>
+            <p className="crexus-copy mt-2">Current match read, matchup notes, team comparison, and player risk tags.</p>
+          </div>
+          <span className="rounded-xl bg-red-600 px-3 py-2 text-xs font-black uppercase tracking-[0.18em] text-white">{game.gameMode}</span>
         </div>
       </div>
 
@@ -106,7 +123,7 @@ export default function LiveGame({ puuid, region, onBack }) {
       <DuoSynergyRead participants={game.participants} />
 
       {/* TEAMS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <TeamList teamId={100} participants={game.participants} color="blue" getSpellIcon={getSpellIcon} champs={champs} ddragonImg={ddragonImg} />
         <TeamList teamId={200} participants={game.participants} color="red" getSpellIcon={getSpellIcon} champs={champs} ddragonImg={ddragonImg} />
       </div>
@@ -150,9 +167,9 @@ function TeamList({ teamId, participants, color, getSpellIcon, champs, ddragonIm
 
   return (
     <div className="space-y-3">
-      <h2 className={`text-2xl font-black ${textColor} mb-4 uppercase tracking-wider`}>{color === 'blue' ? 'Blue Team' : 'Red Team'}</h2>
+      <h2 className={`mb-4 text-lg font-black ${textColor} uppercase tracking-[0.16em]`}>{color === 'blue' ? 'Blue Team' : 'Red Team'}</h2>
       {team.map((p) => (
-        <div key={p.puuid} className={`bg-[#161d23] p-3 rounded-lg border-l-4 ${borderColor} flex items-center gap-4 shadow-lg`}>
+        <div key={p.puuid} className={`flex items-center gap-4 rounded-2xl border border-white/10 bg-[#111318] p-3 shadow-lg ${borderColor}`}>
           <div className="relative">
              <img src={`${ddragonImg}/champion/${champs[p.championId]}.png`} className="w-14 h-14 rounded-lg border border-gray-600" />
              <div className="absolute -bottom-2 -right-2 flex">

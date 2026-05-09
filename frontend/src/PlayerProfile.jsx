@@ -22,7 +22,8 @@ import ShareableReportCard from './ShareableReportCard';
 import ChampionInsights from './ChampionInsights';
 import CoachingLayer from './CoachingLayer';
 import { analyzePlayerIntelligence } from './intelligence';
-import { REGION_OPTIONS } from './regions';
+import { REGION_OPTIONS, getRegionLabel } from './regions';
+import { accountKey, clearLinkedAccount, parseRiotId, readLinkedAccount, writeLinkedAccount } from './accountLink';
 import { buildPublicReportUrl, buildStreamerUrl, cleanMetric } from './reportLinks';
 
 const DDRAGON_IMG = 'https://ddragon.leagueoflegends.com/cdn/img';
@@ -39,8 +40,12 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
   const ddragonVersion = useDDragonVersion();
   const ddragonBase = `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}`;
 
-  const [input, setInput] = useState('Faker#KR1');
-  const [region, setRegion] = useState(() => localStorage.getItem('crexus_region') || 'kr');
+  const [linkedAccount, setLinkedAccount] = useState(() => readLinkedAccount());
+  const [input, setInput] = useState(() => {
+    const linked = readLinkedAccount();
+    return linked ? `${linked.name}#${linked.tag}` : 'Faker#KR1';
+  });
+  const [region, setRegion] = useState(() => readLinkedAccount()?.region || localStorage.getItem('crexus_region') || 'kr');
   const [data, setData] = useState(null);
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -289,6 +294,30 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
     localStorage.setItem('crexus_pinned', JSON.stringify(nextPinned));
   };
 
+  const linkCurrentPlayer = () => {
+    if (!currentIdentity) return;
+    setLinkedAccount(writeLinkedAccount(currentIdentity));
+  };
+
+  const linkInputAccount = () => {
+    const parsed = parseRiotId(input);
+    if (!parsed) {
+      alert('Please use Name#Tag format before linking an account.');
+      return;
+    }
+    setLinkedAccount(writeLinkedAccount({ ...parsed, region }));
+  };
+
+  const unlinkAccount = () => {
+    clearLinkedAccount();
+    setLinkedAccount(null);
+  };
+
+  const loadLinkedAccount = () => {
+    if (!linkedAccount) return;
+    searchPlayer(linkedAccount.name, linkedAccount.tag, linkedAccount.region);
+  };
+
   const clearHistory = () => {
     setRecentSearches([]);
     localStorage.removeItem('crexus_recents');
@@ -317,7 +346,7 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
   const buildPublicReportPayload = (displayRank, intelligence) => {
     if (!data || !intelligence) return null;
     return {
-      version: '1.1.0',
+      version: '1.1.1',
       generatedAt: new Date().toISOString(),
       playerName: data.account.gameName,
       tagLine: data.account.tagLine,
@@ -456,9 +485,9 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
     <div className="min-h-screen text-gray-200">
       <div className="crexus-page">
         <header className="mb-5 px-1 py-2">
-          <div className="crexus-kicker">v1.1.0 · Game Stats & Information</div>
+          <div className="crexus-kicker">v1.1.1 · Game Stats & Information</div>
           <h1 className="crexus-page-title mt-2">Player Search</h1>
-          <p className="crexus-copy mt-2 max-w-2xl">Search any Riot ID, open a live game, or jump into clean player tools from the sidebar.</p>
+          <p className="crexus-copy mt-2 max-w-2xl">Search any Riot ID, open a live game, or use your linked account as the default across Crexus.</p>
         </header>
 
         <div className="mb-8 rounded-2xl border border-white/8 bg-[#111318] p-4 shadow-xl md:p-5">
@@ -468,7 +497,20 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
               <div className="mt-1 text-sm text-gray-500">Enter GameName#Tag and choose a region.</div>
             </div>
           </div>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-[180px_1fr_auto] md:items-center">
+          {linkedAccount && (
+            <div className="mb-4 flex flex-col gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-3 md:flex-row md:items-center md:justify-between">
+              <div>
+                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-red-200">Linked account</div>
+                <div className="mt-1 text-sm font-bold text-white">{linkedAccount.name}<span className="text-gray-400">#{linkedAccount.tag}</span> · {getRegionLabel(linkedAccount.region)}</div>
+              </div>
+              <div className="flex gap-2">
+                <button type="button" onClick={loadLinkedAccount} className="crexus-btn crexus-btn-secondary min-h-0 px-3 py-2 text-[10px]">Load</button>
+                <button type="button" onClick={unlinkAccount} className="crexus-btn crexus-btn-secondary min-h-0 px-3 py-2 text-[10px]">Unlink</button>
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-[180px_1fr_auto_auto] md:items-center">
             <select
               value={region}
               onChange={(e) => setRegion(e.target.value)}
@@ -489,6 +531,9 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
 
             <button onClick={() => searchPlayer()} className="crexus-btn crexus-btn-primary px-7">
               Search
+            </button>
+            <button type="button" onClick={linkInputAccount} className="crexus-btn crexus-btn-secondary px-5">
+              Link
             </button>
           </div>
         </div>
@@ -688,12 +733,15 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
                     Live Game
                   </button>
 
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                     <button onClick={toggleFavoriteCurrent} className={`rounded-2xl border px-3 py-2 text-xs font-black uppercase tracking-[0.14em] transition ${isCurrentFavorite ? 'border-yellow-500/30 bg-yellow-500/10 text-yellow-200' : 'border-white/10 bg-white/5 text-gray-300 hover:border-red-500/30 hover:bg-red-500/10 hover:text-white'}`}>
                       {isCurrentFavorite ? '★ Saved' : '☆ Save'}
                     </button>
                     <button onClick={pinCurrentPlayer} className={`rounded-2xl border px-3 py-2 text-xs font-black uppercase tracking-[0.14em] transition ${pinnedPlayer && currentIdentity && `${pinnedPlayer.name}#${pinnedPlayer.tag}:${pinnedPlayer.region}` === `${currentIdentity.name}#${currentIdentity.tag}:${currentIdentity.region}` ? 'border-red-500/30 bg-red-500/10 text-red-200' : 'border-white/10 bg-white/5 text-gray-300 hover:border-red-500/30 hover:bg-red-500/10 hover:text-white'}`}>
                       Pin
+                    </button>
+                    <button onClick={linkCurrentPlayer} className={`rounded-2xl border px-3 py-2 text-xs font-black uppercase tracking-[0.14em] transition ${linkedAccount && currentIdentity && accountKey(linkedAccount) === accountKey(currentIdentity) ? 'border-red-500/30 bg-red-500/10 text-red-200' : 'border-white/10 bg-white/5 text-gray-300 hover:border-red-500/30 hover:bg-red-500/10 hover:text-white'}`}>
+                      Link
                     </button>
                     <button onClick={() => setShowShareCard(true)} className="rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-black uppercase tracking-[0.14em] text-gray-300 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
                       Share

@@ -46,7 +46,7 @@ export default function Leaderboard({ onBack }) {
 
   return (
     <div className="min-h-screen text-gray-200">
-      <div className="mx-auto max-w-6xl p-4 md:p-6 lg:p-8">
+      <div className="crexus-page">
         <div className="crexus-card mb-6 rounded-2xl border border-red-500/10 p-5 md:p-7">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>

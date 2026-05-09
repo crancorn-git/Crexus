@@ -125,7 +125,7 @@ function EdgeBadge({ label, winner }) {
 
 function LoadingSkeleton() {
   return (
-    <div className="crexus-card rounded-[28px] p-6">
+    <div className="crexus-card rounded-2xl p-6">
       <div className="h-3 w-28 animate-pulse rounded-full bg-red-500/20" />
       <div className="mt-5 flex items-center gap-4">
         <div className="h-20 w-20 animate-pulse rounded-3xl bg-white/10" />
@@ -171,7 +171,7 @@ function MetricDuel({ title, a, b, detailA, detailB, higher = true }) {
 function PlayerSnapshot({ slot, data, ddragonBase }) {
   if (!data) {
     return (
-      <div className="crexus-card rounded-[28px] p-6">
+      <div className="crexus-card rounded-2xl p-6">
         <div className="text-[10px] font-black uppercase tracking-[0.24em] text-red-300">Player {slot}</div>
         <div className="mt-3 text-2xl font-black text-white">Waiting for comparison</div>
         <p className="mt-2 text-sm leading-6 text-gray-400">Enter a Riot ID above to build side-by-side reads.</p>
@@ -181,7 +181,7 @@ function PlayerSnapshot({ slot, data, ddragonBase }) {
 
   const { profile, insight, rank } = data;
   return (
-    <div className="crexus-card rounded-[28px] p-6">
+    <div className="crexus-card rounded-2xl p-6">
       <div className="flex items-center gap-4">
         <img src={`${ddragonBase}/img/profileicon/${profile.summoner.profileIconId}.png`} alt="profile icon" className="h-20 w-20 rounded-3xl border border-white/10" />
         <div className="min-w-0">
@@ -205,7 +205,7 @@ function ChampionPoolDuel({ a, b, ddragonBase }) {
   const champsB = b?.insight?.championStats || [];
   const poolWinner = winnerLabel(champsA.length, champsB.length);
   return (
-    <div className="crexus-card rounded-[28px] p-6">
+    <div className="crexus-card rounded-2xl p-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <div className="text-[10px] font-black uppercase tracking-[0.24em] text-red-300">Champion Pool Comparison</div>
@@ -273,7 +273,7 @@ function ComparisonSummary({ a, b }) {
   }, [a, b]);
 
   return (
-    <div className="crexus-card rounded-[28px] p-6">
+    <div className="crexus-card rounded-2xl p-6">
       <div className="text-[10px] font-black uppercase tracking-[0.24em] text-red-300">Versus Summary</div>
       <h3 className="mt-2 text-2xl font-black text-white">Who has the edge?</h3>
       <p className="mt-3 text-sm leading-7 text-gray-300">{summary.text}</p>
@@ -318,21 +318,17 @@ export default function PlayerCompare({ onBack }) {
   };
 
   return (
-    <div className="mx-auto min-h-screen max-w-7xl p-4 text-gray-200 md:p-6 lg:p-8">
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <BackButton onClick={onBack} />
-          <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Crexus v1.1.0</div>
-          <h1 className="mt-2 text-4xl font-black text-white md:text-5xl">Player Compare</h1>
-          <p className="mt-3 max-w-3xl text-sm leading-6 text-gray-400">Compare two players side by side using Crexus Score, champion pool, recent form, lane phase, objective control, and match consistency.</p>
-        </div>
-        <div className="rounded-3xl border border-red-500/20 bg-red-500/10 px-5 py-4 text-sm leading-6 text-red-50">
-          <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-200">Ready for v0.9</div>
-          <div className="mt-1 text-gray-200">v1.1.0 launch baseline</div>
+    <div className="crexus-page">
+      <div className="crexus-card mb-6 rounded-2xl p-5 md:p-7">
+        <BackButton onClick={onBack} />
+        <div className="mt-4">
+          <div className="crexus-kicker">Crexus Compare</div>
+          <h1 className="crexus-page-title mt-2">Player Compare</h1>
+          <p className="crexus-copy mt-2 max-w-3xl">Compare two players side by side using score, champion pool, recent form, lane phase, objective control, and match consistency.</p>
         </div>
       </div>
 
-      <div className="crexus-card mb-6 rounded-[28px] p-4">
+      <div className="crexus-card mb-6 rounded-2xl p-4">
         <div className="grid grid-cols-1 gap-3 lg:grid-cols-[220px_1fr_1fr_auto]">
           <select value={region} onChange={(e) => setRegion(e.target.value)} className="rounded-2xl border border-white/10 bg-[#0b0d12] px-4 py-4 text-sm font-black uppercase tracking-[0.18em] text-white outline-none focus:border-red-500/30">
             {REGION_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}

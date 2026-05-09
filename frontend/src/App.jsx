@@ -72,7 +72,7 @@ function App() {
         />
       )}
 
-      {view === 'lobby' && <Lobby onBack={() => setView('profile')} />}
+      {(view === 'lobby' || (view === 'live' && !liveData)) && <Lobby onBack={() => setView('profile')} />}
       
       {/* NEW VIEW */}
       {view === 'leaderboard' && <Leaderboard onBack={() => setView('profile')} />}

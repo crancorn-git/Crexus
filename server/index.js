@@ -12,7 +12,7 @@ app.use(cors({
 
 const API_KEY = process.env.RIOT_API_KEY;
 
-const APP_VERSION = process.env.APP_VERSION || '1.1.0';
+const APP_VERSION = process.env.APP_VERSION || '1.1.1';
 const DEPLOY_TIME = process.env.VERCEL_GIT_COMMIT_SHA ? 'vercel' : new Date().toISOString();
 const DEBUG_TOKEN = process.env.CREXUS_DEBUG_TOKEN;
 
@@ -155,7 +155,7 @@ app.get('/api/launch-check', async (req, res) => {
         checks: {
             backend: true,
             riotKey: Boolean(API_KEY),
-            versionPinned: APP_VERSION === '1.1.0',
+            versionPinned: APP_VERSION === '1.1.1',
             regionRouting: true,
             publicReports: true,
             streamerMode: true
