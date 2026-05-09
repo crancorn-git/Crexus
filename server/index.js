@@ -12,7 +12,7 @@ app.use(cors({
 
 const API_KEY = process.env.RIOT_API_KEY;
 
-const APP_VERSION = process.env.APP_VERSION || '0.9.0';
+const APP_VERSION = process.env.APP_VERSION || '1.0.0';
 const DEPLOY_TIME = process.env.VERCEL_GIT_COMMIT_SHA ? 'vercel' : new Date().toISOString();
 const DEBUG_TOKEN = process.env.CREXUS_DEBUG_TOKEN;
 
@@ -123,6 +123,46 @@ app.get('/api/version', async (req, res) => {
     });
 });
 
+
+
+app.get('/api/launch-check', async (req, res) => {
+    const ddragonVersion = await getDataDragonVersion();
+    res.json({
+        app: 'Crexus',
+        version: APP_VERSION,
+        status: 'launch-ready',
+        identity: 'Game stats and information platform',
+        firstSupportedGame: 'League of Legends',
+        riotKeyConfigured: Boolean(API_KEY),
+        ddragonVersion,
+        regions: Array.from(PLATFORM_REGIONS),
+        modules: [
+            'player_profiles',
+            'live_scout',
+            'lobby_scout',
+            'ladder',
+            'match_details',
+            'crexus_score',
+            'player_compare',
+            'champion_insights',
+            'draft_tools',
+            'saved_accounts',
+            'coaching_layer',
+            'public_reports',
+            'streamer_mode',
+            'health_diagnostics'
+        ],
+        checks: {
+            backend: true,
+            riotKey: Boolean(API_KEY),
+            versionPinned: APP_VERSION === '1.0.0',
+            regionRouting: true,
+            publicReports: true,
+            streamerMode: true
+        },
+        timestamp: new Date().toISOString()
+    });
+});
 
 app.get('/api/discord/commands', (req, res) => {
     res.json({

@@ -8,6 +8,7 @@ import ChampionInsights from './ChampionInsights';
 import AccountDashboard from './AccountDashboard';
 import CoachLanding from './CoachLanding';
 import CommunityHub from './CommunityHub';
+import LaunchReady from './LaunchReady';
 import PublicReport from './PublicReport';
 import StreamerMode from './StreamerMode';
 import BackendStatus from './BackendStatus';
@@ -19,7 +20,7 @@ function App() {
     if (params.get('report')) return 'publicReport';
     if (params.get('streamer')) return 'streamer';
     return 'profile';
-  }); // profile, live, lobby, leaderboard, compare, champions, dashboard, coach, community
+  }); // profile, live, lobby, leaderboard, compare, champions, dashboard, coach, community, launch
   const [liveData, setLiveData] = useState(null);
   const [profileTarget, setProfileTarget] = useState(null); 
 
@@ -105,6 +106,10 @@ function App() {
           onBack={() => setView('profile')}
           onScoutClick={() => setView('profile')}
         />
+      )}
+
+      {view === 'launch' && (
+        <LaunchReady onBack={() => setView('profile')} />
       )}
     </CrexusShell>
   );

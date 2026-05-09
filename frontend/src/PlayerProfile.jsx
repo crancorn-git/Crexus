@@ -314,7 +314,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
   const buildPublicReportPayload = (displayRank, intelligence) => {
     if (!data || !intelligence) return null;
     return {
-      version: '0.9.0',
+      version: '1.0.0',
       generatedAt: new Date().toISOString(),
       playerName: data.account.gameName,
       tagLine: data.account.tagLine,
@@ -453,7 +453,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
     <div className="min-h-screen text-gray-200">
       <div className="crexus-page">
         <header className="mb-5 px-1 py-2">
-          <div className="crexus-kicker">v0.9.0 · Game Stats & Information</div>
+          <div className="crexus-kicker">v1.0.0 · Game Stats & Information</div>
           <h1 className="crexus-page-title mt-2">Scout Search</h1>
           <p className="crexus-copy mt-2 max-w-3xl">Search a player, review their profile, then use the sidebar for Dashboard, Compare, Champions, Lobby Scout, and Ladder.</p>
         </header>

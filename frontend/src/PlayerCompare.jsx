@@ -323,13 +323,13 @@ export default function PlayerCompare({ onBack }) {
       <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
           <BackButton onClick={onBack} />
-          <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Crexus v0.9.0</div>
+          <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Crexus v1.0.0</div>
           <h1 className="mt-2 text-4xl font-black text-white md:text-5xl">Player Compare</h1>
           <p className="mt-3 max-w-3xl text-sm leading-6 text-gray-400">Compare two players side by side using Crexus Score, champion pool, recent form, lane phase, objective control, and match consistency.</p>
         </div>
         <div className="rounded-3xl border border-red-500/20 bg-red-500/10 px-5 py-4 text-sm leading-6 text-red-50">
           <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-200">Ready for v0.9</div>
-          <div className="mt-1 text-gray-200">v0.9.0 community/content baseline</div>
+          <div className="mt-1 text-gray-200">v1.0.0 launch baseline</div>
         </div>
       </div>
 

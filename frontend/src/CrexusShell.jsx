@@ -5,6 +5,7 @@ const navItems = [
   { key: 'champions', label: 'Champions', hint: 'Champion reads' },
   { key: 'coach', label: 'Coach', hint: 'Actionable advice' },
   { key: 'community', label: 'Community', hint: 'Share & stream' },
+  { key: 'launch', label: 'Launch', hint: 'v1.0 readiness' },
   { key: 'lobby', label: 'Lobby Scout', hint: 'Paste lobby' },
   { key: 'leaderboard', label: 'Ladder', hint: 'Top players' },
 ];
@@ -28,7 +29,7 @@ export default function CrexusShell({ activeView, onNavigate, children }) {
           <img src="/crexus-logo.png" alt="Crexus logo" className="h-10 w-10 rounded-xl object-contain shadow-[0_0_22px_rgba(239,68,68,0.18)]" />
           <div className="min-w-0">
             <div className="text-lg font-black uppercase tracking-[0.16em] text-white">Crexus</div>
-            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-300">v0.9.0</div>
+            <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-300">v1.0.0</div>
           </div>
         </div>
 
