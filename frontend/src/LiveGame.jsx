@@ -19,6 +19,7 @@ export default function LiveGame({ puuid, region, onBack }) {
   const [error, setError] = useState(null);
   const [spells, setSpells] = useState({});
   const [champs, setChamps] = useState({});
+  const [champNames, setChampNames] = useState({});
   const [userChampName, setUserChampName] = useState("");
   const [scoutStatus, setScoutStatus] = useState("");
 
@@ -37,6 +38,7 @@ export default function LiveGame({ puuid, region, onBack }) {
             idToNameMap[c.key] = c.name; // ID "266" -> "Aatrox"
         });
         setChamps(champMap);
+        setChampNames(idToNameMap);
 
         const res = await axios.get(`${API_BASE}/api/live/${puuid}?region=${region}`);
         setScoutStatus("Building player read tags...");
@@ -95,7 +97,7 @@ export default function LiveGame({ puuid, region, onBack }) {
       </div>
 
       {/* MATCHUP TIPS SECTION */}
-      <MatchupTipsBox participants={game.participants} userChamp={userChampName} champs={champs} ddragonImg={ddragonImg} />
+      <MatchupTipsBox participants={game.participants} userPuuid={puuid} userChamp={userChampName} champs={champs} champNames={champNames} ddragonImg={ddragonImg} />
 
       <LiveTeamComparison participants={game.participants} />
 
@@ -112,36 +114,29 @@ export default function LiveGame({ puuid, region, onBack }) {
 }
 
 // NEW: Component to find and display the Tip
-function MatchupTipsBox({ participants, userChamp, champs }) {
-    if (!userChamp) return null;
+function MatchupTipsBox({ participants, userPuuid, userChamp, champNames }) {
+    if (!userChamp || !userPuuid) return null;
 
-    // Find likely opponent (Same position isn't always available in API, so we check for 'likely' matchups manually or just display general tips)
-    // For now, let's look for a specific enemy that matches our Tip Database keys
-    const enemies = participants.filter(p => p.teamId !== participants.find(u => u.championId.toString() === Object.keys(champs).find(k => champs[k] === userChamp))?.teamId);
-    
-    let activeTip = null;
-    let enemyChampName = "";
+    const me = participants.find((p) => p.puuid === userPuuid);
+    if (!me) return null;
 
-    // Check all enemies to see if we have a tip for UserChamp vs EnemyChamp
-    enemies.forEach(e => {
-        // Note: Our champ map in parent was Key->ID. We need Name. 
-        // Simpler: Just rely on the hardcoded Tip Keys
-        // Let's assume champs[id] returns "Aatrox" (The ID string from DDragon)
-        const tip = getMatchupTip(userChamp, champs[e.championId]);
-        if (tip) {
-            activeTip = tip;
-            enemyChampName = champs[e.championId];
-        }
-    });
+    const enemies = participants.filter((p) => p.teamId !== me.teamId);
+    const tipRead = enemies
+      .map((enemy) => {
+        const enemyChampName = champNames[enemy.championId] || '';
+        const tip = getMatchupTip(userChamp, enemyChampName);
+        return tip ? { enemyChampName, tip } : null;
+      })
+      .find(Boolean);
 
-    if (!activeTip) return null;
+    if (!tipRead) return null;
 
     return (
-        <div className="bg-gradient-to-r from-red-950/40 to-[#181b22] border border-red-500/30 p-4 rounded-xl mb-8 flex items-start gap-4">
-            <div className="text-2xl">💡</div>
+        <div className="mb-8 flex items-start gap-4 rounded-[24px] border border-red-500/30 bg-gradient-to-r from-red-950/40 to-[#181b22] p-4">
+            <div className="text-2xl">◆</div>
             <div>
-                <h3 className="text-red-200 font-bold text-sm uppercase tracking-widest mb-1">Matchup Tip: vs {enemyChampName}</h3>
-                <p className="text-white font-medium">{activeTip}</p>
+                <h3 className="mb-1 text-sm font-black uppercase tracking-widest text-red-200">Matchup Tip: {userChamp} vs {tipRead.enemyChampName}</h3>
+                <p className="font-medium text-white">{tipRead.tip}</p>
             </div>
         </div>
     );

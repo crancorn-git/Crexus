@@ -262,7 +262,7 @@ export default function PlayerCompare({ onBack }) {
         <button onClick={onBack} className="mb-6 text-sm font-bold uppercase tracking-[0.18em] text-gray-400 transition hover:text-white">← Back</button>
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Crexus v0.5.1</div>
+            <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Crexus v0.5.2</div>
             <h1 className="mt-2 text-4xl font-black text-white md:text-5xl">Player Compare</h1>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-gray-400">Compare two players side by side using Crexus Score, champion pool, recent form, lane phase, objective control, and match consistency.</p>
           </div>
