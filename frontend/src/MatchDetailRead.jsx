@@ -8,7 +8,7 @@ export default function MatchDetailRead({ matches, puuid }) {
       <div className="flex items-start justify-between gap-4 mb-4">
         <div>
           <h2 className="text-xl font-black text-white uppercase tracking-wide">Previous Matches Read</h2>
-          <p className="text-sm text-gray-400 mt-1">A quick intelligence layer for the match history page.</p>
+          <p className="text-sm text-gray-400 mt-1">A quick Crexus read for the match history page.</p>
         </div>
         <div className="text-right">
           <div className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Avg Impact</div>

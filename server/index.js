@@ -33,11 +33,19 @@ const getDataDragonVersion = async () => {
 
 const getUptimeSeconds = () => Math.round(process.uptime());
 
+
+const PLATFORM_REGIONS = new Set(['na1', 'br1', 'la1', 'la2', 'kr', 'jp1', 'euw1', 'eun1', 'tr1', 'ru', 'oc1']);
+const normalizePlatform = (region, fallback = 'na1') => {
+    const platform = String(region || fallback).toLowerCase();
+    return PLATFORM_REGIONS.has(platform) ? platform : fallback;
+};
+
 const getBroadRegion = (platform) => {
     const map = {
         'na1': 'americas', 'br1': 'americas', 'la1': 'americas', 'la2': 'americas',
         'kr': 'asia', 'jp1': 'asia',
-        'euw1': 'europe', 'eun1': 'europe', 'tr1': 'europe', 'ru': 'europe'
+        'euw1': 'europe', 'eun1': 'europe', 'tr1': 'europe', 'ru': 'europe',
+        'oc1': 'sea'
     };
     return map[platform.toLowerCase()] || 'americas';
 };
@@ -115,12 +123,66 @@ app.get('/api/version', async (req, res) => {
     });
 });
 
+
+
+app.get('/api/launch-check', async (req, res) => {
+    const ddragonVersion = await getDataDragonVersion();
+    res.json({
+        app: 'Crexus',
+        version: APP_VERSION,
+        status: 'launch-ready',
+        identity: 'Game stats and information platform',
+        firstSupportedGame: 'League of Legends',
+        riotKeyConfigured: Boolean(API_KEY),
+        ddragonVersion,
+        regions: Array.from(PLATFORM_REGIONS),
+        modules: [
+            'player_profiles',
+            'live_game',
+            'live_game_read',
+            'ladder',
+            'match_details',
+            'crexus_score',
+            'player_compare',
+            'champion_insights',
+            'draft_tools',
+            'saved_accounts',
+            'coaching_layer',
+            'public_reports',
+            'streamer_mode',
+            'health_diagnostics'
+        ],
+        checks: {
+            backend: true,
+            riotKey: Boolean(API_KEY),
+            versionPinned: APP_VERSION === '1.1.0',
+            regionRouting: true,
+            publicReports: true,
+            streamerMode: true
+        },
+        timestamp: new Date().toISOString()
+    });
+});
+
+app.get('/api/discord/commands', (req, res) => {
+    res.json({
+        app: 'Crexus',
+        version: APP_VERSION,
+        commands: [
+            { name: '/crexus player', usage: '/crexus player Ciaran#EUW', description: 'Return a player scout summary and public report link.' },
+            { name: '/crexus live', usage: '/crexus live Ciaran#EUW', description: 'Return live-game scout details when the player is currently in game.' },
+            { name: '/crexus compare', usage: '/crexus compare PlayerA#EUW PlayerB#EUW', description: 'Compare two players side by side.' },
+            { name: '/crexus report', usage: '/crexus report PlayerName#TAG', description: 'Generate a clean public report card for sharing.' }
+        ]
+    });
+});
+
 app.get('/api/debug/riot', async (req, res) => {
     if (DEBUG_TOKEN && req.query.token !== DEBUG_TOKEN) {
         return res.status(401).json({ error: 'Debug token required.' });
     }
 
-    const platform = req.query.region || 'kr';
+    const platform = normalizePlatform(req.query.region, 'kr');
 
     try {
         const statusUrl = `https://${platform}.api.riotgames.com/lol/status/v4/platform-data`;
@@ -146,7 +208,7 @@ app.get('/api/debug/riot', async (req, res) => {
 // API 1: Get Player Profile
 app.get('/api/player/:name/:tag', async (req, res) => {
     const { name, tag } = req.params;
-    const platform = req.query.region || 'na1';
+    const platform = normalizePlatform(req.query.region, 'na1');
     const region = getBroadRegion(platform);
 
     try {
@@ -219,7 +281,7 @@ app.get('/api/player/:name/:tag', async (req, res) => {
 // API 2: Matches
 app.get('/api/matches/:puuid', async (req, res) => {
     const { puuid } = req.params;
-    const platform = req.query.region || 'na1'; 
+    const platform = normalizePlatform(req.query.region, 'na1'); 
     const region = getBroadRegion(platform);
 
     try {
@@ -238,7 +300,7 @@ app.get('/api/matches/:puuid', async (req, res) => {
 // API 3: Live Game
 app.get('/api/live/:puuid', async (req, res) => {
     const { puuid } = req.params;
-    const platform = req.query.region || 'na1';
+    const platform = normalizePlatform(req.query.region, 'na1');
     
     try {
         const url = `https://${platform}.api.riotgames.com/lol/spectator/v5/active-games/by-summoner/${puuid}`;
@@ -283,7 +345,7 @@ app.get('/api/live/:puuid', async (req, res) => {
 
 // API 4: Server Status & Free Rotation
 app.get('/api/status', async (req, res) => {
-    const platform = req.query.region || 'na1'; 
+    const platform = normalizePlatform(req.query.region, 'na1'); 
     try {
         const statusUrl = `https://${platform}.api.riotgames.com/lol/status/v4/platform-data`;
         const statusData = await riotRequest(statusUrl);
@@ -301,52 +363,91 @@ app.get('/api/status', async (req, res) => {
     }
 });
 
-// API 5: Challenger Leaderboard
+// API 5: Region-aware ranked ladder
 app.get('/api/leaderboard', async (req, res) => {
-    const platform = req.query.region || 'na1';
+    const platform = normalizePlatform(req.query.region, 'na1');
     const region = getBroadRegion(platform);
-    
-    try {
-        const url = `https://${platform}.api.riotgames.com/lol/league/v4/challengerleagues/by-queue/RANKED_SOLO_5x5`;
-        const data = await riotRequest(url);
-        
-        const topPlayers = data.entries
-            .sort((a, b) => b.leaguePoints - a.leaguePoints)
-            .slice(0, 10);
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 100, 1), 200);
+    const queue = req.query.queue || 'RANKED_SOLO_5x5';
+    const tier = req.query.tier || 'challenger';
 
-        const enrichedPlayers = await Promise.all(topPlayers.map(async (player) => {
-            if (!player.summonerId) {
-                return { ...player, gameName: "Unknown User", tagLine: "???" };
-            }
+    try {
+        const url = `https://${platform}.api.riotgames.com/lol/league/v4/${tier}leagues/by-queue/${queue}`;
+        const data = await riotRequest(url);
+        const entries = Array.isArray(data.entries) ? data.entries : [];
+        
+        const topPlayers = entries
+            .sort((a, b) => b.leaguePoints - a.leaguePoints)
+            .slice(0, limit);
+
+        const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+        const enrichPlayer = async (player, index) => {
+            const fallbackName = player.gameName || player.riotIdGameName || player.summonerName || `Rank #${index + 1}`;
+            const fallbackTag = player.tagLine || player.riotIdTagline || '';
 
             try {
-                const sumUrl = `https://${platform}.api.riotgames.com/lol/summoner/v4/summoners/${player.summonerId}`;
-                const sumData = await riotRequest(sumUrl);
-                
-                const accUrl = `https://${region}.api.riotgames.com/riot/account/v1/accounts/by-puuid/${sumData.puuid}`;
+                let puuid = player.puuid;
+
+                // Newer Riot ladder payloads can include puuid directly. Older payloads only include
+                // encrypted summonerId, so keep that route as a fallback.
+                if (!puuid && player.summonerId) {
+                    const sumUrl = `https://${platform}.api.riotgames.com/lol/summoner/v4/summoners/${player.summonerId}`;
+                    const sumData = await riotRequest(sumUrl);
+                    puuid = sumData.puuid;
+                }
+
+                if (!puuid) {
+                    return { ...player, gameName: fallbackName, tagLine: fallbackTag, nameUnavailable: true };
+                }
+
+                const accUrl = `https://${region}.api.riotgames.com/riot/account/v1/accounts/by-puuid/${puuid}`;
                 const accData = await riotRequest(accUrl);
 
                 return {
                     ...player,
-                    gameName: accData.gameName,
-                    tagLine: accData.tagLine
+                    puuid,
+                    gameName: accData.gameName || fallbackName,
+                    tagLine: accData.tagLine || fallbackTag
                 };
             } catch (err) {
-                return { ...player, gameName: "Hidden User", tagLine: "" };
+                console.warn(`Leaderboard name lookup failed for ${platform} rank ${index + 1}:`, err.response?.status || err.message);
+                return { ...player, gameName: fallbackName, tagLine: fallbackTag, nameUnavailable: true };
             }
-        }));
+        };
 
-        res.json(enrichedPlayers);
+        // Avoid firing 200 Riot requests at once. That caused name lookups to fail and the UI
+        // showed every row as Unknown User. Small batches are slower but reliable.
+        const enrichedPlayers = [];
+        const batchSize = 5;
+        for (let i = 0; i < topPlayers.length; i += batchSize) {
+            const batch = topPlayers.slice(i, i + batchSize);
+            const enrichedBatch = await Promise.all(batch.map((player, offset) => enrichPlayer(player, i + offset)));
+            enrichedPlayers.push(...enrichedBatch);
+            if (i + batchSize < topPlayers.length) await sleep(150);
+        }
+
+        res.json({
+            meta: {
+                region: platform,
+                broadRegion: region,
+                queue,
+                tier: String(tier).toUpperCase(),
+                totalEntries: entries.length,
+                returned: enrichedPlayers.length
+            },
+            players: enrichedPlayers
+        });
     } catch (error) {
         console.error("Leaderboard error:", error.message);
-        sendRiotError(res, error, "Failed to fetch challenger leaderboard.");
+        sendRiotError(res, error, `Failed to fetch ${tier} ladder for ${platform.toUpperCase()}.`);
     }
 });
 
 // API 6: Match Timeline
 app.get('/api/match/:matchId/timeline', async (req, res) => {
     const { matchId } = req.params;
-    const platform = req.query.region || 'na1'; 
+    const platform = normalizePlatform(req.query.region, 'na1'); 
     const region = getBroadRegion(platform);
     
     try {

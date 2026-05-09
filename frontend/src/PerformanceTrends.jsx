@@ -79,7 +79,7 @@ const CustomTooltip = ({ active, payload }) => {
     <div className="bg-[#10151b] border border-gray-700 rounded-xl shadow-2xl p-3 text-xs min-w-40">
       <div className="flex justify-between gap-4 mb-2">
         <span className="font-black text-white">Game {row.index}</span>
-        <span className={row.result === 'W' ? 'text-blue-300 font-black' : 'text-red-300 font-black'}>{row.result}</span>
+        <span className={row.result === 'W' ? 'text-red-200 font-black' : 'text-red-300 font-black'}>{row.result}</span>
       </div>
       <div className="text-gray-400 font-bold mb-1">{row.champion}</div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-gray-300">
@@ -115,7 +115,7 @@ export default function PerformanceTrends({ matches = [], puuid }) {
     <div className="bg-[#161d23] rounded-2xl border border-gray-800 shadow-xl overflow-hidden">
       <div className="p-5 border-b border-gray-800 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-4">
         <div>
-          <div className="text-xs text-blue-300 font-black uppercase tracking-[0.25em]">Performance Trends</div>
+          <div className="text-xs text-red-200 font-black uppercase tracking-[0.25em]">Performance Trends</div>
           <h2 className="text-2xl font-black text-white mt-1">Momentum Read</h2>
           <p className="text-sm text-gray-400 mt-2">{momentum.detail}</p>
         </div>
@@ -142,13 +142,13 @@ export default function PerformanceTrends({ matches = [], puuid }) {
         </div>
 
         {bestGame && (
-          <div className="mt-4 bg-blue-500/5 border border-blue-500/20 rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+          <div className="mt-4 bg-red-500/5 border border-red-500/20 rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <div>
-              <div className="text-[10px] uppercase tracking-widest text-blue-300/80 font-black">Best Recent Spike</div>
+              <div className="text-[10px] uppercase tracking-widest text-red-200/80 font-black">Best Recent Spike</div>
               <div className="text-white font-black mt-1">{bestGame.champion} · {bestGame.kills}/{bestGame.deaths}/{bestGame.assists}</div>
             </div>
             <div className="text-sm text-gray-400">
-              Impact <span className="text-blue-200 font-black">{bestGame.impact}/100</span> · {bestGame.cs} CS/m · {bestGame.damage} DMG/m
+              Impact <span className="text-red-100 font-black">{bestGame.impact}/100</span> · {bestGame.cs} CS/m · {bestGame.damage} DMG/m
             </div>
           </div>
         )}

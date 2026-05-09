@@ -15,7 +15,9 @@ export default function ShareableReportCard({
   onClose,
   onCopy,
   onPrint,
-  shareText
+  shareText,
+  publicReportUrl,
+  streamerUrl
 }) {
   if (!player || !intelligence) return null;
 
@@ -28,7 +30,7 @@ export default function ShareableReportCard({
               <img src="/crexus-logo.png" alt="Crexus" className="h-12 w-12 rounded-xl object-contain" />
             </div>
             <div>
-              <div className="text-[11px] font-black uppercase tracking-[0.25em] text-red-300">Shareable Scout Report</div>
+              <div className="text-[11px] font-black uppercase tracking-[0.25em] text-red-300">Shareable Player Report</div>
               <h3 className="mt-1 text-2xl font-black text-white">{player.account.gameName}<span className="text-gray-500">#{player.account.tagLine}</span></h3>
               <div className="mt-1 text-sm text-gray-400">Region: {region.toUpperCase()} · {displayRank ? `${displayRank.tier} ${displayRank.rank}` : 'Unranked'}</div>
             </div>
@@ -40,7 +42,7 @@ export default function ShareableReportCard({
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div>
               <div className="text-[11px] uppercase tracking-[0.22em] text-red-300">Crexus v1.1.0</div>
-              <div className="mt-2 text-3xl font-black text-white">Player Intelligence Snapshot</div>
+              <div className="mt-2 text-3xl font-black text-white">Player Read Snapshot</div>
               <p className="mt-2 max-w-xl text-sm leading-6 text-gray-300">{intelligence.summary}</p>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -80,7 +82,9 @@ export default function ShareableReportCard({
         <div className="mt-5 flex flex-wrap gap-3">
           <button onClick={onCopy} className="rounded-2xl bg-red-600 px-5 py-3 text-sm font-black uppercase tracking-[0.18em] text-white shadow-[0_0_24px_rgba(239,68,68,0.35)] transition hover:bg-red-500">Copy report text</button>
           <button onClick={onPrint} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">Open print/share view</button>
-          <div className="self-center text-xs text-gray-500">Good for Discord, socials, or a quick scout summary.</div>
+          <button onClick={async () => { try { await navigator.clipboard.writeText(publicReportUrl); alert('Public report link copied.'); } catch { alert('Could not copy public report link.'); } }} className="rounded-2xl border border-red-500/20 bg-red-500/10 px-5 py-3 text-sm font-black uppercase tracking-[0.18em] text-red-100 transition hover:bg-red-500/20">Copy public link</button>
+          <button onClick={async () => { try { await navigator.clipboard.writeText(streamerUrl); alert('Streamer/OBS link copied.'); } catch { alert('Could not copy streamer link.'); } }} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">Copy OBS card link</button>
+          <div className="self-center text-xs text-gray-500">Good for Discord, socials, stream overlays, or a quick scout summary.</div>
         </div>
       </div>
     </div>

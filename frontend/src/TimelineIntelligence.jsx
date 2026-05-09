@@ -20,12 +20,12 @@ export default function TimelineIntelligence({ matches, puuid }) {
     <div className="bg-[#161d23] rounded-2xl border border-gray-800 p-6 shadow-xl">
       <div className="flex items-start justify-between gap-4 mb-5">
         <div>
-          <h2 className="text-xl font-black text-white uppercase tracking-wide">Timeline Intelligence</h2>
+          <h2 className="text-xl font-black text-white uppercase tracking-wide">Timeline Read</h2>
           <p className="text-sm text-gray-400 mt-1">Impact direction, game length tendencies and recent momentum.</p>
         </div>
         <div className="text-right">
           <div className="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Momentum</div>
-          <div className="text-2xl font-black text-blue-300">{read.label}</div>
+          <div className="text-2xl font-black text-red-200">{read.label}</div>
         </div>
       </div>
 

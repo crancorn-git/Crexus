@@ -33,7 +33,7 @@ export default function PublicReport({ encodedReport, onBack }) {
             <img src="/crexus-logo.png" alt="Crexus" className="h-12 w-12 rounded-2xl object-contain shadow-[0_0_28px_rgba(239,68,68,0.24)]" />
             <div>
               <div className="text-xl font-black uppercase tracking-[0.16em] text-white">Crexus</div>
-              <div className="text-[10px] font-black uppercase tracking-[0.22em] text-red-300">Public Report · v1.0.0</div>
+              <div className="text-[10px] font-black uppercase tracking-[0.22em] text-red-300">Public Report · v1.1.0</div>
             </div>
           </div>
           <button type="button" onClick={onBack} className="crexus-btn crexus-btn-secondary">Open App</button>
@@ -42,7 +42,7 @@ export default function PublicReport({ encodedReport, onBack }) {
         <section className="crexus-card rounded-[32px] border-red-500/15 p-6 md:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <div className="crexus-kicker">Shareable Scout Report</div>
+              <div className="crexus-kicker">Shareable Player Report</div>
               <h1 className="mt-3 text-4xl font-black tracking-tight text-white md:text-6xl">
                 {report.playerName}<span className="text-gray-500">#{report.tagLine}</span>
               </h1>

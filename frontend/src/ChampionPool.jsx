@@ -11,9 +11,9 @@ const laneLabels = {
 const roleStyle = {
   TOP: 'border-orange-500/30 text-orange-300 bg-orange-500/10',
   JUNGLE: 'border-green-500/30 text-green-300 bg-green-500/10',
-  MIDDLE: 'border-blue-500/30 text-blue-300 bg-blue-500/10',
-  MID: 'border-blue-500/30 text-blue-300 bg-blue-500/10',
-  BOTTOM: 'border-purple-500/30 text-purple-300 bg-purple-500/10',
+  MIDDLE: 'border-red-500/30 text-red-200 bg-red-500/10',
+  MID: 'border-red-500/30 text-red-200 bg-red-500/10',
+  BOTTOM: 'border-red-500/30 text-red-200 bg-red-500/10',
   UTILITY: 'border-pink-500/30 text-pink-300 bg-pink-500/10',
   NONE: 'border-gray-600 text-gray-400 bg-gray-800/40',
 };

@@ -191,7 +191,7 @@ export default function ObjectiveControl({ matches = [], puuid }) {
   const scoreTone = analysis.controlScore >= 75
     ? 'text-emerald-300 border-emerald-500/30 bg-emerald-500/10'
     : analysis.controlScore >= 55
-      ? 'text-blue-300 border-blue-500/30 bg-blue-500/10'
+      ? 'text-red-200 border-red-500/30 bg-red-500/10'
       : 'text-red-300 border-red-500/30 bg-red-500/10';
 
   return (

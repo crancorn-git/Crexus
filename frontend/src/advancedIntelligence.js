@@ -224,7 +224,7 @@ export function buildMatchDetailRead(matches = [], puuid) {
   if (!rows.length) {
     return {
       ready: false,
-      summary: 'Match detail intelligence will appear once recent matches are loaded.',
+      summary: 'Match detail read will appear once recent matches are loaded.',
       rows: []
     };
   }

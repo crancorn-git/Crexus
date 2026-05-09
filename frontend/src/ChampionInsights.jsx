@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useDDragonVersion } from './ddragon';
 
 import { BackButton } from './CrexusShell';
-const laneOrder = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'];
 const roleLabel = { TOP: 'Top', JUNGLE: 'Jungle', MIDDLE: 'Mid', BOTTOM: 'ADC', UTILITY: 'Support' };
 const safePct = (wins, games) => (games ? Math.round((wins / games) * 100) : 0);
 const kda = (p) => ((p.kills + p.assists) / Math.max(1, p.deaths)).toFixed(2);
@@ -176,7 +175,7 @@ export default function ChampionInsights({ onBack, playerData = null, matches = 
       const res = await axios.get(`${ddragonBase}/data/en_US/champion.json`);
       const list = Object.values(res.data.data).sort((a, b) => a.name.localeCompare(b.name));
       setChampions(list);
-      if (!selectedKey && list[0]) setSelectedKey(list[0].id);
+      if (list[0]) setSelectedKey((current) => current || list[0].id);
     };
     load().catch((err) => console.error('Champion load failed', err));
   }, [ddragonBase]);

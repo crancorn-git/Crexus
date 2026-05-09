@@ -22,7 +22,7 @@ export default function StreamerMode({ encodedReport, onBack }) {
         <div className="flex items-center gap-3">
           <img src="/crexus-logo.png" alt="Crexus" className="h-11 w-11 rounded-2xl object-contain" />
           <div>
-            <div className="text-[10px] font-black uppercase tracking-[0.22em] text-red-300">Crexus Scout Card</div>
+            <div className="text-[10px] font-black uppercase tracking-[0.22em] text-red-300">Crexus Player Card</div>
             <div className="text-xl font-black text-white">{report.playerName}<span className="text-gray-500">#{report.tagLine}</span></div>
           </div>
         </div>

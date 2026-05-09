@@ -9,7 +9,7 @@ export default function CoachLanding({ onBack, onScoutClick }) {
         <h1 className="mt-3 text-4xl font-black tracking-tight text-white md:text-5xl">Crexus Coach</h1>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-gray-400 md:text-base">Search a player first, then open the Coach tab on their profile. Crexus will turn their recent games into strengths, weaknesses, role-specific advice, and match review notes.</p>
         <button type="button" onClick={onScoutClick} className="mt-6 rounded-2xl bg-red-600 px-5 py-3 text-sm font-black uppercase tracking-[0.16em] text-white shadow-[0_0_22px_rgba(239,68,68,0.24)] transition hover:bg-red-500">
-          Open Scout Search
+          Open Player Search
         </button>
       </div>
 

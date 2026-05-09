@@ -151,7 +151,7 @@ function ProgressHistory({ selectedKey, progress }) {
                 ? 'Recent winrate is low. Review losses and reduce champion swapping for the next block.'
                 : previous && latest.crexusScore < previous.crexusScore
                   ? 'Score dipped since last check. Compare objective control and lane phase before queueing.'
-                  : 'Current trend is stable. Keep tracking form and use Compare or Live Scout for matchup preparation.'}
+                  : 'Current trend is stable. Keep tracking form and use Compare or Live Game for matchup preparation.'}
           </p>
         </div>
       </div>
@@ -218,7 +218,7 @@ export default function AccountDashboard({ onBack, onOpenAccount, onCompareClick
             <img src="/crexus-logo.png" alt="Crexus logo" className="h-12 w-12 rounded-2xl object-contain shadow-[0_0_28px_rgba(239,68,68,0.18)]" />
             <div>
               <h1 className="text-3xl font-black uppercase tracking-[0.18em] text-white md:text-4xl">Crexus</h1>
-              <div className="mt-1 text-[11px] font-black uppercase tracking-[0.28em] text-red-300">v1.0.0 · Account Tracking</div>
+              <div className="mt-1 text-[11px] font-black uppercase tracking-[0.28em] text-red-300">v1.1.0 · Account Tracking</div>
             </div>
           </div>
           <BackButton onClick={onBack} />
