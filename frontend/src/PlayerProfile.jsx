@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import axios from 'axios';
 import { API_BASE } from './config';
 import { useDDragonVersion } from './ddragon';
@@ -49,6 +49,15 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
   const [serverData, setServerData] = useState(null);
   const [profileTab, setProfileTab] = useState('overview');
   const [showShareCard, setShowShareCard] = useState(false);
+  const profileContentRef = useRef(null);
+
+  const jumpToProfileTab = (tab) => {
+    setProfileTab(tab);
+    if (tab === 'overview') setDetailMatchId(null);
+    requestAnimationFrame(() => {
+      profileContentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
 
   const [queues, setQueues] = useState({});
   const [runes, setRunes] = useState([]);
@@ -386,10 +395,10 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
             </div>
 
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-              <button onClick={() => setProfileTab('overview')} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
+              <button onClick={() => jumpToProfileTab('overview')} className={`rounded-2xl border px-4 py-3 text-sm font-black uppercase tracking-[0.16em] transition ${profileTab === 'overview' ? 'border-red-500/40 bg-red-600/20 text-white shadow-[0_0_18px_rgba(239,68,68,0.18)]' : 'border-white/10 bg-white/5 text-gray-200 hover:border-red-500/30 hover:bg-red-500/10 hover:text-white'}`}>
                 Overview
               </button>
-              <button onClick={() => setProfileTab('matches')} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
+              <button onClick={() => jumpToProfileTab('matches')} className={`rounded-2xl border px-4 py-3 text-sm font-black uppercase tracking-[0.16em] transition ${profileTab === 'matches' ? 'border-red-500/40 bg-red-600/20 text-white shadow-[0_0_18px_rgba(239,68,68,0.18)]' : 'border-white/10 bg-white/5 text-gray-200 hover:border-red-500/30 hover:bg-red-500/10 hover:text-white'}`}>
                 Matches
               </button>
               <button onClick={onLobbyClick} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
@@ -691,16 +700,16 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
               </div>
             </div>
 
-            <div className="lg:col-span-3 space-y-4">
+            <div ref={profileContentRef} className="scroll-mt-6 lg:col-span-3 space-y-4">
               <div className="crexus-card rounded-[28px] p-2 sticky top-4 z-20 flex gap-2">
                 <button
-                  onClick={() => { setProfileTab('overview'); setDetailMatchId(null); }}
+                  onClick={() => jumpToProfileTab('overview')}
                   className={`flex-1 rounded-2xl px-4 py-3 text-sm font-black uppercase tracking-[0.18em] transition ${profileTab === 'overview' ? 'bg-red-600 text-white shadow-[0_0_18px_rgba(239,68,68,0.35)]' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
                 >
                   Player Overview
                 </button>
                 <button
-                  onClick={() => setProfileTab('matches')}
+                  onClick={() => jumpToProfileTab('matches')}
                   className={`flex-1 rounded-2xl px-4 py-3 text-sm font-black uppercase tracking-[0.18em] transition ${profileTab === 'matches' ? 'bg-red-600 text-white shadow-[0_0_18px_rgba(239,68,68,0.35)]' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
                 >
                   Previous Matches

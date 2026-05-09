@@ -111,7 +111,8 @@ export default function Leaderboard({ onBack }) {
                   {players.map((p, index) => {
                     const totalGames = (p.wins || 0) + (p.losses || 0);
                     const winrate = totalGames ? Math.round((p.wins / totalGames) * 100) : 0;
-                    const name = p.gameName ? `${p.gameName} #${p.tagLine || ''}`.trim() : (p.summonerName || 'Hidden User');
+                    const tag = p.tagLine ? `#${p.tagLine}` : '';
+                    const name = p.gameName ? `${p.gameName}${tag ? ` ${tag}` : ''}` : (p.summonerName || `Rank #${index + 1}`);
                     const isPro = PRO_PLAYERS[p.gameName];
 
                     return (
@@ -121,6 +122,7 @@ export default function Leaderboard({ onBack }) {
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="font-black text-white">{name}</span>
                             {isPro && <span className="rounded border border-yellow-500/30 bg-yellow-500/10 px-2 py-0.5 text-[10px] font-black uppercase tracking-wider text-yellow-200">Pro: {isPro}</span>}
+                            {p.nameUnavailable && <span className="text-[10px] text-gray-500" title="Riot name lookup was unavailable, showing ladder rank fallback">Name lookup unavailable</span>}
                             {p.veteran && <span className="text-[10px] text-gray-500" title="Veteran">Veteran</span>}
                           </div>
                         </td>

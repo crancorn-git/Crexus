@@ -326,28 +326,52 @@ app.get('/api/leaderboard', async (req, res) => {
             .sort((a, b) => b.leaguePoints - a.leaguePoints)
             .slice(0, limit);
 
-        const enrichedPlayers = await Promise.all(topPlayers.map(async (player) => {
-            if (!player.summonerId) {
-                return { ...player, gameName: player.summonerName || 'Unknown User', tagLine: '' };
-            }
+        const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+        const enrichPlayer = async (player, index) => {
+            const fallbackName = player.gameName || player.riotIdGameName || player.summonerName || `Rank #${index + 1}`;
+            const fallbackTag = player.tagLine || player.riotIdTagline || '';
 
             try {
-                const sumUrl = `https://${platform}.api.riotgames.com/lol/summoner/v4/summoners/${player.summonerId}`;
-                const sumData = await riotRequest(sumUrl);
-                
-                const accUrl = `https://${region}.api.riotgames.com/riot/account/v1/accounts/by-puuid/${sumData.puuid}`;
+                let puuid = player.puuid;
+
+                // Newer Riot ladder payloads can include puuid directly. Older payloads only include
+                // encrypted summonerId, so keep that route as a fallback.
+                if (!puuid && player.summonerId) {
+                    const sumUrl = `https://${platform}.api.riotgames.com/lol/summoner/v4/summoners/${player.summonerId}`;
+                    const sumData = await riotRequest(sumUrl);
+                    puuid = sumData.puuid;
+                }
+
+                if (!puuid) {
+                    return { ...player, gameName: fallbackName, tagLine: fallbackTag, nameUnavailable: true };
+                }
+
+                const accUrl = `https://${region}.api.riotgames.com/riot/account/v1/accounts/by-puuid/${puuid}`;
                 const accData = await riotRequest(accUrl);
 
                 return {
                     ...player,
-                    puuid: sumData.puuid,
-                    gameName: accData.gameName || player.summonerName || 'Hidden User',
-                    tagLine: accData.tagLine || ''
+                    puuid,
+                    gameName: accData.gameName || fallbackName,
+                    tagLine: accData.tagLine || fallbackTag
                 };
             } catch (err) {
-                return { ...player, gameName: player.summonerName || 'Hidden User', tagLine: '' };
+                console.warn(`Leaderboard name lookup failed for ${platform} rank ${index + 1}:`, err.response?.status || err.message);
+                return { ...player, gameName: fallbackName, tagLine: fallbackTag, nameUnavailable: true };
             }
-        }));
+        };
+
+        // Avoid firing 200 Riot requests at once. That caused name lookups to fail and the UI
+        // showed every row as Unknown User. Small batches are slower but reliable.
+        const enrichedPlayers = [];
+        const batchSize = 5;
+        for (let i = 0; i < topPlayers.length; i += batchSize) {
+            const batch = topPlayers.slice(i, i + batchSize);
+            const enrichedBatch = await Promise.all(batch.map((player, offset) => enrichPlayer(player, i + offset)));
+            enrichedPlayers.push(...enrichedBatch);
+            if (i + batchSize < topPlayers.length) await sleep(150);
+        }
 
         res.json({
             meta: {
