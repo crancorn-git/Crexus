@@ -2,3 +2,14 @@
 .env
 dist
 .DS_Store
+
+# Local secrets
+.env
+.env.*
+!*.env.example
+server/.env
+frontend/.env
+**/.env
+node_modules/
+dist/
+build/

@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { API_BASE } from './config';
 
 // Smart URL detection for localhost vs production
-const API_BASE = window.location.hostname === "localhost" 
-  ? "http://localhost:5000" 
-  : "https://crexusback.vercel.app";
 
 export default function Lobby({ onBack }) {
   const [text, setText] = useState("");
@@ -30,7 +28,7 @@ export default function Lobby({ onBack }) {
             // FIXED URL HERE:
             const res = await axios.get(`${API_BASE}/api/player/${name.trim()}/${tag.trim()}?region=${region}`);
             return { name: line, data: res.data };
-        } catch (err) {
+        } catch {
             return { name: line, error: "Not Found" };
         }
     });
@@ -47,7 +45,23 @@ export default function Lobby({ onBack }) {
       </button>
       <h1 className="text-3xl font-bold mb-4 text-red-500 uppercase tracking-tighter">LOBBY SCOUT</h1>
       
-      <div className="flex gap-4 mb-6">
+      <div className="flex flex-col gap-4 mb-6">
+        <select
+          value={region}
+          onChange={(e) => setRegion(e.target.value)}
+          className="w-full md:w-48 bg-[#161d23] border border-gray-700 p-3 rounded text-white font-bold focus:outline-none focus:border-red-500"
+        >
+          <option value="na1">NA</option>
+          <option value="kr">KR</option>
+          <option value="euw1">EUW</option>
+          <option value="br1">BR</option>
+          <option value="eun1">EUNE</option>
+          <option value="jp1">JP</option>
+          <option value="la1">LAN</option>
+          <option value="la2">LAS</option>
+          <option value="tr1">TR</option>
+          <option value="ru">RU</option>
+        </select>
         <textarea 
             className="w-full h-32 bg-[#161d23] p-4 rounded border border-gray-700 text-sm text-gray-200 focus:outline-none focus:border-red-500"
             placeholder="Paste lobby chat here... (e.g. 'Faker#KR1 joined the lobby')"

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE } from './config';
 
 // A manual list of Pros to highlight (Name -> Real Name)
 // Note: Riot IDs change, so this requires maintenance, but it looks cool for the demo!
@@ -13,9 +14,6 @@ const PRO_PLAYERS = {
     "Doublelift": "Doublelift"
 };
 
-const API_BASE = window.location.hostname === "localhost" 
-  ? "http://localhost:5000" 
-  : "https://crexusback.vercel.app";
 
 export default function Leaderboard({ onBack }) {
   const [region, setRegion] = useState("kr"); // Default to Korea (for Faker)
@@ -28,7 +26,7 @@ export default function Leaderboard({ onBack }) {
       try {
         const res = await axios.get(`${API_BASE}/api/leaderboard?region=${region}`);
         setPlayers(res.data);
-      } catch (err) {
+      } catch {
         console.error("Failed to load ladder");
       }
       setLoading(false);

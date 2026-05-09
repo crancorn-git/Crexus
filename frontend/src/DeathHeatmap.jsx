@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { API_BASE } from './config';
 
 // Official Map Image (Summoner's Rift)
 const MAP_IMG = "https://ddragon.leagueoflegends.com/cdn/6.8.1/img/map/map11.png";
-const API_BASE = window.location.hostname === "localhost" 
-  ? "http://localhost:5000" 
-  : "https://crexusback.vercel.app";
 
 export default function DeathHeatmap({ matchId, participantId, region }) {
   const [deaths, setDeaths] = useState([]);
@@ -31,13 +29,13 @@ export default function DeathHeatmap({ matchId, participantId, region }) {
 
         setDeaths(deathEvents);
         setLoading(false);
-      } catch (err) {
+      } catch {
         console.error("No timeline data");
         setLoading(false);
       }
     };
     fetchTimeline();
-  }, [matchId, participantId]);
+  }, [matchId, participantId, region]);
 
   if (loading) return <div className="text-xs text-gray-500 animate-pulse">Loading Map...</div>;
   if (deaths.length === 0) return <div className="text-xs text-green-500">Perfect Game! (0 Deaths)</div>;

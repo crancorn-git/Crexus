@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE } from './config';
+import { useDDragonVersion } from './ddragon';
 import { getMatchupTip } from './MatchupTips'; // Import your tips
 
-const VERSION = "14.3.1";
-const DDRAGON_IMG = `https://ddragon.leagueoflegends.com/cdn/${VERSION}/img`;
 
-const API_BASE = window.location.hostname === "localhost" 
-  ? "http://localhost:5000" 
-  : "https://crexusback.vercel.app";
 
 export default function LiveGame({ puuid, region, onBack }) {
+  const ddragonVersion = useDDragonVersion();
+  const ddragonImg = `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/img`;
+
   const [game, setGame] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -20,11 +20,11 @@ export default function LiveGame({ puuid, region, onBack }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const spellsRes = await axios.get(`https://ddragon.leagueoflegends.com/cdn/${VERSION}/data/en_US/summoner.json`);
+        const spellsRes = await axios.get(`https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/data/en_US/summoner.json`);
         setSpells(spellsRes.data.data);
 
         // Fetch Champs to map IDs -> Names (Needed for Tips)
-        const champRes = await axios.get(`https://ddragon.leagueoflegends.com/cdn/${VERSION}/data/en_US/champion.json`);
+        const champRes = await axios.get(`https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/data/en_US/champion.json`);
         const champMap = {};
         const idToNameMap = {};
         Object.values(champRes.data.data).forEach(c => {
@@ -46,7 +46,7 @@ export default function LiveGame({ puuid, region, onBack }) {
       setLoading(false);
     };
     fetchData();
-  }, [puuid, region]);
+  }, [puuid, region, ddragonVersion]);
 
   const getSpellIcon = (spellId) => {
     const spell = Object.values(spells).find(s => s.key == spellId);
@@ -70,12 +70,12 @@ export default function LiveGame({ puuid, region, onBack }) {
       </div>
 
       {/* MATCHUP TIPS SECTION */}
-      <MatchupTipsBox participants={game.participants} userChamp={userChampName} champs={champs} />
+      <MatchupTipsBox participants={game.participants} userChamp={userChampName} champs={champs} ddragonImg={ddragonImg} />
 
       {/* TEAMS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
-        <TeamList teamId={100} participants={game.participants} color="blue" spells={spells} getSpellIcon={getSpellIcon} champs={champs} />
-        <TeamList teamId={200} participants={game.participants} color="red" spells={spells} getSpellIcon={getSpellIcon} champs={champs} />
+        <TeamList teamId={100} participants={game.participants} color="blue" spells={spells} getSpellIcon={getSpellIcon} champs={champs} ddragonImg={ddragonImg} />
+        <TeamList teamId={200} participants={game.participants} color="red" spells={spells} getSpellIcon={getSpellIcon} champs={champs} ddragonImg={ddragonImg} />
       </div>
     </div>
   );
@@ -94,7 +94,6 @@ function MatchupTipsBox({ participants, userChamp, champs }) {
 
     // Check all enemies to see if we have a tip for UserChamp vs EnemyChamp
     enemies.forEach(e => {
-        const eName = Object.keys(champs).find(k => champs[k] === e.championId.toString()) ? champs[e.championId.toString()] : ""; // Map ID to Name
         // Note: Our champ map in parent was Key->ID. We need Name. 
         // Simpler: Just rely on the hardcoded Tip Keys
         // Let's assume champs[id] returns "Aatrox" (The ID string from DDragon)
@@ -118,7 +117,7 @@ function MatchupTipsBox({ participants, userChamp, champs }) {
     );
 }
 
-function TeamList({ teamId, participants, color, getSpellIcon, champs }) {
+function TeamList({ teamId, participants, color, getSpellIcon, champs, ddragonImg }) {
   const team = participants.filter(p => p.teamId === teamId);
   const borderColor = color === 'blue' ? 'border-blue-500' : 'border-red-500';
   const textColor = color === 'blue' ? 'text-blue-400' : 'text-red-400';
@@ -129,10 +128,10 @@ function TeamList({ teamId, participants, color, getSpellIcon, champs }) {
       {team.map((p) => (
         <div key={p.puuid} className={`bg-[#161d23] p-3 rounded-lg border-l-4 ${borderColor} flex items-center gap-4 shadow-lg`}>
           <div className="relative">
-             <img src={`${DDRAGON_IMG}/champion/${champs[p.championId]}.png`} className="w-14 h-14 rounded-lg border border-gray-600" />
+             <img src={`${ddragonImg}/champion/${champs[p.championId]}.png`} className="w-14 h-14 rounded-lg border border-gray-600" />
              <div className="absolute -bottom-2 -right-2 flex">
-                <img src={`${DDRAGON_IMG}/spell/${getSpellIcon(p.spell1Id)}`} className="w-5 h-5 rounded border border-black" />
-                <img src={`${DDRAGON_IMG}/spell/${getSpellIcon(p.spell2Id)}`} className="w-5 h-5 rounded border border-black" />
+                <img src={`${ddragonImg}/spell/${getSpellIcon(p.spell1Id)}`} className="w-5 h-5 rounded border border-black" />
+                <img src={`${ddragonImg}/spell/${getSpellIcon(p.spell2Id)}`} className="w-5 h-5 rounded border border-black" />
              </div>
           </div>
 

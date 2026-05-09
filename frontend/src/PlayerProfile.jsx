@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_BASE } from './config';
+import { useDDragonVersion } from './ddragon';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis } from 'recharts';
 
 // Sub-Components
@@ -8,15 +10,13 @@ import MatchBadges from './MatchBadges';
 import DeathHeatmap from './DeathHeatmap';
 import WinRateChart from './WinRateChart';
 
-const VERSION = "14.3.1"; 
-const DDRAGON_BASE = `https://ddragon.leagueoflegends.com/cdn/${VERSION}`;
 const DDRAGON_IMG = `https://ddragon.leagueoflegends.com/cdn/img`;
 
-const API_BASE = window.location.hostname === "localhost" 
-  ? "http://localhost:5000" 
-  : "https://crexusback.vercel.app";
 
 export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboardClick }) {
+  const ddragonVersion = useDDragonVersion();
+  const ddragonBase = `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}`;
+
   const [input, setInput] = useState("Faker#KR1"); 
   const [region, setRegion] = useState("kr"); 
   const [data, setData] = useState(null);
@@ -35,10 +35,10 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
   useEffect(() => {
     const fetchStaticData = async () => {
       try {
-        const runesRes = await axios.get(`https://ddragon.leagueoflegends.com/cdn/${VERSION}/data/en_US/runesReforged.json`);
+        const runesRes = await axios.get(`${ddragonBase}/data/en_US/runesReforged.json`);
         setRunes(runesRes.data);
 
-        const spellsRes = await axios.get(`https://ddragon.leagueoflegends.com/cdn/${VERSION}/data/en_US/summoner.json`);
+        const spellsRes = await axios.get(`${ddragonBase}/data/en_US/summoner.json`);
         setSpells(spellsRes.data.data);
 
         const queuesRes = await axios.get("https://static.developer.riotgames.com/docs/lol/queues.json");
@@ -46,7 +46,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
         queuesRes.data.forEach(q => queueMap[q.queueId] = q.description);
         setQueues(queueMap);
 
-        const champRes = await axios.get(`https://ddragon.leagueoflegends.com/cdn/${VERSION}/data/en_US/champion.json`);
+        const champRes = await axios.get(`${ddragonBase}/data/en_US/champion.json`);
         const champMap = {};
         Object.values(champRes.data.data).forEach(c => champMap[c.key] = c.id);
         setChamps(champMap);
@@ -59,14 +59,14 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
         try {
             const res = await axios.get(`${API_BASE}/api/status?region=${region}`);
             setServerData(res.data);
-        } catch (e) { console.error("Status offline"); }
+        } catch { console.error("Status offline"); }
     };
 
     const saved = JSON.parse(localStorage.getItem('crexus_recents') || '[]');
     setRecentSearches(saved);
     fetchStaticData();
     fetchStatus();
-  }, [region]); 
+  }, [region, ddragonBase]); 
 
   // --- HELPERS ---
   const getRuneIcon = (styleId, runeId) => {
@@ -255,7 +255,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                                 onClick={() => searchPlayer(item.name, item.tag, item.region)}
                                 className="bg-[#161d23] p-3 rounded-lg flex items-center gap-3 cursor-pointer hover:bg-[#1f2933] border border-gray-800 transition"
                             >
-                                <img src={`${DDRAGON_BASE}/img/profileicon/${item.iconId}.png`} className="w-10 h-10 rounded-full" />
+                                <img src={`${ddragonBase}/img/profileicon/${item.iconId}.png`} className="w-10 h-10 rounded-full" />
                                 <div>
                                     <div className="text-white font-bold">{item.name} <span className="text-gray-500">#{item.tag}</span></div>
                                     <div className="text-xs text-gray-500 uppercase">{item.region}</div>
@@ -292,7 +292,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                             {serverData.rotation.slice(0, 14).map(id => (
                                 <div key={id} className="relative group">
                                     <img 
-                                        src={champs[id] ? `${DDRAGON_BASE}/img/champion/${champs[id]}.png` : ""} 
+                                        src={champs[id] ? `${ddragonBase}/img/champion/${champs[id]}.png` : ""} 
                                         className="w-10 h-10 rounded border border-gray-700" 
                                     />
                                 </div>
@@ -311,7 +311,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
           <div className="bg-[#161d23] p-8 rounded-2xl shadow-xl text-center h-fit border border-gray-800 sticky top-8 z-10">
             <div className="relative inline-block group">
                 <img 
-                  src={`${DDRAGON_BASE}/img/profileicon/${data.summoner.profileIconId}.png`} 
+                  src={`${ddragonBase}/img/profileicon/${data.summoner.profileIconId}.png`} 
                   className="w-32 h-32 rounded-3xl mx-auto border-4 border-[#1c2329] shadow-lg group-hover:border-red-500 transition duration-300"
                 />
                 <span className="absolute -bottom-3 left-1/2 transform -translate-x-1/2 bg-[#202830] text-sm px-3 py-1 rounded-full border border-gray-700 font-bold shadow">
@@ -360,7 +360,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                     {data.mastery.map((champ) => (
                         <div key={champ.championId} className="flex flex-col items-center group cursor-pointer">
                             <div className="relative">
-                                <img src={champs[champ.championId] ? `${DDRAGON_BASE}/img/champion/${champs[champ.championId]}.png` : "https://via.placeholder.com/48"} className="w-12 h-12 rounded-full border-2 border-gray-700 group-hover:border-yellow-500 transition" />
+                                <img src={champs[champ.championId] ? `${ddragonBase}/img/champion/${champs[champ.championId]}.png` : "https://via.placeholder.com/48"} className="w-12 h-12 rounded-full border-2 border-gray-700 group-hover:border-yellow-500 transition" />
                                 <div className="absolute -bottom-1 -right-1 bg-gray-900 text-[10px] w-5 h-5 flex items-center justify-center rounded-full border border-gray-600 text-yellow-500 font-bold">{champ.championLevel}</div>
                             </div>
                             <p className="text-xs text-gray-400 mt-2 font-mono group-hover:text-yellow-400 transition">{formatPoints(champ.championPoints)}</p>
@@ -430,13 +430,13 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
 
                         <div className="flex items-center gap-3 mx-4">
                             <div className="relative">
-                                <img src={`${DDRAGON_BASE}/img/champion/${participant.championName}.png`} className="w-14 h-14 rounded-lg shadow-lg" />
+                                <img src={`${ddragonBase}/img/champion/${participant.championName}.png`} className="w-14 h-14 rounded-lg shadow-lg" />
                                 <div className="absolute -bottom-2 -right-2 bg-[#0a0e13] text-gray-300 text-[10px] w-6 h-6 flex items-center justify-center rounded-full border border-gray-700 font-bold">{participant.champLevel}</div>
                             </div>
                             <div className="flex flex-col gap-1">
                                 <div className="flex gap-1">
-                                    <img src={`${DDRAGON_BASE}/img/spell/${getSpellIcon(participant.summoner1Id)}`} className="w-6 h-6 rounded md:w-5 md:h-5" />
-                                    <img src={`${DDRAGON_BASE}/img/spell/${getSpellIcon(participant.summoner2Id)}`} className="w-6 h-6 rounded md:w-5 md:h-5" />
+                                    <img src={`${ddragonBase}/img/spell/${getSpellIcon(participant.summoner1Id)}`} className="w-6 h-6 rounded md:w-5 md:h-5" />
+                                    <img src={`${ddragonBase}/img/spell/${getSpellIcon(participant.summoner2Id)}`} className="w-6 h-6 rounded md:w-5 md:h-5" />
                                 </div>
                                 <div className="flex gap-1 justify-center">
                                     <div className="w-6 h-6 md:w-5 md:h-5 bg-black/50 rounded-full overflow-hidden p-[2px]">
@@ -474,12 +474,12 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                             <div className="grid grid-cols-3 gap-1">
                                 {[participant.item0, participant.item1, participant.item2, participant.item3, participant.item4, participant.item5].map((item, i) => (
                                     <div key={i} className="w-8 h-8 bg-[#0a0e13] rounded-[4px] overflow-hidden border border-gray-800/60 relative">
-                                        {item !== 0 && <img src={`${DDRAGON_BASE}/img/item/${item}.png`} className="w-full h-full" />}
+                                        {item !== 0 && <img src={`${ddragonBase}/img/item/${item}.png`} className="w-full h-full" />}
                                     </div>
                                 ))}
                             </div>
                             <div className="w-8 h-8 bg-[#0a0e13] rounded-full overflow-hidden border border-gray-800/60 ml-1">
-                                {participant.item6 !== 0 && <img src={`${DDRAGON_BASE}/img/item/${participant.item6}.png`} className="w-full h-full" />}
+                                {participant.item6 !== 0 && <img src={`${ddragonBase}/img/item/${participant.item6}.png`} className="w-full h-full" />}
                             </div>
                         </div>
                         <div className="absolute top-2 right-2 text-gray-600 text-xs">{isExpanded ? '▲' : '▼'}</div>

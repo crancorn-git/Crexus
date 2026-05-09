@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { API_BASE } from './config';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts';
 
-const API_BASE = window.location.hostname === "localhost" 
-  ? "http://localhost:5000" 
-  : "https://crexusback.vercel.app";
 
 export default function MatchTimeline({ matchId, participantId, participants, region }) {
   const [data, setData] = useState([]);
@@ -52,7 +50,7 @@ export default function MatchTimeline({ matchId, participantId, participants, re
       }
     };
     fetchTimeline();
-  }, [matchId, participantId, participants]);
+  }, [matchId, participantId, participants, region]);
 
   if (loading) return <div className="text-xs text-gray-500 animate-pulse mt-4">Analyzing Lane Phase...</div>;
   if (data.length === 0) return null;

@@ -10,8 +10,11 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
-// PASTE YOUR KEY HERE
-const API_KEY = "RGAPI-93f5dd6c-7247-4ca2-99ff-4c15bf0e23ee"; 
+const API_KEY = process.env.RIOT_API_KEY;
+
+if (!API_KEY) {
+    console.warn('RIOT_API_KEY is missing. Riot-backed routes will fail until it is configured.');
+}
 
 const getBroadRegion = (platform) => {
     const map = {
@@ -22,13 +25,47 @@ const getBroadRegion = (platform) => {
     return map[platform.toLowerCase()] || 'americas';
 };
 
+
+const getRiotErrorPayload = (error, fallbackMessage) => {
+    const status = error.response?.status || error.statusCode || 500;
+
+    const messages = {
+        400: 'Bad request sent to Riot. Check the supplied player name, tag, match ID, or region.',
+        401: 'Riot API key is invalid or missing. Rotate the key and set RIOT_API_KEY in the backend environment.',
+        403: 'Riot API key is expired, invalid, or does not have access to this endpoint.',
+        404: fallbackMessage,
+        429: 'Riot API rate limit reached. Wait a moment and try again.',
+        500: fallbackMessage,
+        502: 'Riot service returned a bad gateway response.',
+        503: 'Riot service is temporarily unavailable.',
+        504: 'Riot service timed out.'
+    };
+
+    return {
+        status,
+        error: messages[status] || fallbackMessage
+    };
+};
+
+const sendRiotError = (res, error, fallbackMessage) => {
+    const payload = getRiotErrorPayload(error, fallbackMessage);
+    return res.status(payload.status).json(payload);
+};
+
 const riotRequest = async (url) => {
     try {
-        const fullUrl = `${url}${url.includes('?') ? '&' : '?'}api_key=${API_KEY}`;
-        const response = await axios.get(fullUrl);
+        if (!API_KEY) {
+            const missingKeyError = new Error('Missing RIOT_API_KEY');
+            missingKeyError.statusCode = 500;
+            throw missingKeyError;
+        }
+
+        const response = await axios.get(url, {
+            headers: { 'X-Riot-Token': API_KEY }
+        });
         return response.data;
     } catch (err) {
-        console.error("Riot API Error:", err.response?.status, err.config?.url);
+        console.error("Riot API Error:", err.response?.status || err.statusCode, err.config?.url || url);
         throw err;
     }
 };
@@ -59,7 +96,7 @@ app.get('/api/player/:name/:tag', async (req, res) => {
                 const tftUrl = `https://${platform}.api.riotgames.com/tft/summoner/v1/summoners/by-puuid/${accountData.puuid}`;
                 const tftData = await riotRequest(tftUrl);
                 if (tftData.id) encryptedSummonerId = tftData.id;
-            } catch (e) { /* Ignore */ }
+            } catch { /* Ignore */ }
         }
 
         // 4. Fallback Level 2: CLASH (The Hail Mary)
@@ -72,7 +109,7 @@ app.get('/api/player/:name/:tag', async (req, res) => {
                     encryptedSummonerId = clashData[0].summonerId;
                     console.log("✅ Recovered ID via Clash!");
                 }
-            } catch (e) { /* Ignore */ }
+            } catch { /* Ignore */ }
         }
 
         // 5. Rank (League-V4)
@@ -102,7 +139,7 @@ app.get('/api/player/:name/:tag', async (req, res) => {
 
     } catch (error) {
         console.error("Search failed:", error.message);
-        res.status(500).json({ error: "Player not found" });
+        sendRiotError(res, error, "Player not found. Check the Riot ID, tag, and selected region.");
     }
 });
 
@@ -121,7 +158,7 @@ app.get('/api/matches/:puuid', async (req, res) => {
         );
         res.json(matchDetails);
     } catch (error) {
-        res.status(500).json({ error: "Failed to fetch matches" });
+        sendRiotError(res, error, "Failed to fetch recent matches.");
     }
 });
 
@@ -148,7 +185,7 @@ app.get('/api/live/:puuid', async (req, res) => {
                     const wr = (solo.wins / (solo.wins + solo.losses)) * 100;
                     if (wr > 70 && (solo.wins + solo.losses) > 10) tags.push("SMURF");
                 }
-            } catch (e) {}
+            } catch {}
 
             try {
                 const masteryUrl = `https://${platform}.api.riotgames.com/lol/champion-mastery/v4/champion-masteries/by-puuid/${p.puuid}/by-champion/${p.championId}`;
@@ -157,7 +194,7 @@ app.get('/api/live/:puuid', async (req, res) => {
                 if (mastery > 1000000) tags.push("GOD"); 
                 else if (mastery > 500000) tags.push("OTP"); 
                 else if (mastery < 5000) tags.push("NEW"); 
-            } catch (e) {}
+            } catch {}
 
             return { ...p, rank, tags, mastery };
         }));
@@ -167,7 +204,7 @@ app.get('/api/live/:puuid', async (req, res) => {
 
     } catch (error) {
         if (error.response?.status === 404) return res.status(404).json({ error: "Not in game" });
-        res.status(500).json({ error: "Failed" });
+        sendRiotError(res, error, "Failed to load live game.");
     }
 });
 
@@ -187,7 +224,7 @@ app.get('/api/status', async (req, res) => {
         });
     } catch (error) {
         console.error("Status check failed");
-        res.status(500).json({ error: "Failed to fetch status" });
+        sendRiotError(res, error, "Failed to fetch server status or champion rotation.");
     }
 });
 
@@ -229,7 +266,7 @@ app.get('/api/leaderboard', async (req, res) => {
         res.json(enrichedPlayers);
     } catch (error) {
         console.error("Leaderboard error:", error.message);
-        res.status(500).json({ error: "Failed to fetch leaderboard" });
+        sendRiotError(res, error, "Failed to fetch challenger leaderboard.");
     }
 });
 
@@ -245,7 +282,7 @@ app.get('/api/match/:matchId/timeline', async (req, res) => {
         res.json(timelineData);
     } catch (error) {
         console.error("Timeline failed:", error.message);
-        res.status(500).json({ error: "Timeline not found" });
+        sendRiotError(res, error, "Match timeline not found.");
     }
 });
 
