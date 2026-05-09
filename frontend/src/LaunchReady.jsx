@@ -75,7 +75,7 @@ export default function LaunchReady({ onBack }) {
       <BackButton onClick={onBack} />
 
       <header className="mt-5 rounded-[30px] border border-red-500/15 bg-gradient-to-br from-red-500/12 via-[#12141b] to-[#090a0e] p-6 shadow-2xl md:p-8">
-        <div className="crexus-kicker">v1.1.1 launch version</div>
+        <div className="crexus-kicker">v1.1.2 launch version</div>
         <div className="mt-3 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <h1 className="crexus-page-title">Crexus Launch Build</h1>
@@ -86,7 +86,7 @@ export default function LaunchReady({ onBack }) {
           <div className="flex flex-wrap gap-2">
             <StatePill ok={online}>{online ? 'Backend online' : 'Backend check'}</StatePill>
             <StatePill ok={riotReady}>{riotReady ? 'Riot key loaded' : 'Riot key needed'}</StatePill>
-            <StatePill ok>{health?.version ? `v${health.version}` : 'v1.1.1'}</StatePill>
+            <StatePill ok>{health?.version ? `v${health.version}` : 'v1.1.2'}</StatePill>
           </div>
         </div>
       </header>
@@ -108,7 +108,7 @@ export default function LaunchReady({ onBack }) {
             </div>
             <div className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/5 p-4">
               <span className="text-gray-400">App version</span>
-              <span className="font-black text-white">v{health?.version || '1.1.1'}</span>
+              <span className="font-black text-white">v{health?.version || '1.1.2'}</span>
             </div>
             <div className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/5 p-4">
               <span className="text-gray-400">Riot key</span>

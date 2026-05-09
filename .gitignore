@@ -13,3 +13,8 @@ frontend/.env
 node_modules/
 dist/
 build/
+.env.local
+**/.env.local
+dist_electron/
+*.log
+auth.js

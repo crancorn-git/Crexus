@@ -346,7 +346,7 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
   const buildPublicReportPayload = (displayRank, intelligence) => {
     if (!data || !intelligence) return null;
     return {
-      version: '1.1.1',
+      version: '1.1.2',
       generatedAt: new Date().toISOString(),
       playerName: data.account.gameName,
       tagLine: data.account.tagLine,
@@ -484,59 +484,90 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
   return (
     <div className="min-h-screen text-gray-200">
       <div className="crexus-page">
-        <header className="mb-5 px-1 py-2">
-          <div className="crexus-kicker">v1.1.1 · Game Stats & Information</div>
-          <h1 className="crexus-page-title mt-2">Player Search</h1>
-          <p className="crexus-copy mt-2 max-w-2xl">Search any Riot ID, open a live game, or use your linked account as the default across Crexus.</p>
-        </header>
-
-        <div className="mb-8 rounded-2xl border border-white/8 bg-[#111318] p-4 shadow-xl md:p-5">
-          <div className="mb-3 flex items-center justify-between gap-3">
-            <div>
-              <div className="crexus-kicker">Player search</div>
-              <div className="mt-1 text-sm text-gray-500">Enter GameName#Tag and choose a region.</div>
-            </div>
-          </div>
-          {linkedAccount && (
-            <div className="mb-4 flex flex-col gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-3 md:flex-row md:items-center md:justify-between">
+        <section className="crexus-hero-panel mb-8 p-4 md:p-6 xl:p-7">
+          <div className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr] xl:items-stretch">
+            <div className="flex min-w-0 flex-col justify-between gap-6">
               <div>
-                <div className="text-[10px] font-black uppercase tracking-[0.18em] text-red-200">Linked account</div>
-                <div className="mt-1 text-sm font-bold text-white">{linkedAccount.name}<span className="text-gray-400">#{linkedAccount.tag}</span> · {getRegionLabel(linkedAccount.region)}</div>
+                <div className="crexus-kicker">v1.1.2 · Game Stats & Information</div>
+                <h1 className="crexus-page-title mt-3">Player Search</h1>
+                <p className="crexus-copy mt-3 max-w-2xl">Search any Riot ID, open a live game, or use your linked account as the default across Crexus.</p>
               </div>
-              <div className="flex gap-2">
-                <button type="button" onClick={loadLinkedAccount} className="crexus-btn crexus-btn-secondary min-h-0 px-3 py-2 text-[10px]">Load</button>
-                <button type="button" onClick={unlinkAccount} className="crexus-btn crexus-btn-secondary min-h-0 px-3 py-2 text-[10px]">Unlink</button>
+
+              <div className="rounded-2xl border border-white/10 bg-black/30 p-4 shadow-2xl backdrop-blur md:p-5">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                  <div>
+                    <div className="crexus-kicker">Focused player tools</div>
+                    <div className="mt-1 text-sm text-gray-500">Enter GameName#Tag and choose a region.</div>
+                  </div>
+                  <div className="hidden rounded-full border border-red-500/25 bg-red-500/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-red-200 md:block">Online</div>
+                </div>
+                {linkedAccount && (
+                  <div className="mb-4 flex flex-col gap-3 rounded-2xl border border-red-500/20 bg-red-500/10 p-3 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <div className="text-[10px] font-black uppercase tracking-[0.18em] text-red-200">Linked account</div>
+                      <div className="mt-1 text-sm font-bold text-white">{linkedAccount.name}<span className="text-gray-400">#{linkedAccount.tag}</span> · {getRegionLabel(linkedAccount.region)}</div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button type="button" onClick={loadLinkedAccount} className="crexus-btn crexus-btn-secondary min-h-0 px-3 py-2 text-[10px]">Load</button>
+                      <button type="button" onClick={unlinkAccount} className="crexus-btn crexus-btn-secondary min-h-0 px-3 py-2 text-[10px]">Unlink</button>
+                    </div>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-[170px_1fr_auto_auto] md:items-center">
+                  <select
+                    value={region}
+                    onChange={(e) => setRegion(e.target.value)}
+                    className="crexus-input text-sm font-black uppercase tracking-[0.12em]"
+                  >
+                    {REGION_OPTIONS.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+
+                  <input
+                    className="crexus-input"
+                    placeholder="GameName#Tag"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && searchPlayer()}
+                  />
+
+                  <button onClick={() => searchPlayer()} className="crexus-btn crexus-btn-primary px-7">
+                    Search
+                  </button>
+                  <button type="button" onClick={linkInputAccount} className="crexus-btn crexus-btn-secondary px-5">
+                    Link
+                  </button>
+                </div>
               </div>
             </div>
-          )}
 
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-[180px_1fr_auto_auto] md:items-center">
-            <select
-              value={region}
-              onChange={(e) => setRegion(e.target.value)}
-              className="crexus-input text-sm font-black uppercase tracking-[0.12em]"
-            >
-              {REGION_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>{option.label}</option>
-              ))}
-            </select>
-
-            <input
-              className="crexus-input"
-              placeholder="GameName#Tag"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && searchPlayer()}
-            />
-
-            <button onClick={() => searchPlayer()} className="crexus-btn crexus-btn-primary px-7">
-              Search
-            </button>
-            <button type="button" onClick={linkInputAccount} className="crexus-btn crexus-btn-secondary px-5">
-              Link
-            </button>
+            <div className="grid gap-4 lg:grid-cols-[1fr_260px] xl:grid-cols-1 2xl:grid-cols-[1fr_270px]">
+              <div className="crexus-radar min-h-[280px]">
+                <div className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full border border-red-500/25 bg-red-500/10 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-red-200 shadow-[0_0_30px_rgba(239,68,68,0.18)]">Performance read ready</div>
+              </div>
+              <div className="grid gap-4">
+                <div className="crexus-card rounded-2xl p-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-[11px] font-black uppercase tracking-[0.22em] text-gray-400">Status</div>
+                    <div className="h-2 w-2 rounded-full bg-red-500 shadow-[0_0_18px_rgba(239,68,68,0.85)]" />
+                  </div>
+                  <div className="mt-3 text-2xl font-black text-white">I'm ready.</div>
+                  <p className="mt-2 text-sm leading-6 text-gray-400">Clean player reads, live tools, and compact match summaries.</p>
+                </div>
+                <div className="crexus-card rounded-2xl p-4">
+                  <div className="text-[11px] font-black uppercase tracking-[0.22em] text-gray-400">Today</div>
+                  <div className="mt-3 space-y-2 text-sm text-gray-300">
+                    <div className="flex justify-between"><span>Cards</span><span className="font-black text-white">Focused</span></div>
+                    <div className="flex justify-between"><span>Actions</span><span className="font-black text-white">Clear</span></div>
+                    <div className="flex justify-between"><span>Accent</span><span className="font-black text-red-300">Red</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+        </section>
 
         {loading && (
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-[320px_1fr]">
