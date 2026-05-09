@@ -378,41 +378,13 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
   return (
     <div className="min-h-screen text-gray-200">
       <div className="mx-auto max-w-7xl p-4 md:p-6 lg:p-8">
-        <div className="crexus-card mb-8 rounded-[32px] border border-red-500/10 p-5 md:p-7">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="flex items-start gap-4">
-              <div className="rounded-3xl border border-red-500/20 bg-red-500/10 p-3 shadow-[0_0_40px_rgba(239,68,68,0.12)]">
-                <img src="/crexus-logo.png" alt="Crexus logo" className="h-14 w-14 rounded-2xl object-contain" />
-              </div>
-              <div>
-                <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Crexus v0.5</div>
-                <h1 className="mt-2 text-3xl font-black tracking-tight text-white md:text-4xl">Game Stats & Information Platform</h1>
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-400 md:text-base">
-                  A dark, red-accented hub for game stats, player profiles, lobby scouting, live match reads, versus tools, match details,
-                  and shareable Crexus reports.
-                </p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
-              <button onClick={() => jumpToProfileTab('overview')} className={`rounded-2xl border px-4 py-3 text-sm font-black uppercase tracking-[0.16em] transition ${profileTab === 'overview' ? 'border-red-500/40 bg-red-600/20 text-white shadow-[0_0_18px_rgba(239,68,68,0.18)]' : 'border-white/10 bg-white/5 text-gray-200 hover:border-red-500/30 hover:bg-red-500/10 hover:text-white'}`}>
-                Overview
-              </button>
-              <button onClick={() => jumpToProfileTab('matches')} className={`rounded-2xl border px-4 py-3 text-sm font-black uppercase tracking-[0.16em] transition ${profileTab === 'matches' ? 'border-red-500/40 bg-red-600/20 text-white shadow-[0_0_18px_rgba(239,68,68,0.18)]' : 'border-white/10 bg-white/5 text-gray-200 hover:border-red-500/30 hover:bg-red-500/10 hover:text-white'}`}>
-                Matches
-              </button>
-              <button onClick={onCompareClick} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
-                Compare
-              </button>
-              <button onClick={onLobbyClick} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
-                Lobby Scout
-              </button>
-              <button onClick={onLeaderboardClick} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
-                Ladder
-              </button>
-            </div>
+        <header className="mb-6 flex items-center gap-4 px-1 py-2">
+          <img src="/crexus-logo.png" alt="Crexus logo" className="h-12 w-12 rounded-2xl object-contain shadow-[0_0_28px_rgba(239,68,68,0.18)]" />
+          <div>
+            <h1 className="text-3xl font-black uppercase tracking-[0.18em] text-white md:text-4xl">Crexus</h1>
+            <div className="mt-1 text-[11px] font-black uppercase tracking-[0.28em] text-red-300">v0.5.1 · Game Stats & Information</div>
           </div>
-        </div>
+        </header>
 
         <div className="mb-8 rounded-[28px] border border-white/8 bg-[#12141b]/95 p-3 shadow-2xl md:p-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
