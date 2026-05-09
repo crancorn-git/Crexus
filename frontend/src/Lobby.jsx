@@ -3,6 +3,7 @@ import axios from 'axios';
 import { API_BASE } from './config';
 import { analyzePlayerIntelligence } from './intelligence';
 import { IntelligencePills, IntelligenceMiniRead } from './IntelligencePills';
+import { ScoutTeamRead } from './ScoutTeamRead';
 
 // Smart URL detection for localhost vs production
 
@@ -83,6 +84,8 @@ export default function Lobby({ onBack }) {
       <button onClick={scoutLobby} className="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded font-bold w-full mb-8 transition shadow-lg shadow-red-900/50">
         {loading ? "SCOUTING..." : "ANALYZE TEAM"}
       </button>
+
+      {results.length > 0 && <ScoutTeamRead entries={results} title="Lobby Team Read" />}
 
       <div className="grid gap-4">
         {results.map((res, i) => (

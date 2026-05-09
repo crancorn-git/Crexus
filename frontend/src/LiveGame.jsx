@@ -5,6 +5,7 @@ import { useDDragonVersion } from './ddragon';
 import { getMatchupTip } from './MatchupTips'; // Import your tips
 import { analyzePlayerIntelligence } from './intelligence';
 import { IntelligencePills, IntelligenceMiniRead } from './IntelligencePills';
+import { LiveTeamComparison } from './ScoutTeamRead';
 
 
 
@@ -93,6 +94,8 @@ export default function LiveGame({ puuid, region, onBack }) {
 
       {/* MATCHUP TIPS SECTION */}
       <MatchupTipsBox participants={game.participants} userChamp={userChampName} champs={champs} ddragonImg={ddragonImg} />
+
+      <LiveTeamComparison participants={game.participants} />
 
       {/* TEAMS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
