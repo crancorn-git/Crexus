@@ -52,7 +52,7 @@ export function EnemyMatchupRead({ participants = [] }) {
     <div className="crexus-card mb-8 rounded-[28px] p-5 md:p-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <div className="text-[10px] font-black uppercase tracking-[0.24em] text-red-300">v0.5.2 Enemy Matchup Read</div>
+          <div className="text-[10px] font-black uppercase tracking-[0.24em] text-red-300">v0.5.3 Enemy Matchup Read</div>
           <h2 className="mt-2 text-2xl font-black text-white">Lane-by-lane live read</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-400">Compares matching live-game slots and highlights who has the stronger recent profile. Riot live data does not always expose exact assigned roles, so Crexus treats this as a scouting read instead of a guaranteed draft order.</p>
         </div>
@@ -189,7 +189,7 @@ export function DuoSynergyRead({ participants = [] }) {
     <div className="crexus-card mb-8 rounded-[28px] p-5 md:p-6">
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
-          <div className="text-[10px] font-black uppercase tracking-[0.24em] text-red-300">v0.5.2 Duo / Synergy Detection</div>
+          <div className="text-[10px] font-black uppercase tracking-[0.24em] text-red-300">v0.5.3 Duo / Synergy Detection</div>
           <h2 className="mt-2 text-2xl font-black text-white">Live coordination signals</h2>
           <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-400">Finds current live-game teammates who appeared together in recent match samples, then scores the pair by repeated games, shared winrate, role link, and combined KDA.</p>
         </div>

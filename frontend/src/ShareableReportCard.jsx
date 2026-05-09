@@ -39,7 +39,7 @@ export default function ShareableReportCard({
         <div id="crexus-share-card" className="rounded-[28px] border border-white/8 bg-gradient-to-br from-[#120b0b] via-[#13151c] to-[#0e1116] p-6">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div>
-              <div className="text-[11px] uppercase tracking-[0.22em] text-red-300">Crexus v0.5.2</div>
+              <div className="text-[11px] uppercase tracking-[0.22em] text-red-300">Crexus v0.5.3</div>
               <div className="mt-2 text-3xl font-black text-white">Player Read Snapshot</div>
               <p className="mt-2 max-w-xl text-sm leading-6 text-gray-300">{intelligence.summary}</p>
             </div>

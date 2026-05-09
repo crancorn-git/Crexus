@@ -382,7 +382,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
           <img src="/crexus-logo.png" alt="Crexus logo" className="h-12 w-12 rounded-2xl object-contain shadow-[0_0_28px_rgba(239,68,68,0.18)]" />
           <div>
             <h1 className="text-3xl font-black uppercase tracking-[0.18em] text-white md:text-4xl">Crexus</h1>
-            <div className="mt-1 text-[11px] font-black uppercase tracking-[0.28em] text-red-300">v0.5.2 · Game Stats & Information</div>
+            <div className="mt-1 text-[11px] font-black uppercase tracking-[0.28em] text-red-300">v0.5.3 · Game Stats & Information</div>
           </div>
         </header>
 
