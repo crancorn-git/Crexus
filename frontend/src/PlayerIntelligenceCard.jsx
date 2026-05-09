@@ -1,6 +1,6 @@
 const scoreColor = (score) => {
   if (score >= 80) return 'text-emerald-300 border-emerald-500/40 bg-emerald-500/10';
-  if (score >= 65) return 'text-red-200 border-red-500/40 bg-red-500/10';
+  if (score >= 65) return 'text-blue-300 border-blue-500/40 bg-blue-500/10';
   if (score >= 45) return 'text-yellow-300 border-yellow-500/40 bg-yellow-500/10';
   return 'text-red-300 border-red-500/40 bg-red-500/10';
 };
@@ -27,7 +27,7 @@ export default function PlayerIntelligenceCard({ intelligence }) {
       <div className="p-5 border-b border-gray-800 bg-gradient-to-r from-red-950/30 via-[#161d23] to-[#10151b]">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <div className="text-xs text-red-300 font-black uppercase tracking-[0.25em]">Crexus Player Read</div>
+            <div className="text-xs text-red-300 font-black uppercase tracking-[0.25em]">Crexus Intelligence</div>
             <h2 className="text-2xl font-black text-white mt-1">Player Read</h2>
             <p className="text-sm text-gray-400 mt-2 max-w-2xl">{intelligence.summary}</p>
           </div>

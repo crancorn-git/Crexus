@@ -6,11 +6,10 @@ import { getMatchupTip } from './MatchupTips'; // Import your tips
 import { analyzePlayerIntelligence } from './intelligence';
 import { IntelligencePills, IntelligenceMiniRead } from './IntelligencePills';
 import { LiveTeamComparison } from './ScoutTeamRead';
-import { EnemyMatchupRead, DuoSynergyRead } from './LiveVersusTools';
-
-
-
 import { BackButton } from './CrexusShell';
+
+
+
 export default function LiveGame({ puuid, region, onBack }) {
   const ddragonVersion = useDDragonVersion();
   const ddragonImg = `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/img`;
@@ -20,7 +19,6 @@ export default function LiveGame({ puuid, region, onBack }) {
   const [error, setError] = useState(null);
   const [spells, setSpells] = useState({});
   const [champs, setChamps] = useState({});
-  const [champNames, setChampNames] = useState({});
   const [userChampName, setUserChampName] = useState("");
   const [scoutStatus, setScoutStatus] = useState("");
 
@@ -39,7 +37,6 @@ export default function LiveGame({ puuid, region, onBack }) {
             idToNameMap[c.key] = c.name; // ID "266" -> "Aatrox"
         });
         setChamps(champMap);
-        setChampNames(idToNameMap);
 
         const res = await axios.get(`${API_BASE}/api/live/${puuid}?region=${region}`);
         setScoutStatus("Building player read tags...");
@@ -52,9 +49,8 @@ export default function LiveGame({ puuid, region, onBack }) {
               ranks: participant.ranks || [],
               mastery: participant.mastery ? [{ championPoints: participant.mastery }] : []
             };
-            const recentMatches = matchRes.data || [];
-            const intelligence = analyzePlayerIntelligence({ matches: recentMatches, playerData });
-            return { ...participant, intelligence, recentMatches };
+            const intelligence = analyzePlayerIntelligence({ matches: matchRes.data || [], playerData });
+            return { ...participant, intelligence };
           } catch {
             return { ...participant, intelligence: null };
           }
@@ -82,28 +78,25 @@ export default function LiveGame({ puuid, region, onBack }) {
   };
 
   // --- RENDER ---
-  if (loading) return <div className="text-center text-red-300 animate-pulse mt-20 text-2xl font-bold">SCOUTING RIFT...{scoutStatus && <div className="text-sm text-gray-400 mt-2">{scoutStatus}</div>}</div>;
-  if (error) return <div className="text-center mt-20 text-red-500 font-bold text-xl">{error}</div>;
+  if (loading) return <div className="crexus-page text-center text-red-300 animate-pulse mt-20 text-2xl font-black">Scouting live game...{scoutStatus && <div className="text-sm text-gray-400 mt-2">{scoutStatus}</div>}</div>;
+  if (error) return <div className="crexus-page text-center mt-20 text-red-300 font-bold text-xl">{error}</div>;
 
   return (
-    <div className="max-w-7xl mx-auto p-6 animate-in fade-in zoom-in duration-300">
+    <div className="crexus-page animate-in fade-in zoom-in duration-300">
       <BackButton onClick={onBack} />
 
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-gray-800 pb-6">
         <div>
-            <h1 className="text-4xl font-black text-white italic">LIVE GAME</h1>
+            <h1 className="crexus-page-title">Live Game</h1>
             <span className="bg-red-600 text-white px-3 py-1 rounded text-sm font-bold animate-pulse">{game.gameMode}</span>
         </div>
       </div>
 
       {/* MATCHUP TIPS SECTION */}
-      <MatchupTipsBox participants={game.participants} userPuuid={puuid} userChamp={userChampName} champs={champs} champNames={champNames} ddragonImg={ddragonImg} />
+      <MatchupTipsBox participants={game.participants} userChamp={userChampName} champs={champs} ddragonImg={ddragonImg} />
 
       <LiveTeamComparison participants={game.participants} />
-
-      <EnemyMatchupRead participants={game.participants} />
-      <DuoSynergyRead participants={game.participants} />
 
       {/* TEAMS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
@@ -115,29 +108,36 @@ export default function LiveGame({ puuid, region, onBack }) {
 }
 
 // NEW: Component to find and display the Tip
-function MatchupTipsBox({ participants, userPuuid, userChamp, champNames }) {
-    if (!userChamp || !userPuuid) return null;
+function MatchupTipsBox({ participants, userChamp, champs }) {
+    if (!userChamp) return null;
 
-    const me = participants.find((p) => p.puuid === userPuuid);
-    if (!me) return null;
+    // Find likely opponent (Same position isn't always available in API, so we check for 'likely' matchups manually or just display general tips)
+    // For now, let's look for a specific enemy that matches our Tip Database keys
+    const enemies = participants.filter(p => p.teamId !== participants.find(u => u.championId.toString() === Object.keys(champs).find(k => champs[k] === userChamp))?.teamId);
+    
+    let activeTip = null;
+    let enemyChampName = "";
 
-    const enemies = participants.filter((p) => p.teamId !== me.teamId);
-    const tipRead = enemies
-      .map((enemy) => {
-        const enemyChampName = champNames[enemy.championId] || '';
-        const tip = getMatchupTip(userChamp, enemyChampName);
-        return tip ? { enemyChampName, tip } : null;
-      })
-      .find(Boolean);
+    // Check all enemies to see if we have a tip for UserChamp vs EnemyChamp
+    enemies.forEach(e => {
+        // Note: Our champ map in parent was Key->ID. We need Name. 
+        // Simpler: Just rely on the hardcoded Tip Keys
+        // Let's assume champs[id] returns "Aatrox" (The ID string from DDragon)
+        const tip = getMatchupTip(userChamp, champs[e.championId]);
+        if (tip) {
+            activeTip = tip;
+            enemyChampName = champs[e.championId];
+        }
+    });
 
-    if (!tipRead) return null;
+    if (!activeTip) return null;
 
     return (
-        <div className="mb-8 flex items-start gap-4 rounded-[24px] border border-red-500/30 bg-gradient-to-r from-red-950/40 to-[#181b22] p-4">
-            <div className="text-2xl">◆</div>
+        <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-500/30 p-4 rounded-xl mb-8 flex items-start gap-4">
+            <div className="text-2xl">💡</div>
             <div>
-                <h3 className="mb-1 text-sm font-black uppercase tracking-widest text-red-200">Matchup Tip: {userChamp} vs {tipRead.enemyChampName}</h3>
-                <p className="font-medium text-white">{tipRead.tip}</p>
+                <h3 className="text-blue-300 font-bold text-sm uppercase tracking-widest mb-1">Matchup Tip: vs {enemyChampName}</h3>
+                <p className="text-white font-medium">{activeTip}</p>
             </div>
         </div>
     );
@@ -145,8 +145,8 @@ function MatchupTipsBox({ participants, userPuuid, userChamp, champNames }) {
 
 function TeamList({ teamId, participants, color, getSpellIcon, champs, ddragonImg }) {
   const team = participants.filter(p => p.teamId === teamId);
-  const borderColor = color === 'blue' ? 'border-red-500' : 'border-red-500';
-  const textColor = color === 'blue' ? 'text-red-300' : 'text-red-400';
+  const borderColor = color === 'blue' ? 'border-blue-500' : 'border-red-500';
+  const textColor = color === 'blue' ? 'text-blue-400' : 'text-red-400';
 
   return (
     <div className="space-y-3">
@@ -171,7 +171,7 @@ function TeamList({ teamId, participants, color, getSpellIcon, champs, ddragonIm
             <div className="flex gap-1 mt-2 flex-wrap">
                 {p.tags && p.tags.map(tag => {
                     let colorClass = "bg-gray-700 text-gray-300";
-                    if (tag === "SMURF") colorClass = "bg-red-600 text-white";
+                    if (tag === "SMURF") colorClass = "bg-blue-600 text-white";
                     if (tag === "GOD" || tag === "OTP") colorClass = "bg-yellow-600 text-black";
                     if (tag === "TILTED") colorClass = "bg-red-600 text-white animate-pulse";
                     if (tag === "NEW") colorClass = "bg-green-600 text-white";

@@ -15,9 +15,7 @@ export default function ShareableReportCard({
   onClose,
   onCopy,
   onPrint,
-  shareText,
-  publicReportUrl,
-  streamerUrl
+  shareText
 }) {
   if (!player || !intelligence) return null;
 
@@ -41,8 +39,8 @@ export default function ShareableReportCard({
         <div id="crexus-share-card" className="rounded-[28px] border border-white/8 bg-gradient-to-br from-[#120b0b] via-[#13151c] to-[#0e1116] p-6">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div>
-              <div className="text-[11px] uppercase tracking-[0.22em] text-red-300">Crexus v1.0.0</div>
-              <div className="mt-2 text-3xl font-black text-white">Player Read Snapshot</div>
+              <div className="text-[11px] uppercase tracking-[0.22em] text-red-300">Crexus v1.1.0</div>
+              <div className="mt-2 text-3xl font-black text-white">Player Intelligence Snapshot</div>
               <p className="mt-2 max-w-xl text-sm leading-6 text-gray-300">{intelligence.summary}</p>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -82,9 +80,7 @@ export default function ShareableReportCard({
         <div className="mt-5 flex flex-wrap gap-3">
           <button onClick={onCopy} className="rounded-2xl bg-red-600 px-5 py-3 text-sm font-black uppercase tracking-[0.18em] text-white shadow-[0_0_24px_rgba(239,68,68,0.35)] transition hover:bg-red-500">Copy report text</button>
           <button onClick={onPrint} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">Open print/share view</button>
-          <button onClick={async () => { try { await navigator.clipboard.writeText(publicReportUrl); alert('Public report link copied.'); } catch { alert('Could not copy public report link.'); } }} className="rounded-2xl border border-red-500/20 bg-red-500/10 px-5 py-3 text-sm font-black uppercase tracking-[0.18em] text-red-100 transition hover:bg-red-500/20">Copy public link</button>
-          <button onClick={async () => { try { await navigator.clipboard.writeText(streamerUrl); alert('Streamer/OBS link copied.'); } catch { alert('Could not copy streamer link.'); } }} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">Copy OBS card link</button>
-          <div className="self-center text-xs text-gray-500">Good for Discord, socials, stream overlays, or a quick scout summary.</div>
+          <div className="self-center text-xs text-gray-500">Good for Discord, socials, or a quick scout summary.</div>
         </div>
       </div>
     </div>

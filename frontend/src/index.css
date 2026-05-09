@@ -69,45 +69,57 @@ body {
   box-shadow: 0 0 0 1px rgba(239,68,68,0.25), 0 0 30px rgba(239,68,68,0.18);
 }
 
+.crexus-grid-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
 
+/* v1.1 simplified UI reshuffle */
 .crexus-page {
   width: 100%;
-  max-width: 1280px;
+  max-width: 1320px;
   margin: 0 auto;
   padding: 1rem;
 }
-
-@media (min-width: 768px) {
-  .crexus-page { padding: 1.5rem; }
-}
-
-@media (min-width: 1024px) {
-  .crexus-page { padding: 2rem; }
-}
+@media (min-width: 768px) { .crexus-page { padding: 1.5rem; } }
+@media (min-width: 1024px) { .crexus-page { padding: 2rem; } }
 
 .crexus-page-title {
-  font-size: clamp(1.75rem, 3vw, 2.65rem);
-  line-height: 1.05;
+  font-size: clamp(1.85rem, 3vw, 2.85rem);
+  line-height: 1.04;
   font-weight: 900;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.035em;
   color: white;
 }
-
 .crexus-kicker {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   line-height: 1rem;
   font-weight: 900;
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: rgb(252 165 165);
 }
-
 .crexus-copy {
-  font-size: 0.875rem;
-  line-height: 1.6;
+  font-size: 0.9rem;
+  line-height: 1.65;
   color: rgb(156 163 175);
 }
-
+.crexus-input {
+  width: 100%;
+  min-height: 48px;
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: #0b0d12;
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  color: white;
+  outline: none;
+  transition: border-color 160ms ease, background 160ms ease;
+}
+.crexus-input::placeholder { color: rgb(107 114 128); }
+.crexus-input:focus { border-color: rgba(239,68,68,0.42); background: #0e1117; }
 .crexus-btn {
   display: inline-flex;
   min-height: 44px;
@@ -123,27 +135,22 @@ body {
   transition: all 160ms ease;
   white-space: nowrap;
 }
-
 .crexus-btn-primary {
   background: rgb(220 38 38);
   color: white;
   box-shadow: 0 0 22px rgba(239,68,68,0.28);
 }
-
 .crexus-btn-primary:hover { background: rgb(239 68 68); }
-
 .crexus-btn-secondary {
   border: 1px solid rgba(255,255,255,0.1);
   background: rgba(255,255,255,0.05);
   color: rgb(229 231 235);
 }
-
 .crexus-btn-secondary:hover {
   border-color: rgba(239,68,68,0.32);
   background: rgba(239,68,68,0.1);
   color: white;
 }
-
 .crexus-back-btn {
   display: inline-flex;
   min-height: 40px;
@@ -161,24 +168,9 @@ body {
   transition: all 160ms ease;
   white-space: nowrap;
 }
-
 .crexus-back-btn:hover {
   border-color: rgba(239,68,68,0.35);
   background: rgba(239,68,68,0.12);
   color: white;
 }
-
-.crexus-input {
-  width: 100%;
-  border-radius: 1rem;
-  border: 1px solid rgba(255,255,255,0.1);
-  background: #0b0d12;
-  padding: 0.85rem 1rem;
-  font-size: 0.95rem;
-  color: white;
-  outline: none;
-  transition: border-color 160ms ease;
-}
-
-.crexus-input::placeholder { color: rgb(107 114 128); }
-.crexus-input:focus { border-color: rgba(239,68,68,0.42); }
+.crexus-grid-bg { background-image: none !important; }

@@ -3,7 +3,7 @@ const riskTone = (label) => {
   if (['High', 'Strong', 'Cold', 'Negative'].includes(label)) return 'bg-red-500/15 text-red-300 border-red-500/30';
   if (['Medium', 'Possible', 'Stable'].includes(label)) return 'bg-yellow-500/15 text-yellow-300 border-yellow-500/30';
   if (['Hot', 'Positive'].includes(label)) return 'bg-green-500/15 text-green-300 border-green-500/30';
-  return 'bg-red-500/15 text-red-200 border-red-500/30';
+  return 'bg-blue-500/15 text-blue-300 border-blue-500/30';
 };
 
 const compactScoreTone = (score) => {
@@ -41,7 +41,7 @@ export function IntelligencePills({ intelligence, compact = false }) {
         CXS {intelligence.crexusScore}
       </span>
       {!compact && intelligence.mainRole?.role && intelligence.mainRole.role !== 'Unknown' && (
-        <span className="px-2 py-1 rounded border bg-red-500/10 text-red-200 border-red-500/30" title="Detected Main Role">
+        <span className="px-2 py-1 rounded border bg-purple-500/10 text-purple-300 border-purple-500/30" title="Detected Main Role">
           {intelligence.mainRole.role}
         </span>
       )}

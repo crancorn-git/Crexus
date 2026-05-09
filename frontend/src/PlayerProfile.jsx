@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { API_BASE } from './config';
 import { useDDragonVersion } from './ddragon';
@@ -19,13 +19,16 @@ import MatchDetailRead from './MatchDetailRead';
 import MatchInsightMini from './MatchInsightMini';
 import MatchDetailPage from './MatchDetailPage';
 import ShareableReportCard from './ShareableReportCard';
-import ChampionInsights from './ChampionInsights';
-import CoachingLayer from './CoachingLayer';
 import { analyzePlayerIntelligence } from './intelligence';
-import { REGION_OPTIONS } from './regions';
-import { buildPublicReportUrl, buildStreamerUrl, cleanMetric } from './reportLinks';
 
 const DDRAGON_IMG = 'https://ddragon.leagueoflegends.com/cdn/img';
+const REGION_OPTIONS = [
+  { value: 'na1', label: 'NA' },
+  { value: 'kr', label: 'KR' },
+  { value: 'euw1', label: 'EUW' },
+  { value: 'br1', label: 'BR' }
+];
+
 const readStorage = (key, fallback) => {
   try {
     const value = localStorage.getItem(key);
@@ -35,7 +38,7 @@ const readStorage = (key, fallback) => {
   }
 };
 
-export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboardClick, onCompareClick, onChampionsClick, onDashboardClick, initialAccount }) {
+export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboardClick }) {
   const ddragonVersion = useDDragonVersion();
   const ddragonBase = `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}`;
 
@@ -52,15 +55,6 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
   const [serverData, setServerData] = useState(null);
   const [profileTab, setProfileTab] = useState('overview');
   const [showShareCard, setShowShareCard] = useState(false);
-  const profileContentRef = useRef(null);
-
-  const jumpToProfileTab = (tab) => {
-    setProfileTab(tab);
-    if (tab === 'overview') setDetailMatchId(null);
-    requestAnimationFrame(() => {
-      profileContentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  };
 
   const [queues, setQueues] = useState({});
   const [runes, setRunes] = useState([]);
@@ -70,13 +64,6 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
   useEffect(() => {
     localStorage.setItem('crexus_region', region);
   }, [region]);
-
-  useEffect(() => {
-    if (!initialAccount?.name || !initialAccount?.tag) return;
-    setInput(`${initialAccount.name}#${initialAccount.tag}`);
-    setRegion(initialAccount.region || region);
-    searchPlayer(initialAccount.name, initialAccount.tag, initialAccount.region || region);
-  }, [initialAccount]);
 
   useEffect(() => {
     const fetchStaticData = async () => {
@@ -154,7 +141,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
 
   const getCsColor = (csPerMin) => {
     if (csPerMin >= 9) return 'text-yellow-400 font-bold drop-shadow-md';
-    if (csPerMin >= 7.5) return 'text-red-300 font-bold';
+    if (csPerMin >= 7.5) return 'text-blue-400 font-bold';
     if (csPerMin >= 6) return 'text-green-400';
     return 'text-gray-500';
   };
@@ -300,37 +287,15 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
       displayRank ? `Rank: ${displayRank.tier} ${displayRank.rank} · ${displayRank.leaguePoints} LP` : 'Rank: Unranked',
       `Crexus Score: ${intelligence.crexusScore}/100`,
       `Recent Form: ${intelligence.recentForm}`,
-      `Tilt Risk: ${intelligence.tiltRisk?.label || intelligence.tiltRisk}`,
-      `Smurf Signal: ${intelligence.smurfSignal?.label || intelligence.smurfSignal}`,
-      `One-Trick Risk: ${intelligence.oneTrickRisk?.label || intelligence.oneTrickRisk}`,
-      `Early Death Risk: ${intelligence.earlyDeathRisk?.label || intelligence.earlyDeathRisk}`,
-      `Main Role: ${intelligence.mainRole?.role || intelligence.mainRole}`,
+      `Tilt Risk: ${intelligence.tiltRisk}`,
+      `Smurf Signal: ${intelligence.smurfSignal}`,
+      `One-Trick Risk: ${intelligence.oneTrickRisk}`,
+      `Early Death Risk: ${intelligence.earlyDeathRisk}`,
+      `Main Role: ${intelligence.mainRole}`,
       `Playstyle Tags: ${intelligence.playstyleTags.join(', ')}`,
       '',
       `Summary: ${intelligence.summary}`
     ].join('\n');
-  };
-
-  const buildPublicReportPayload = (displayRank, intelligence) => {
-    if (!data || !intelligence) return null;
-    return {
-      version: '1.0.0',
-      generatedAt: new Date().toISOString(),
-      playerName: data.account.gameName,
-      tagLine: data.account.tagLine,
-      region,
-      rank: displayRank ? `${displayRank.tier} ${displayRank.rank} · ${displayRank.leaguePoints} LP` : 'Unranked',
-      crexusScore: intelligence.crexusScore,
-      recentForm: intelligence.recentForm,
-      mainRole: cleanMetric(intelligence.mainRole),
-      tiltRisk: cleanMetric(intelligence.tiltRisk),
-      smurfSignal: cleanMetric(intelligence.smurfSignal),
-      oneTrickRisk: cleanMetric(intelligence.oneTrickRisk),
-      earlyDeathRisk: cleanMetric(intelligence.earlyDeathRisk),
-      playstyleTags: intelligence.playstyleTags || [],
-      reasons: intelligence.reasons || [],
-      summary: intelligence.summary
-    };
   };
 
   const openPrintShareView = (displayRank, intelligence) => {
@@ -407,63 +372,22 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
   const intelligence = data ? analyzePlayerIntelligence({ matches, playerData: data }) : null;
   const detailMatch = useMemo(() => matches.find((m) => m.metadata.matchId === detailMatchId) || null, [detailMatchId, matches]);
 
-  useEffect(() => {
-    if (!data?.account?.gameName || !data?.account?.tagLine || !intelligence || !matches.length) return;
-
-    const rank = getBestRank(data.ranks);
-    const participants = matches
-      .map((match) => match.info.participants.find((p) => p.puuid === data.account.puuid))
-      .filter(Boolean);
-    const wins = participants.filter((p) => p.win).length;
-    const winRate = participants.length ? Math.round((wins / participants.length) * 100) : 0;
-    const championCounts = participants.reduce((acc, participant) => {
-      acc[participant.championName] = (acc[participant.championName] || 0) + 1;
-      return acc;
-    }, {});
-    const topChampions = Object.entries(championCounts)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 4)
-      .map(([name, games]) => ({ name, games }));
-    const key = `${data.account.gameName}#${data.account.tagLine}:${region}`;
-    const allProgress = readStorage('crexus_progress', {});
-    const existing = allProgress[key] || [];
-    const today = new Date().toISOString().slice(0, 10);
-    const snapshot = {
-      date: today,
-      timestamp: Date.now(),
-      name: data.account.gameName,
-      tag: data.account.tagLine,
-      region,
-      iconId: data.summoner.profileIconId,
-      crexusScore: intelligence.crexusScore,
-      rank: rank ? `${rank.tier} ${rank.rank}` : 'Unranked',
-      lp: rank?.leaguePoints || 0,
-      winRate,
-      matches: participants.length,
-      recentForm: intelligence.recentForm,
-      tiltRisk: intelligence.tiltRisk?.label || intelligence.tiltRisk,
-      mainRole: intelligence.mainRole?.role || intelligence.mainRole || 'Unknown',
-      topChampions
-    };
-    const updated = [snapshot, ...existing.filter((entry) => entry.date !== today)].slice(0, 30);
-    localStorage.setItem('crexus_progress', JSON.stringify({ ...allProgress, [key]: updated }));
-  }, [data, matches, intelligence, region]);
-
   return (
     <div className="min-h-screen text-gray-200">
       <div className="crexus-page">
         <header className="mb-5 px-1 py-2">
-          <div className="crexus-kicker">v1.0.0 · Game Stats & Information</div>
+          <div className="crexus-kicker">v1.1.0 · Game Stats & Information</div>
           <h1 className="crexus-page-title mt-2">Scout Search</h1>
-          <p className="crexus-copy mt-2 max-w-3xl">Search a player, review their profile, then use the sidebar for Dashboard, Compare, Champions, Lobby Scout, and Ladder.</p>
+          <p className="crexus-copy mt-2 max-w-3xl">Search a player, review the core profile cards, then use the sidebar for Lobby Scout and Ladder. The search area is now separated from navigation so the page is easier to scan.</p>
         </header>
 
         <div className="mb-8 rounded-[24px] border border-white/8 bg-[#12141b]/95 p-4 shadow-2xl md:p-5">
-          <div className="mb-3 flex items-center justify-between gap-3">
+          <div className="mb-4 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
             <div>
-              <div className="crexus-kicker">Scout search</div>
-              <div className="mt-1 text-sm text-gray-500">This is separated from the app navigation so the buttons do not crowd the search bar.</div>
+              <div className="crexus-kicker">Scout Search</div>
+              <div className="mt-1 text-sm text-gray-500">Use Riot ID format: GameName#Tag.</div>
             </div>
+            <div className="hidden text-xs font-black uppercase tracking-[0.18em] text-gray-600 md:block">Simple v1.1 layout</div>
           </div>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-[180px_1fr_auto] md:items-center">
             <select
@@ -520,7 +444,8 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                 <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Get Started</div>
                 <h2 className="mt-2 text-2xl font-black text-white md:text-3xl">Search, pin, favourite, and report</h2>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-400">
-                  Crexus now includes saved accounts, a pinned dashboard, progress snapshots, quick refresh controls, profile reports, live tools, and champion/draft reads.
+                  Crexus now includes a cleaner red brand pass, profile and match pages, favourites, a pinned player slot,
+                  search history controls, and a shareable report workflow.
                 </p>
 
                 <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -535,9 +460,9 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                     <div className="mt-1 text-sm text-gray-300">Open a focused match page with timeline, death map, and scoreboards.</div>
                   </div>
                   <div className="rounded-2xl border border-red-500/15 bg-red-500/10 p-4">
-                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-200">0.7</div>
-                    <div className="mt-2 text-lg font-black text-white">Account Tracking</div>
-                    <div className="mt-1 text-sm text-gray-300">Saved accounts, progress history, pinned dashboard, and weekly focus cards are ready before coaching.</div>
+                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-200">1.1</div>
+                    <div className="mt-2 text-lg font-black text-white">Share Reports</div>
+                    <div className="mt-1 text-sm text-gray-300">Copy a scout summary or open a printable report card.</div>
                   </div>
                 </div>
               </div>
@@ -746,31 +671,19 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
               </div>
             </div>
 
-            <div ref={profileContentRef} className="scroll-mt-6 lg:col-span-3 space-y-4">
+            <div className="lg:col-span-3 space-y-4">
               <div className="crexus-card rounded-[28px] p-2 sticky top-4 z-20 flex flex-wrap gap-2">
                 <button
-                  onClick={() => jumpToProfileTab('overview')}
-                  className={`flex-1 rounded-2xl px-4 py-3 text-sm font-black uppercase tracking-[0.18em] transition ${profileTab === 'overview' ? 'bg-red-600 text-white shadow-[0_0_18px_rgba(239,68,68,0.35)]' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
+                  onClick={() => { setProfileTab('overview'); setDetailMatchId(null); }}
+                  className={`flex-1 min-w-[180px] rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.14em] transition ${profileTab === 'overview' ? 'bg-red-600 text-white shadow-[0_0_18px_rgba(239,68,68,0.35)]' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
                 >
                   Player Overview
                 </button>
                 <button
-                  onClick={() => jumpToProfileTab('matches')}
-                  className={`flex-1 rounded-2xl px-4 py-3 text-sm font-black uppercase tracking-[0.18em] transition ${profileTab === 'matches' ? 'bg-red-600 text-white shadow-[0_0_18px_rgba(239,68,68,0.35)]' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
+                  onClick={() => setProfileTab('matches')}
+                  className={`flex-1 min-w-[180px] rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.14em] transition ${profileTab === 'matches' ? 'bg-red-600 text-white shadow-[0_0_18px_rgba(239,68,68,0.35)]' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
                 >
                   Previous Matches
-                </button>
-                <button
-                  onClick={() => jumpToProfileTab('champions')}
-                  className={`flex-1 rounded-2xl px-4 py-3 text-sm font-black uppercase tracking-[0.18em] transition ${profileTab === 'champions' ? 'bg-red-600 text-white shadow-[0_0_18px_rgba(239,68,68,0.35)]' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
-                >
-                  Champion Insights
-                </button>
-                <button
-                  onClick={() => jumpToProfileTab('coach')}
-                  className={`flex-1 rounded-2xl px-4 py-3 text-sm font-black uppercase tracking-[0.18em] transition ${profileTab === 'coach' ? 'bg-red-600 text-white shadow-[0_0_18px_rgba(239,68,68,0.35)]' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
-                >
-                  Coach
                 </button>
               </div>
 
@@ -786,14 +699,6 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                 </div>
               )}
 
-              {profileTab === 'champions' && (
-                <ChampionInsights playerData={data} matches={matches} region={region} />
-              )}
-
-              {profileTab === 'coach' && (
-                <CoachingLayer playerData={data} matches={matches} />
-              )}
-
               {profileTab === 'matches' && (
                 <div className="space-y-4">
                   {!detailMatch && (
@@ -801,7 +706,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                       <div className="crexus-card rounded-[28px] p-5 md:p-6">
                         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                           <div>
-                            <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">Match Detail Page</div>
+                            <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">v0.4.2 Match Detail Page</div>
                             <h3 className="mt-1 text-2xl font-black text-white">Previous Matches</h3>
                             <p className="mt-2 text-sm text-gray-400">Open any match to drill into a dedicated review page with lane timeline, death heatmap, and team scoreboards.</p>
                           </div>
@@ -846,16 +751,16 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                       }));
 
                       const cardClasses = isWin
-                        ? 'border-l-blue-400 bg-gradient-to-r from-red-950/10 to-[#161d23]'
+                        ? 'border-l-blue-400 bg-gradient-to-r from-blue-900/10 to-[#161d23]'
                         : 'border-l-red-500 bg-gradient-to-r from-red-900/10 to-[#161d23]';
-                      const textClasses = isWin ? 'text-red-200' : 'text-red-300';
+                      const textClasses = isWin ? 'text-blue-300' : 'text-red-300';
 
                       return (
                         <div key={match.metadata.matchId} className="transition-all duration-300">
                           <div className={`relative cursor-pointer rounded-2xl border-l-[6px] border-y border-r border-white/6 p-4 shadow-md hover:bg-white/[0.03] ${cardClasses}`} onClick={() => toggleMatch(match.metadata.matchId)}>
                             <div className="flex flex-col gap-4 md:flex-row md:items-center">
                               <div className="w-full md:w-28 text-left">
-                                <div className={`mb-1 text-xs font-bold uppercase tracking-[0.18em] opacity-80 ${isWin ? 'text-red-300' : 'text-red-400'}`}>{formatQueue(queueName)}</div>
+                                <div className={`mb-1 text-xs font-bold uppercase tracking-[0.18em] opacity-80 ${isWin ? 'text-blue-400' : 'text-red-400'}`}>{formatQueue(queueName)}</div>
                                 <div className={`flex items-center gap-2 text-lg font-black ${textClasses}`}>
                                   {isWin ? 'VICTORY' : 'DEFEAT'}
                                   {isSurrender && <span className="rounded bg-gray-700 px-1 text-[9px] text-gray-300">FF</span>}
@@ -892,7 +797,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                                 </div>
                                 <div className="mt-1 text-xs text-gray-400">
                                   <span className="text-gray-500">KDA: </span>
-                                  <span className={((participant.kills + participant.assists) / (participant.deaths || 1)) > 3 ? 'font-bold text-red-200' : 'text-gray-300'}>
+                                  <span className={((participant.kills + participant.assists) / (participant.deaths || 1)) > 3 ? 'font-bold text-blue-300' : 'text-gray-300'}>
                                     {((participant.kills + participant.assists) / (participant.deaths || 1)).toFixed(2)}
                                   </span>
                                 </div>
@@ -973,8 +878,6 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
           intelligence={intelligence}
           displayRank={displayRank}
           shareText={buildShareText(displayRank, intelligence)}
-          publicReportUrl={buildPublicReportUrl(buildPublicReportPayload(displayRank, intelligence))}
-          streamerUrl={buildStreamerUrl(buildPublicReportPayload(displayRank, intelligence))}
           onClose={() => setShowShareCard(false)}
           onCopy={async () => {
             try {

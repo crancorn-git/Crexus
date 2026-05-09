@@ -87,7 +87,7 @@ export function ScoutTeamRead({ entries = [], title = 'Scout Read' }) {
     <div className="bg-[#111820] border border-emerald-500/20 rounded-2xl p-5 mb-6 shadow-xl shadow-emerald-950/20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.25em] text-emerald-400 font-black">Crexus Team Read</div>
+          <div className="text-[10px] uppercase tracking-[0.25em] text-emerald-400 font-black">Crexus Team Intelligence</div>
           <h2 className="text-2xl font-black text-white italic">{title}</h2>
         </div>
         <div className="text-right">
@@ -133,20 +133,20 @@ export function LiveTeamComparison({ participants = [] }) {
   const red = summarizeGroup(participants.filter((player) => player.teamId === 200));
   const diff = blue.averageScore - red.averageScore;
   const leader = Math.abs(diff) < 5 ? 'Even read' : diff > 0 ? 'Blue advantage' : 'Red advantage';
-  const leaderClass = Math.abs(diff) < 5 ? 'text-gray-300' : diff > 0 ? 'text-red-200' : 'text-red-300';
+  const leaderClass = Math.abs(diff) < 5 ? 'text-gray-300' : diff > 0 ? 'text-blue-300' : 'text-red-300';
 
   return (
-    <div className="bg-[#111820] border border-red-500/20 rounded-2xl p-5 mb-8 shadow-xl shadow-red-950/20">
+    <div className="bg-[#111820] border border-cyan-500/20 rounded-2xl p-5 mb-8 shadow-xl shadow-cyan-950/20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-5">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.25em] text-red-300 font-black">Live Draft Read</div>
+          <div className="text-[10px] uppercase tracking-[0.25em] text-cyan-400 font-black">Live Draft Intelligence</div>
           <h2 className="text-2xl font-black text-white italic">Team Advantage Read</h2>
         </div>
         <div className={`text-2xl font-black ${leaderClass}`}>{leader}</div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {[['Blue Team', blue, 'text-red-200'], ['Red Team', red, 'text-red-300']].map(([name, summary, colorClass]) => (
+        {[['Blue Team', blue, 'text-blue-300'], ['Red Team', red, 'text-red-300']].map(([name, summary, colorClass]) => (
           <div key={name} className="bg-black/25 border border-white/5 rounded-xl p-4">
             <div className="flex items-center justify-between mb-2">
               <div className={`font-black uppercase tracking-wider ${colorClass}`}>{name}</div>

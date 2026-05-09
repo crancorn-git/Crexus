@@ -4,9 +4,13 @@ import { API_BASE } from './config';
 import { analyzePlayerIntelligence } from './intelligence';
 import { IntelligencePills, IntelligenceMiniRead } from './IntelligencePills';
 import { ScoutTeamRead } from './ScoutTeamRead';
-import { REGION_OPTIONS } from './regions';
-
 import { BackButton } from './CrexusShell';
+
+const REGION_OPTIONS = [
+  ['na1', 'North America'], ['kr', 'Korea'], ['euw1', 'Europe West'], ['br1', 'Brazil'],
+  ['eun1', 'Europe Nordic & East'], ['jp1', 'Japan'], ['la1', 'Latin America North'], ['la2', 'Latin America South'], ['tr1', 'Turkey'], ['ru', 'Russia']
+];
+
 export default function Lobby({ onBack }) {
   const [text, setText] = useState('');
   const [region, setRegion] = useState('na1');
@@ -16,112 +20,75 @@ export default function Lobby({ onBack }) {
   const scoutLobby = async () => {
     setLoading(true);
     setResults([]);
+    const lines = text.split(/[\n,]/).map((l) => l.replace(/ joined the lobby/gi, '').trim()).filter(Boolean);
 
-    const lines = text
-      .split(/[\n,]/)
-      .map((line) => line.replace(/ joined the lobby/gi, '').trim())
-      .filter(Boolean);
-
-    const promises = lines.map(async (line) => {
+    const data = await Promise.all(lines.map(async (line) => {
       const [name, tag] = line.split('#');
       if (!tag) return { name: line, error: 'Missing #Tag' };
-
       try {
         const res = await axios.get(`${API_BASE}/api/player/${encodeURIComponent(name.trim())}/${encodeURIComponent(tag.trim())}?region=${region}`);
         let matches = [];
         try {
           const matchRes = await axios.get(`${API_BASE}/api/matches/${res.data.account.puuid}?region=${region}`);
           matches = matchRes.data || [];
-        } catch {
-          matches = [];
-        }
-
+        } catch { matches = []; }
         const intelligence = analyzePlayerIntelligence({ matches, playerData: res.data });
         return { name: line, data: res.data, intelligence };
-      } catch (err) {
-        return { name: line, error: err.response?.data?.error || 'Not found' };
+      } catch {
+        return { name: line, error: 'Not found' };
       }
-    });
+    }));
 
-    const data = await Promise.all(promises);
     setResults(data);
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen text-gray-200">
-      <div className="mx-auto max-w-6xl p-4 md:p-6 lg:p-8">
-        <div className="crexus-card mb-6 rounded-[32px] border border-red-500/10 p-5 md:p-7">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <BackButton onClick={onBack} />
-              <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Crexus Lobby Scout</div>
-              <h1 className="mt-2 text-3xl font-black tracking-tight text-white md:text-4xl">Scout a lobby before queue locks in</h1>
-              <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-400">
-                Paste Riot IDs from lobby chat to build a quick team read with ranks, recent form, champion pool signals, and risk tags.
-              </p>
-            </div>
+    <div className="crexus-page min-h-screen text-gray-200">
+      <BackButton onClick={onBack} />
 
-            <select
-              value={region}
-              onChange={(e) => setRegion(e.target.value)}
-              className="rounded-2xl border border-white/10 bg-[#0b0d12] px-4 py-4 text-sm font-black uppercase tracking-[0.18em] text-white outline-none transition hover:border-red-500/30 focus:border-red-500/40"
-            >
-              {REGION_OPTIONS.map((option) => (
-                <option key={option.value} value={option.value}>{option.label}</option>
-              ))}
-            </select>
-          </div>
-        </div>
+      <header className="mt-5 mb-6">
+        <div className="crexus-kicker">v1.1.0 · Lobby Scout</div>
+        <h1 className="crexus-page-title mt-2">Lobby Scout</h1>
+        <p className="crexus-copy mt-2 max-w-3xl">Paste lobby chat or Riot IDs to build a clean team read without crowding the page.</p>
+      </header>
 
-        <div className="crexus-card mb-6 rounded-[28px] p-5 md:p-6">
+      <section className="crexus-card mb-6 rounded-[28px] p-5 md:p-6">
+        <div className="grid grid-cols-1 gap-3 lg:grid-cols-[220px_1fr_auto] lg:items-start">
+          <select value={region} onChange={(e) => setRegion(e.target.value)} className="crexus-input text-sm font-black uppercase tracking-[0.12em]">
+            {REGION_OPTIONS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+          </select>
           <textarea
-            className="h-40 w-full resize-none rounded-2xl border border-white/10 bg-[#0b0d12] p-4 text-sm text-gray-200 outline-none placeholder:text-gray-600 transition focus:border-red-500/40"
-            placeholder="Paste lobby chat here, for example: PlayerName#TAG joined the lobby"
+            className="crexus-input h-36 resize-none leading-6"
+            placeholder="Paste lobby chat here, for example: Faker#KR1 joined the lobby"
             value={text}
             onChange={(e) => setText(e.target.value)}
           />
-          <button
-            onClick={scoutLobby}
-            disabled={loading || !text.trim()}
-            className="mt-4 w-full rounded-2xl bg-red-600 px-8 py-4 text-sm font-black uppercase tracking-[0.2em] text-white shadow-[0_0_26px_rgba(239,68,68,0.35)] transition hover:bg-red-500 disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-gray-500 disabled:shadow-none"
-          >
-            {loading ? 'Scouting lobby...' : 'Scout team'}
+          <button onClick={scoutLobby} disabled={loading || !text.trim()} className="crexus-btn crexus-btn-primary px-7 disabled:opacity-50">
+            {loading ? 'Scouting...' : 'Scout Team'}
           </button>
         </div>
+      </section>
 
-        {results.length > 0 && <ScoutTeamRead entries={results} title="Lobby Team Read" />}
+      {results.length > 0 && <ScoutTeamRead entries={results} title="Lobby Team Read" />}
 
-        <div className="grid gap-4">
-          {results.map((res, i) => (
-            <div key={`${res.name}-${i}`} className="crexus-card-soft rounded-[24px] border border-white/10 p-4 shadow-md">
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div className="min-w-0">
-                  <div className="text-lg font-black text-white">{res.name}</div>
-                  {res.error ? (
-                    <p className="mt-1 text-sm font-bold text-red-300">{res.error}</p>
-                  ) : (
-                    <div className="mt-3">
-                      <IntelligencePills intelligence={res.intelligence} />
-                      <IntelligenceMiniRead intelligence={res.intelligence} />
-                    </div>
-                  )}
-                </div>
-
-                {!res.error && (
-                  <div className="shrink-0 rounded-2xl border border-white/10 bg-[#0d1117] px-5 py-4 text-left md:text-right">
-                    <div className="text-xl font-black text-red-300">
-                      {res.data.ranks[0] ? `${res.data.ranks[0].tier} ${res.data.ranks[0].rank}` : 'Unranked'}
-                    </div>
-                    <div className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-gray-500">
-                      Level {res.data.summoner.summonerLevel}
-                    </div>
-                  </div>
-                )}
+      <div className="grid gap-3">
+        {results.map((res, i) => (
+          <div key={`${res.name}-${i}`} className="rounded-[24px] border border-white/10 bg-[#11141b] p-4 shadow-md">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div>
+                <div className="text-lg font-black text-white">{res.name}</div>
+                {res.error ? <p className="mt-1 text-sm font-bold text-red-300">{res.error}</p> : <><IntelligencePills intelligence={res.intelligence} /><IntelligenceMiniRead intelligence={res.intelligence} /></>}
               </div>
+              {!res.error && (
+                <div className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left md:text-right">
+                  <div className="font-black text-red-200">{res.data.ranks[0] ? `${res.data.ranks[0].tier} ${res.data.ranks[0].rank}` : 'Unranked'}</div>
+                  <div className="text-xs uppercase tracking-[0.16em] text-gray-500">Level {res.data.summoner.summonerLevel}</div>
+                </div>
+              )}
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
     </div>
   );
