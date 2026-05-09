@@ -12,9 +12,26 @@ app.use(cors({
 
 const API_KEY = process.env.RIOT_API_KEY;
 
+const APP_VERSION = process.env.APP_VERSION || '0.2.1';
+const DEPLOY_TIME = process.env.VERCEL_GIT_COMMIT_SHA ? 'vercel' : new Date().toISOString();
+const DEBUG_TOKEN = process.env.CREXUS_DEBUG_TOKEN;
+
 if (!API_KEY) {
     console.warn('RIOT_API_KEY is missing. Riot-backed routes will fail until it is configured.');
 }
+
+
+const getDataDragonVersion = async () => {
+    try {
+        const response = await axios.get('https://ddragon.leagueoflegends.com/api/versions.json', { timeout: 5000 });
+        if (Array.isArray(response.data) && response.data[0]) return response.data[0];
+    } catch (err) {
+        console.error('Data Dragon version check failed:', err.message);
+    }
+    return 'unknown';
+};
+
+const getUptimeSeconds = () => Math.round(process.uptime());
 
 const getBroadRegion = (platform) => {
     const map = {
@@ -69,6 +86,62 @@ const riotRequest = async (url) => {
         throw err;
     }
 };
+
+
+app.get('/api/health', (req, res) => {
+    res.json({
+        server: 'online',
+        version: APP_VERSION,
+        riotKeyConfigured: Boolean(API_KEY),
+        environment: process.env.NODE_ENV || 'development',
+        uptimeSeconds: getUptimeSeconds(),
+        timestamp: new Date().toISOString()
+    });
+});
+
+app.get('/api/version', async (req, res) => {
+    const ddragonVersion = await getDataDragonVersion();
+    res.json({
+        app: 'Crexus',
+        version: APP_VERSION,
+        ddragonVersion,
+        deploy: {
+            commit: process.env.VERCEL_GIT_COMMIT_SHA || null,
+            branch: process.env.VERCEL_GIT_COMMIT_REF || null,
+            url: process.env.VERCEL_URL || null,
+            time: DEPLOY_TIME
+        },
+        timestamp: new Date().toISOString()
+    });
+});
+
+app.get('/api/debug/riot', async (req, res) => {
+    if (DEBUG_TOKEN && req.query.token !== DEBUG_TOKEN) {
+        return res.status(401).json({ error: 'Debug token required.' });
+    }
+
+    const platform = req.query.region || 'kr';
+
+    try {
+        const statusUrl = `https://${platform}.api.riotgames.com/lol/status/v4/platform-data`;
+        const statusData = await riotRequest(statusUrl);
+        res.json({
+            ok: true,
+            region: platform,
+            riotKeyConfigured: Boolean(API_KEY),
+            riotStatusName: statusData.name,
+            message: 'Riot API key is accepted for this endpoint.'
+        });
+    } catch (error) {
+        const payload = getRiotErrorPayload(error, 'Riot debug check failed.');
+        res.status(payload.status).json({
+            ok: false,
+            region: platform,
+            riotKeyConfigured: Boolean(API_KEY),
+            ...payload
+        });
+    }
+});
 
 // API 1: Get Player Profile
 app.get('/api/player/:name/:tag', async (req, res) => {

@@ -2,7 +2,8 @@ import { useState } from 'react';
 import PlayerProfile from './PlayerProfile';
 import LiveGame from './LiveGame';
 import Lobby from './Lobby';
-import Leaderboard from './Leaderboard'; // <-- Import
+import Leaderboard from './Leaderboard';
+import BackendStatus from './BackendStatus';
 
 function App() {
   const [view, setView] = useState('profile'); // profile, live, lobby, leaderboard
@@ -15,6 +16,7 @@ function App() {
 
   return (
     <div>
+      <BackendStatus />
       {view === 'profile' && (
         <PlayerProfile 
             onLiveClick={handleOpenLive} 
