@@ -10,6 +10,7 @@ import MatchBadges from './MatchBadges';
 import DeathHeatmap from './DeathHeatmap';
 import WinRateChart from './WinRateChart';
 import PlayerIntelligenceCard from './PlayerIntelligenceCard';
+import PerformanceTrends from './PerformanceTrends';
 import { analyzePlayerIntelligence } from './intelligence';
 
 const DDRAGON_IMG = `https://ddragon.leagueoflegends.com/cdn/img`;
@@ -396,6 +397,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
           {/* RIGHT COL: INTELLIGENCE + MATCH HISTORY */}
           <div className="lg:col-span-3 space-y-4">
             <PlayerIntelligenceCard intelligence={intelligence} />
+            <PerformanceTrends matches={matches} puuid={data.account.puuid} />
             <h2 className="text-xl font-bold mb-4 text-gray-400 uppercase tracking-wider pl-1">Recent Matches</h2>
             
             {matches.map((match) => {
