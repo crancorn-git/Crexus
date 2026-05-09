@@ -12,7 +12,7 @@ app.use(cors({
 
 const API_KEY = process.env.RIOT_API_KEY;
 
-const APP_VERSION = process.env.APP_VERSION || '0.8.0';
+const APP_VERSION = process.env.APP_VERSION || '0.9.0';
 const DEPLOY_TIME = process.env.VERCEL_GIT_COMMIT_SHA ? 'vercel' : new Date().toISOString();
 const DEBUG_TOKEN = process.env.CREXUS_DEBUG_TOKEN;
 
@@ -120,6 +120,20 @@ app.get('/api/version', async (req, res) => {
             time: DEPLOY_TIME
         },
         timestamp: new Date().toISOString()
+    });
+});
+
+
+app.get('/api/discord/commands', (req, res) => {
+    res.json({
+        app: 'Crexus',
+        version: APP_VERSION,
+        commands: [
+            { name: '/crexus player', usage: '/crexus player Ciaran#EUW', description: 'Return a player scout summary and public report link.' },
+            { name: '/crexus live', usage: '/crexus live Ciaran#EUW', description: 'Return live-game scout details when the player is currently in game.' },
+            { name: '/crexus compare', usage: '/crexus compare PlayerA#EUW PlayerB#EUW', description: 'Compare two players side by side.' },
+            { name: '/crexus report', usage: '/crexus report PlayerName#TAG', description: 'Generate a clean public report card for sharing.' }
+        ]
     });
 });
 

@@ -23,6 +23,7 @@ import ChampionInsights from './ChampionInsights';
 import CoachingLayer from './CoachingLayer';
 import { analyzePlayerIntelligence } from './intelligence';
 import { REGION_OPTIONS } from './regions';
+import { buildPublicReportUrl, buildStreamerUrl, cleanMetric } from './reportLinks';
 
 const DDRAGON_IMG = 'https://ddragon.leagueoflegends.com/cdn/img';
 const readStorage = (key, fallback) => {
@@ -310,6 +311,28 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
     ].join('\n');
   };
 
+  const buildPublicReportPayload = (displayRank, intelligence) => {
+    if (!data || !intelligence) return null;
+    return {
+      version: '0.9.0',
+      generatedAt: new Date().toISOString(),
+      playerName: data.account.gameName,
+      tagLine: data.account.tagLine,
+      region,
+      rank: displayRank ? `${displayRank.tier} ${displayRank.rank} · ${displayRank.leaguePoints} LP` : 'Unranked',
+      crexusScore: intelligence.crexusScore,
+      recentForm: intelligence.recentForm,
+      mainRole: cleanMetric(intelligence.mainRole),
+      tiltRisk: cleanMetric(intelligence.tiltRisk),
+      smurfSignal: cleanMetric(intelligence.smurfSignal),
+      oneTrickRisk: cleanMetric(intelligence.oneTrickRisk),
+      earlyDeathRisk: cleanMetric(intelligence.earlyDeathRisk),
+      playstyleTags: intelligence.playstyleTags || [],
+      reasons: intelligence.reasons || [],
+      summary: intelligence.summary
+    };
+  };
+
   const openPrintShareView = (displayRank, intelligence) => {
     const shareText = buildShareText(displayRank, intelligence).replace(/\n/g, '<br/>');
     const printWindow = window.open('', '_blank', 'width=900,height=1200');
@@ -430,7 +453,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
     <div className="min-h-screen text-gray-200">
       <div className="crexus-page">
         <header className="mb-5 px-1 py-2">
-          <div className="crexus-kicker">v0.8.0 · Game Stats & Information</div>
+          <div className="crexus-kicker">v0.9.0 · Game Stats & Information</div>
           <h1 className="crexus-page-title mt-2">Scout Search</h1>
           <p className="crexus-copy mt-2 max-w-3xl">Search a player, review their profile, then use the sidebar for Dashboard, Compare, Champions, Lobby Scout, and Ladder.</p>
         </header>
@@ -950,6 +973,8 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
           intelligence={intelligence}
           displayRank={displayRank}
           shareText={buildShareText(displayRank, intelligence)}
+          publicReportUrl={buildPublicReportUrl(buildPublicReportPayload(displayRank, intelligence))}
+          streamerUrl={buildStreamerUrl(buildPublicReportPayload(displayRank, intelligence))}
           onClose={() => setShowShareCard(false)}
           onCopy={async () => {
             try {
