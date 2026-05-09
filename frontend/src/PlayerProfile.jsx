@@ -9,6 +9,8 @@ import MatchTimeline from './MatchTimeline';
 import MatchBadges from './MatchBadges';     
 import DeathHeatmap from './DeathHeatmap';
 import WinRateChart from './WinRateChart';
+import PlayerIntelligenceCard from './PlayerIntelligenceCard';
+import { analyzePlayerIntelligence } from './intelligence';
 
 const DDRAGON_IMG = `https://ddragon.leagueoflegends.com/cdn/img`;
 
@@ -204,6 +206,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
   };
 
   const displayRank = data ? getBestRank(data.ranks) : null;
+  const intelligence = data ? analyzePlayerIntelligence({ matches, playerData: data }) : null;
 
   return (
     <div className="min-h-screen bg-[#0a0e13] text-gray-200 font-sans p-8">
@@ -390,8 +393,9 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
 
           </div>
 
-          {/* RIGHT COL: MATCH HISTORY */}
+          {/* RIGHT COL: INTELLIGENCE + MATCH HISTORY */}
           <div className="lg:col-span-3 space-y-4">
+            <PlayerIntelligenceCard intelligence={intelligence} />
             <h2 className="text-xl font-bold mb-4 text-gray-400 uppercase tracking-wider pl-1">Recent Matches</h2>
             
             {matches.map((match) => {
