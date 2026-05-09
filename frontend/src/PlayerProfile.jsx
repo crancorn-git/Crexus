@@ -33,7 +33,7 @@ const readStorage = (key, fallback) => {
   }
 };
 
-export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboardClick, onCompareClick, onChampionsClick }) {
+export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboardClick, onCompareClick, onChampionsClick, onDashboardClick, initialAccount }) {
   const ddragonVersion = useDDragonVersion();
   const ddragonBase = `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}`;
 
@@ -68,6 +68,13 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
   useEffect(() => {
     localStorage.setItem('crexus_region', region);
   }, [region]);
+
+  useEffect(() => {
+    if (!initialAccount?.name || !initialAccount?.tag) return;
+    setInput(`${initialAccount.name}#${initialAccount.tag}`);
+    setRegion(initialAccount.region || region);
+    searchPlayer(initialAccount.name, initialAccount.tag, initialAccount.region || region);
+  }, [initialAccount]);
 
   useEffect(() => {
     const fetchStaticData = async () => {
@@ -376,6 +383,48 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
   const intelligence = data ? analyzePlayerIntelligence({ matches, playerData: data }) : null;
   const detailMatch = useMemo(() => matches.find((m) => m.metadata.matchId === detailMatchId) || null, [detailMatchId, matches]);
 
+  useEffect(() => {
+    if (!data?.account?.gameName || !data?.account?.tagLine || !intelligence || !matches.length) return;
+
+    const rank = getBestRank(data.ranks);
+    const participants = matches
+      .map((match) => match.info.participants.find((p) => p.puuid === data.account.puuid))
+      .filter(Boolean);
+    const wins = participants.filter((p) => p.win).length;
+    const winRate = participants.length ? Math.round((wins / participants.length) * 100) : 0;
+    const championCounts = participants.reduce((acc, participant) => {
+      acc[participant.championName] = (acc[participant.championName] || 0) + 1;
+      return acc;
+    }, {});
+    const topChampions = Object.entries(championCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 4)
+      .map(([name, games]) => ({ name, games }));
+    const key = `${data.account.gameName}#${data.account.tagLine}:${region}`;
+    const allProgress = readStorage('crexus_progress', {});
+    const existing = allProgress[key] || [];
+    const today = new Date().toISOString().slice(0, 10);
+    const snapshot = {
+      date: today,
+      timestamp: Date.now(),
+      name: data.account.gameName,
+      tag: data.account.tagLine,
+      region,
+      iconId: data.summoner.profileIconId,
+      crexusScore: intelligence.crexusScore,
+      rank: rank ? `${rank.tier} ${rank.rank}` : 'Unranked',
+      lp: rank?.leaguePoints || 0,
+      winRate,
+      matches: participants.length,
+      recentForm: intelligence.recentForm,
+      tiltRisk: intelligence.tiltRisk?.label || intelligence.tiltRisk,
+      mainRole: intelligence.mainRole?.role || intelligence.mainRole || 'Unknown',
+      topChampions
+    };
+    const updated = [snapshot, ...existing.filter((entry) => entry.date !== today)].slice(0, 30);
+    localStorage.setItem('crexus_progress', JSON.stringify({ ...allProgress, [key]: updated }));
+  }, [data, matches, intelligence, region]);
+
   return (
     <div className="min-h-screen text-gray-200">
       <div className="mx-auto max-w-7xl p-4 md:p-6 lg:p-8">
@@ -383,7 +432,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
           <img src="/crexus-logo.png" alt="Crexus logo" className="h-12 w-12 rounded-2xl object-contain shadow-[0_0_28px_rgba(239,68,68,0.18)]" />
           <div>
             <h1 className="text-3xl font-black uppercase tracking-[0.18em] text-white md:text-4xl">Crexus</h1>
-            <div className="mt-1 text-[11px] font-black uppercase tracking-[0.28em] text-red-300">v0.6 · Game Stats & Information</div>
+            <div className="mt-1 text-[11px] font-black uppercase tracking-[0.28em] text-red-300">v0.7 · Game Stats & Information</div>
           </div>
         </header>
 
@@ -409,6 +458,9 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
 
             <button onClick={() => searchPlayer()} className="rounded-2xl bg-red-600 px-8 py-4 text-sm font-black uppercase tracking-[0.2em] text-white shadow-[0_0_26px_rgba(239,68,68,0.35)] transition hover:bg-red-500">
               Scout
+            </button>
+            <button onClick={onDashboardClick} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
+              Dashboard
             </button>
             <button onClick={onCompareClick} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
               Compare
@@ -455,8 +507,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                 <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Get Started</div>
                 <h2 className="mt-2 text-2xl font-black text-white md:text-3xl">Search, pin, favourite, and report</h2>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-400">
-                  Crexus now includes a cleaner red brand pass, profile and match pages, favourites, a pinned player slot,
-                  search history controls, and a shareable report workflow.
+                  Crexus now includes saved accounts, a pinned dashboard, progress snapshots, quick refresh controls, profile reports, live tools, and champion/draft reads.
                 </p>
 
                 <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -471,9 +522,9 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                     <div className="mt-1 text-sm text-gray-300">Open a focused match page with timeline, death map, and scoreboards.</div>
                   </div>
                   <div className="rounded-2xl border border-red-500/15 bg-red-500/10 p-4">
-                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-200">0.6</div>
-                    <div className="mt-2 text-lg font-black text-white">Champion Insights</div>
-                    <div className="mt-1 text-sm text-gray-300">Champion profiles, matchup memory, and draft pick-ban helper are ready before account tracking.</div>
+                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-200">0.7</div>
+                    <div className="mt-2 text-lg font-black text-white">Account Tracking</div>
+                    <div className="mt-1 text-sm text-gray-300">Saved accounts, progress history, pinned dashboard, and weekly focus cards are ready before coaching.</div>
                   </div>
                 </div>
               </div>

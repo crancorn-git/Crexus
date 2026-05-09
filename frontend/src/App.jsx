@@ -5,15 +5,22 @@ import Lobby from './Lobby';
 import Leaderboard from './Leaderboard';
 import PlayerCompare from './PlayerCompare';
 import ChampionInsights from './ChampionInsights';
+import AccountDashboard from './AccountDashboard';
 import BackendStatus from './BackendStatus';
 
 function App() {
-  const [view, setView] = useState('profile'); // profile, live, lobby, leaderboard, compare, champions
-  const [liveData, setLiveData] = useState(null); 
+  const [view, setView] = useState('profile'); // profile, live, lobby, leaderboard, compare, champions, dashboard
+  const [liveData, setLiveData] = useState(null);
+  const [profileTarget, setProfileTarget] = useState(null); 
 
   const handleOpenLive = (puuid, region) => {
     setLiveData({ puuid, region });
     setView('live');
+  };
+
+  const openTrackedAccount = (account) => {
+    setProfileTarget(account);
+    setView('profile');
   };
 
   return (
@@ -26,6 +33,8 @@ function App() {
             onLeaderboardClick={() => setView('leaderboard')}
             onCompareClick={() => setView('compare')}
             onChampionsClick={() => setView('champions')}
+            onDashboardClick={() => setView('dashboard')}
+            initialAccount={profileTarget}
         />
       )}
 
@@ -45,6 +54,14 @@ function App() {
       {view === 'compare' && <PlayerCompare onBack={() => setView('profile')} />}
 
       {view === 'champions' && <ChampionInsights onBack={() => setView('profile')} />}
+
+      {view === 'dashboard' && (
+        <AccountDashboard
+          onBack={() => setView('profile')}
+          onOpenAccount={openTrackedAccount}
+          onCompareClick={() => setView('compare')}
+        />
+      )}
     </div>
   );
 }
