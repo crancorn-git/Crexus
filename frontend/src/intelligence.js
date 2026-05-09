@@ -180,7 +180,7 @@ export function analyzePlayerIntelligence({ matches = [], playerData = null }) {
       ready: false,
       crexusScore: 0,
       recentForm: 'Unknown',
-      summary: 'Search a player with recent matches to generate Crexus intelligence.'
+      summary: 'Search a player with recent matches to generate Crexus read.'
     };
   }
 

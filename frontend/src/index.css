@@ -69,9 +69,3 @@ body {
   box-shadow: 0 0 0 1px rgba(239,68,68,0.25), 0 0 30px rgba(239,68,68,0.18);
 }
 
-.crexus-grid-bg {
-  background-image:
-    linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
-  background-size: 22px 22px;
-}

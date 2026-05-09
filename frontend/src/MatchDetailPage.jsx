@@ -79,7 +79,7 @@ export default function MatchDetailPage({
             <div className="text-xs uppercase tracking-[0.24em] text-gray-500">Focused Match Review</div>
             <h2 className="mt-2 text-2xl font-black text-white md:text-3xl">{queueName}</h2>
             <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-gray-400">
-              <span className={`rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.18em] ${isWin ? 'bg-blue-500/15 text-blue-300' : 'bg-red-500/15 text-red-300'}`}>{isWin ? 'Victory' : 'Defeat'}</span>
+              <span className={`rounded-full px-3 py-1 text-xs font-black uppercase tracking-[0.18em] ${isWin ? 'bg-red-500/15 text-red-200' : 'bg-red-500/15 text-red-300'}`}>{isWin ? 'Victory' : 'Defeat'}</span>
               <span>{gameMinutes}m {gameSeconds}s</span>
               <span>·</span>
               <span>{participant.championName}</span>

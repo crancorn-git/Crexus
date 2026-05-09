@@ -33,11 +33,19 @@ const getDataDragonVersion = async () => {
 
 const getUptimeSeconds = () => Math.round(process.uptime());
 
+
+const PLATFORM_REGIONS = new Set(['na1', 'br1', 'la1', 'la2', 'kr', 'jp1', 'euw1', 'eun1', 'tr1', 'ru', 'oc1']);
+const normalizePlatform = (region, fallback = 'na1') => {
+    const platform = String(region || fallback).toLowerCase();
+    return PLATFORM_REGIONS.has(platform) ? platform : fallback;
+};
+
 const getBroadRegion = (platform) => {
     const map = {
         'na1': 'americas', 'br1': 'americas', 'la1': 'americas', 'la2': 'americas',
         'kr': 'asia', 'jp1': 'asia',
-        'euw1': 'europe', 'eun1': 'europe', 'tr1': 'europe', 'ru': 'europe'
+        'euw1': 'europe', 'eun1': 'europe', 'tr1': 'europe', 'ru': 'europe',
+        'oc1': 'sea'
     };
     return map[platform.toLowerCase()] || 'americas';
 };
@@ -120,7 +128,7 @@ app.get('/api/debug/riot', async (req, res) => {
         return res.status(401).json({ error: 'Debug token required.' });
     }
 
-    const platform = req.query.region || 'kr';
+    const platform = normalizePlatform(req.query.region, 'kr');
 
     try {
         const statusUrl = `https://${platform}.api.riotgames.com/lol/status/v4/platform-data`;
@@ -146,7 +154,7 @@ app.get('/api/debug/riot', async (req, res) => {
 // API 1: Get Player Profile
 app.get('/api/player/:name/:tag', async (req, res) => {
     const { name, tag } = req.params;
-    const platform = req.query.region || 'na1';
+    const platform = normalizePlatform(req.query.region, 'na1');
     const region = getBroadRegion(platform);
 
     try {
@@ -219,7 +227,7 @@ app.get('/api/player/:name/:tag', async (req, res) => {
 // API 2: Matches
 app.get('/api/matches/:puuid', async (req, res) => {
     const { puuid } = req.params;
-    const platform = req.query.region || 'na1'; 
+    const platform = normalizePlatform(req.query.region, 'na1'); 
     const region = getBroadRegion(platform);
 
     try {
@@ -238,7 +246,7 @@ app.get('/api/matches/:puuid', async (req, res) => {
 // API 3: Live Game
 app.get('/api/live/:puuid', async (req, res) => {
     const { puuid } = req.params;
-    const platform = req.query.region || 'na1';
+    const platform = normalizePlatform(req.query.region, 'na1');
     
     try {
         const url = `https://${platform}.api.riotgames.com/lol/spectator/v5/active-games/by-summoner/${puuid}`;
@@ -283,7 +291,7 @@ app.get('/api/live/:puuid', async (req, res) => {
 
 // API 4: Server Status & Free Rotation
 app.get('/api/status', async (req, res) => {
-    const platform = req.query.region || 'na1'; 
+    const platform = normalizePlatform(req.query.region, 'na1'); 
     try {
         const statusUrl = `https://${platform}.api.riotgames.com/lol/status/v4/platform-data`;
         const statusData = await riotRequest(statusUrl);
@@ -301,22 +309,26 @@ app.get('/api/status', async (req, res) => {
     }
 });
 
-// API 5: Challenger Leaderboard
+// API 5: Region-aware ranked ladder
 app.get('/api/leaderboard', async (req, res) => {
-    const platform = req.query.region || 'na1';
+    const platform = normalizePlatform(req.query.region, 'na1');
     const region = getBroadRegion(platform);
-    
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 100, 1), 200);
+    const queue = req.query.queue || 'RANKED_SOLO_5x5';
+    const tier = req.query.tier || 'challenger';
+
     try {
-        const url = `https://${platform}.api.riotgames.com/lol/league/v4/challengerleagues/by-queue/RANKED_SOLO_5x5`;
+        const url = `https://${platform}.api.riotgames.com/lol/league/v4/${tier}leagues/by-queue/${queue}`;
         const data = await riotRequest(url);
+        const entries = Array.isArray(data.entries) ? data.entries : [];
         
-        const topPlayers = data.entries
+        const topPlayers = entries
             .sort((a, b) => b.leaguePoints - a.leaguePoints)
-            .slice(0, 10);
+            .slice(0, limit);
 
         const enrichedPlayers = await Promise.all(topPlayers.map(async (player) => {
             if (!player.summonerId) {
-                return { ...player, gameName: "Unknown User", tagLine: "???" };
+                return { ...player, gameName: player.summonerName || 'Unknown User', tagLine: '' };
             }
 
             try {
@@ -328,25 +340,36 @@ app.get('/api/leaderboard', async (req, res) => {
 
                 return {
                     ...player,
-                    gameName: accData.gameName,
-                    tagLine: accData.tagLine
+                    puuid: sumData.puuid,
+                    gameName: accData.gameName || player.summonerName || 'Hidden User',
+                    tagLine: accData.tagLine || ''
                 };
             } catch (err) {
-                return { ...player, gameName: "Hidden User", tagLine: "" };
+                return { ...player, gameName: player.summonerName || 'Hidden User', tagLine: '' };
             }
         }));
 
-        res.json(enrichedPlayers);
+        res.json({
+            meta: {
+                region: platform,
+                broadRegion: region,
+                queue,
+                tier: String(tier).toUpperCase(),
+                totalEntries: entries.length,
+                returned: enrichedPlayers.length
+            },
+            players: enrichedPlayers
+        });
     } catch (error) {
         console.error("Leaderboard error:", error.message);
-        sendRiotError(res, error, "Failed to fetch challenger leaderboard.");
+        sendRiotError(res, error, `Failed to fetch ${tier} ladder for ${platform.toUpperCase()}.`);
     }
 });
 
 // API 6: Match Timeline
 app.get('/api/match/:matchId/timeline', async (req, res) => {
     const { matchId } = req.params;
-    const platform = req.query.region || 'na1'; 
+    const platform = normalizePlatform(req.query.region, 'na1'); 
     const region = getBroadRegion(platform);
     
     try {

@@ -20,15 +20,9 @@ import MatchInsightMini from './MatchInsightMini';
 import MatchDetailPage from './MatchDetailPage';
 import ShareableReportCard from './ShareableReportCard';
 import { analyzePlayerIntelligence } from './intelligence';
+import { REGION_OPTIONS } from './regions';
 
 const DDRAGON_IMG = 'https://ddragon.leagueoflegends.com/cdn/img';
-const REGION_OPTIONS = [
-  { value: 'na1', label: 'NA' },
-  { value: 'kr', label: 'KR' },
-  { value: 'euw1', label: 'EUW' },
-  { value: 'br1', label: 'BR' }
-];
-
 const readStorage = (key, fallback) => {
   try {
     const value = localStorage.getItem(key);
@@ -141,7 +135,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
 
   const getCsColor = (csPerMin) => {
     if (csPerMin >= 9) return 'text-yellow-400 font-bold drop-shadow-md';
-    if (csPerMin >= 7.5) return 'text-blue-400 font-bold';
+    if (csPerMin >= 7.5) return 'text-red-300 font-bold';
     if (csPerMin >= 6) return 'text-green-400';
     return 'text-gray-500';
   };
@@ -375,7 +369,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
   return (
     <div className="min-h-screen text-gray-200">
       <div className="mx-auto max-w-7xl p-4 md:p-6 lg:p-8">
-        <div className="crexus-card crexus-grid-bg mb-8 rounded-[32px] border border-red-500/10 p-5 md:p-7">
+        <div className="crexus-card mb-8 rounded-[32px] border border-red-500/10 p-5 md:p-7">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="flex items-start gap-4">
               <div className="rounded-3xl border border-red-500/20 bg-red-500/10 p-3 shadow-[0_0_40px_rgba(239,68,68,0.12)]">
@@ -383,10 +377,10 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
               </div>
               <div>
                 <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Crexus v0.4.4</div>
-                <h1 className="mt-2 text-3xl font-black tracking-tight text-white md:text-4xl">League Intelligence Platform</h1>
+                <h1 className="mt-2 text-3xl font-black tracking-tight text-white md:text-4xl">Game Stats & Information Platform</h1>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-400 md:text-base">
-                  Red-themed, sharper, and more product-like. Search players, scout lobbies, analyze live games, drill into match details,
-                  and generate shareable Crexus reports.
+                  A dark, red-accented hub for game stats, player profiles, lobby scouting, live match reads, match details,
+                  and shareable Crexus reports.
                 </p>
               </div>
             </div>
@@ -435,7 +429,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
               Lobby
             </button>
             <button onClick={onLeaderboardClick} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-black uppercase tracking-[0.18em] text-yellow-300 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
-              Top 100
+              Ladder
             </button>
           </div>
         </div>
@@ -703,7 +697,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                   onClick={() => { setProfileTab('overview'); setDetailMatchId(null); }}
                   className={`flex-1 rounded-2xl px-4 py-3 text-sm font-black uppercase tracking-[0.18em] transition ${profileTab === 'overview' ? 'bg-red-600 text-white shadow-[0_0_18px_rgba(239,68,68,0.35)]' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
                 >
-                  Overview Intelligence
+                  Player Overview
                 </button>
                 <button
                   onClick={() => setProfileTab('matches')}
@@ -732,7 +726,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                       <div className="crexus-card rounded-[28px] p-5 md:p-6">
                         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                           <div>
-                            <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">v0.4.2 Match Detail Page</div>
+                            <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">Match Detail Page</div>
                             <h3 className="mt-1 text-2xl font-black text-white">Previous Matches</h3>
                             <p className="mt-2 text-sm text-gray-400">Open any match to drill into a dedicated review page with lane timeline, death heatmap, and team scoreboards.</p>
                           </div>
@@ -777,16 +771,16 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                       }));
 
                       const cardClasses = isWin
-                        ? 'border-l-blue-400 bg-gradient-to-r from-blue-900/10 to-[#161d23]'
+                        ? 'border-l-blue-400 bg-gradient-to-r from-red-950/10 to-[#161d23]'
                         : 'border-l-red-500 bg-gradient-to-r from-red-900/10 to-[#161d23]';
-                      const textClasses = isWin ? 'text-blue-300' : 'text-red-300';
+                      const textClasses = isWin ? 'text-red-200' : 'text-red-300';
 
                       return (
                         <div key={match.metadata.matchId} className="transition-all duration-300">
                           <div className={`relative cursor-pointer rounded-2xl border-l-[6px] border-y border-r border-white/6 p-4 shadow-md hover:bg-white/[0.03] ${cardClasses}`} onClick={() => toggleMatch(match.metadata.matchId)}>
                             <div className="flex flex-col gap-4 md:flex-row md:items-center">
                               <div className="w-full md:w-28 text-left">
-                                <div className={`mb-1 text-xs font-bold uppercase tracking-[0.18em] opacity-80 ${isWin ? 'text-blue-400' : 'text-red-400'}`}>{formatQueue(queueName)}</div>
+                                <div className={`mb-1 text-xs font-bold uppercase tracking-[0.18em] opacity-80 ${isWin ? 'text-red-300' : 'text-red-400'}`}>{formatQueue(queueName)}</div>
                                 <div className={`flex items-center gap-2 text-lg font-black ${textClasses}`}>
                                   {isWin ? 'VICTORY' : 'DEFEAT'}
                                   {isSurrender && <span className="rounded bg-gray-700 px-1 text-[9px] text-gray-300">FF</span>}
@@ -823,7 +817,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                                 </div>
                                 <div className="mt-1 text-xs text-gray-400">
                                   <span className="text-gray-500">KDA: </span>
-                                  <span className={((participant.kills + participant.assists) / (participant.deaths || 1)) > 3 ? 'font-bold text-blue-300' : 'text-gray-300'}>
+                                  <span className={((participant.kills + participant.assists) / (participant.deaths || 1)) > 3 ? 'font-bold text-red-200' : 'text-gray-300'}>
                                     {((participant.kills + participant.assists) / (participant.deaths || 1)).toFixed(2)}
                                   </span>
                                 </div>

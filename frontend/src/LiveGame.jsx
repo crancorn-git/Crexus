@@ -38,7 +38,7 @@ export default function LiveGame({ puuid, region, onBack }) {
         setChamps(champMap);
 
         const res = await axios.get(`${API_BASE}/api/live/${puuid}?region=${region}`);
-        setScoutStatus("Building intelligence tags...");
+        setScoutStatus("Building player read tags...");
 
         const enrichedParticipants = await Promise.all(res.data.participants.map(async (participant) => {
           try {
@@ -77,7 +77,7 @@ export default function LiveGame({ puuid, region, onBack }) {
   };
 
   // --- RENDER ---
-  if (loading) return <div className="text-center text-blue-400 animate-pulse mt-20 text-2xl font-bold">SCOUTING RIFT...{scoutStatus && <div className="text-sm text-gray-400 mt-2">{scoutStatus}</div>}</div>;
+  if (loading) return <div className="text-center text-red-300 animate-pulse mt-20 text-2xl font-bold">SCOUTING RIFT...{scoutStatus && <div className="text-sm text-gray-400 mt-2">{scoutStatus}</div>}</div>;
   if (error) return <div className="text-center mt-20 text-red-500 font-bold text-xl">{error}</div>;
 
   return (
@@ -132,10 +132,10 @@ function MatchupTipsBox({ participants, userChamp, champs }) {
     if (!activeTip) return null;
 
     return (
-        <div className="bg-gradient-to-r from-blue-900/40 to-purple-900/40 border border-blue-500/30 p-4 rounded-xl mb-8 flex items-start gap-4">
+        <div className="bg-gradient-to-r from-red-950/40 to-[#181b22] border border-red-500/30 p-4 rounded-xl mb-8 flex items-start gap-4">
             <div className="text-2xl">💡</div>
             <div>
-                <h3 className="text-blue-300 font-bold text-sm uppercase tracking-widest mb-1">Matchup Tip: vs {enemyChampName}</h3>
+                <h3 className="text-red-200 font-bold text-sm uppercase tracking-widest mb-1">Matchup Tip: vs {enemyChampName}</h3>
                 <p className="text-white font-medium">{activeTip}</p>
             </div>
         </div>
@@ -144,8 +144,8 @@ function MatchupTipsBox({ participants, userChamp, champs }) {
 
 function TeamList({ teamId, participants, color, getSpellIcon, champs, ddragonImg }) {
   const team = participants.filter(p => p.teamId === teamId);
-  const borderColor = color === 'blue' ? 'border-blue-500' : 'border-red-500';
-  const textColor = color === 'blue' ? 'text-blue-400' : 'text-red-400';
+  const borderColor = color === 'blue' ? 'border-red-500' : 'border-red-500';
+  const textColor = color === 'blue' ? 'text-red-300' : 'text-red-400';
 
   return (
     <div className="space-y-3">
@@ -170,7 +170,7 @@ function TeamList({ teamId, participants, color, getSpellIcon, champs, ddragonIm
             <div className="flex gap-1 mt-2 flex-wrap">
                 {p.tags && p.tags.map(tag => {
                     let colorClass = "bg-gray-700 text-gray-300";
-                    if (tag === "SMURF") colorClass = "bg-blue-600 text-white";
+                    if (tag === "SMURF") colorClass = "bg-red-600 text-white";
                     if (tag === "GOD" || tag === "OTP") colorClass = "bg-yellow-600 text-black";
                     if (tag === "TILTED") colorClass = "bg-red-600 text-white animate-pulse";
                     if (tag === "NEW") colorClass = "bg-green-600 text-white";

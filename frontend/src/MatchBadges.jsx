@@ -2,13 +2,13 @@
 
 const BADGE_STYLES = {
   gold: 'bg-yellow-500/95 text-black border-yellow-300',
-  purple: 'bg-purple-600/95 text-white border-purple-400',
+  purple: 'bg-red-700/95 text-white border-red-400',
   red: 'bg-red-600/95 text-white border-red-400',
-  blue: 'bg-blue-600/95 text-white border-blue-400',
+  blue: 'bg-red-600/95 text-white border-red-400',
   green: 'bg-green-600/95 text-white border-green-400',
   gray: 'bg-gray-600/95 text-white border-gray-400',
   orange: 'bg-orange-600/95 text-white border-orange-400',
-  cyan: 'bg-cyan-600/95 text-white border-cyan-400',
+  cyan: 'bg-red-800/95 text-white border-red-500',
   emerald: 'bg-emerald-600/95 text-white border-emerald-400',
   pink: 'bg-pink-600/95 text-white border-pink-400',
   slate: 'bg-slate-700/95 text-white border-slate-500',
