@@ -6,6 +6,7 @@ import { IntelligencePills, IntelligenceMiniRead } from './IntelligencePills';
 import { ScoutTeamRead } from './ScoutTeamRead';
 import { REGION_OPTIONS } from './regions';
 
+import { BackButton } from './CrexusShell';
 export default function Lobby({ onBack }) {
   const [text, setText] = useState('');
   const [region, setRegion] = useState('na1');
@@ -53,9 +54,7 @@ export default function Lobby({ onBack }) {
         <div className="crexus-card mb-6 rounded-[32px] border border-red-500/10 p-5 md:p-7">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
-              <button onClick={onBack} className="mb-5 text-sm font-black uppercase tracking-[0.18em] text-gray-400 transition hover:text-white">
-                ← Back
-              </button>
+              <BackButton onClick={onBack} />
               <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Crexus Lobby Scout</div>
               <h1 className="mt-2 text-3xl font-black tracking-tight text-white md:text-4xl">Scout a lobby before queue locks in</h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-400">

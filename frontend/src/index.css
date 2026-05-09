@@ -69,3 +69,116 @@ body {
   box-shadow: 0 0 0 1px rgba(239,68,68,0.25), 0 0 30px rgba(239,68,68,0.18);
 }
 
+
+.crexus-page {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+@media (min-width: 768px) {
+  .crexus-page { padding: 1.5rem; }
+}
+
+@media (min-width: 1024px) {
+  .crexus-page { padding: 2rem; }
+}
+
+.crexus-page-title {
+  font-size: clamp(1.75rem, 3vw, 2.65rem);
+  line-height: 1.05;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  color: white;
+}
+
+.crexus-kicker {
+  font-size: 0.7rem;
+  line-height: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgb(252 165 165);
+}
+
+.crexus-copy {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: rgb(156 163 175);
+}
+
+.crexus-btn {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 1rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.76rem;
+  line-height: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: all 160ms ease;
+  white-space: nowrap;
+}
+
+.crexus-btn-primary {
+  background: rgb(220 38 38);
+  color: white;
+  box-shadow: 0 0 22px rgba(239,68,68,0.28);
+}
+
+.crexus-btn-primary:hover { background: rgb(239 68 68); }
+
+.crexus-btn-secondary {
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  color: rgb(229 231 235);
+}
+
+.crexus-btn-secondary:hover {
+  border-color: rgba(239,68,68,0.32);
+  background: rgba(239,68,68,0.1);
+  color: white;
+}
+
+.crexus-back-btn {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.05);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(209 213 219);
+  transition: all 160ms ease;
+  white-space: nowrap;
+}
+
+.crexus-back-btn:hover {
+  border-color: rgba(239,68,68,0.35);
+  background: rgba(239,68,68,0.12);
+  color: white;
+}
+
+.crexus-input {
+  width: 100%;
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: #0b0d12;
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  color: white;
+  outline: none;
+  transition: border-color 160ms ease;
+}
+
+.crexus-input::placeholder { color: rgb(107 114 128); }
+.crexus-input:focus { border-color: rgba(239,68,68,0.42); }

@@ -7,6 +7,7 @@ import PlayerCompare from './PlayerCompare';
 import ChampionInsights from './ChampionInsights';
 import AccountDashboard from './AccountDashboard';
 import BackendStatus from './BackendStatus';
+import CrexusShell from './CrexusShell';
 
 function App() {
   const [view, setView] = useState('profile'); // profile, live, lobby, leaderboard, compare, champions, dashboard
@@ -23,8 +24,13 @@ function App() {
     setView('profile');
   };
 
+  const navigate = (target) => {
+    if (target === 'profile') setProfileTarget(null);
+    setView(target);
+  };
+
   return (
-    <div>
+    <CrexusShell activeView={view} onNavigate={navigate}>
       <BackendStatus />
       {view === 'profile' && (
         <PlayerProfile 
@@ -62,7 +68,7 @@ function App() {
           onCompareClick={() => setView('compare')}
         />
       )}
-    </div>
+    </CrexusShell>
   );
 }
 

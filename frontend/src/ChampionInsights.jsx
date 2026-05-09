@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useDDragonVersion } from './ddragon';
 
+import { BackButton } from './CrexusShell';
 const laneOrder = ['TOP', 'JUNGLE', 'MIDDLE', 'BOTTOM', 'UTILITY'];
 const roleLabel = { TOP: 'Top', JUNGLE: 'Jungle', MIDDLE: 'Mid', BOTTOM: 'ADC', UTILITY: 'Support' };
 const safePct = (wins, games) => (games ? Math.round((wins / games) * 100) : 0);
@@ -209,7 +210,7 @@ export default function ChampionInsights({ onBack, playerData = null, matches = 
               <div className="mt-1 text-[11px] font-black uppercase tracking-[0.28em] text-red-300">v0.6 · Champion Insights & Draft Tools</div>
             </div>
           </div>
-          {onBack && <button onClick={onBack} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-black uppercase tracking-[0.18em] text-gray-200 hover:border-red-500/30 hover:bg-red-500/10">← Back</button>}
+          <BackButton onClick={onBack} />
         </header>
 
         <div className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-[0.8fr_1.2fr]">

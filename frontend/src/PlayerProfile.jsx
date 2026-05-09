@@ -427,21 +427,25 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
 
   return (
     <div className="min-h-screen text-gray-200">
-      <div className="mx-auto max-w-7xl p-4 md:p-6 lg:p-8">
-        <header className="mb-6 flex items-center gap-4 px-1 py-2">
-          <img src="/crexus-logo.png" alt="Crexus logo" className="h-12 w-12 rounded-2xl object-contain shadow-[0_0_28px_rgba(239,68,68,0.18)]" />
-          <div>
-            <h1 className="text-3xl font-black uppercase tracking-[0.18em] text-white md:text-4xl">Crexus</h1>
-            <div className="mt-1 text-[11px] font-black uppercase tracking-[0.28em] text-red-300">v0.7 · Game Stats & Information</div>
-          </div>
+      <div className="crexus-page">
+        <header className="mb-5 px-1 py-2">
+          <div className="crexus-kicker">v0.7.1 · Game Stats & Information</div>
+          <h1 className="crexus-page-title mt-2">Scout Search</h1>
+          <p className="crexus-copy mt-2 max-w-3xl">Search a player, review their profile, then use the sidebar for Dashboard, Compare, Champions, Lobby Scout, and Ladder.</p>
         </header>
 
-        <div className="mb-8 rounded-[28px] border border-white/8 bg-[#12141b]/95 p-3 shadow-2xl md:p-4">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
+        <div className="mb-8 rounded-[24px] border border-white/8 bg-[#12141b]/95 p-4 shadow-2xl md:p-5">
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <div>
+              <div className="crexus-kicker">Scout search</div>
+              <div className="mt-1 text-sm text-gray-500">This is separated from the app navigation so the buttons do not crowd the search bar.</div>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-[180px_1fr_auto] md:items-center">
             <select
               value={region}
               onChange={(e) => setRegion(e.target.value)}
-              className="rounded-2xl border border-white/10 bg-[#0b0d12] px-4 py-4 text-sm font-black uppercase tracking-[0.18em] text-white outline-none transition hover:border-red-500/30"
+              className="crexus-input text-sm font-black uppercase tracking-[0.12em]"
             >
               {REGION_OPTIONS.map((option) => (
                 <option key={option.value} value={option.value}>{option.label}</option>
@@ -449,30 +453,15 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
             </select>
 
             <input
-              className="w-full rounded-2xl border border-white/10 bg-transparent px-5 py-4 text-base text-white outline-none placeholder:text-gray-500 focus:border-red-500/30"
+              className="crexus-input"
               placeholder="Search a player using GameName#Tag"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && searchPlayer()}
             />
 
-            <button onClick={() => searchPlayer()} className="rounded-2xl bg-red-600 px-8 py-4 text-sm font-black uppercase tracking-[0.2em] text-white shadow-[0_0_26px_rgba(239,68,68,0.35)] transition hover:bg-red-500">
+            <button onClick={() => searchPlayer()} className="crexus-btn crexus-btn-primary px-7">
               Scout
-            </button>
-            <button onClick={onDashboardClick} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
-              Dashboard
-            </button>
-            <button onClick={onCompareClick} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
-              Compare
-            </button>
-            <button onClick={onChampionsClick} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
-              Champions
-            </button>
-            <button onClick={onLobbyClick} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
-              Lobby
-            </button>
-            <button onClick={onLeaderboardClick} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-black uppercase tracking-[0.18em] text-yellow-300 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
-              Ladder
             </button>
           </div>
         </div>

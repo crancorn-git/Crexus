@@ -10,6 +10,7 @@ import { EnemyMatchupRead, DuoSynergyRead } from './LiveVersusTools';
 
 
 
+import { BackButton } from './CrexusShell';
 export default function LiveGame({ puuid, region, onBack }) {
   const ddragonVersion = useDDragonVersion();
   const ddragonImg = `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}/img`;
@@ -86,7 +87,7 @@ export default function LiveGame({ puuid, region, onBack }) {
 
   return (
     <div className="max-w-7xl mx-auto p-6 animate-in fade-in zoom-in duration-300">
-      <button onClick={onBack} className="mb-6 text-gray-400 hover:text-white flex items-center gap-2">← Back</button>
+      <BackButton onClick={onBack} />
 
       {/* HEADER */}
       <div className="flex flex-col md:flex-row justify-between items-end mb-8 border-b border-gray-800 pb-6">

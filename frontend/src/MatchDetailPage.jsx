@@ -4,6 +4,7 @@ import DeathHeatmap from './DeathHeatmap';
 import MatchBadges from './MatchBadges';
 import MatchInsightMini from './MatchInsightMini';
 
+import { BackButton } from './CrexusShell';
 function StatChip({ label, value, tone = 'neutral' }) {
   const toneClass = {
     good: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200',
@@ -73,9 +74,7 @@ export default function MatchDetailPage({
       <div className="crexus-card rounded-3xl p-5 md:p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
           <div>
-            <button onClick={onBack} className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-gray-300 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
-              ← Back to matches
-            </button>
+            <BackButton onClick={onBack} label="Back to matches" />
             <div className="text-xs uppercase tracking-[0.24em] text-gray-500">Focused Match Review</div>
             <h2 className="mt-2 text-2xl font-black text-white md:text-3xl">{queueName}</h2>
             <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-gray-400">

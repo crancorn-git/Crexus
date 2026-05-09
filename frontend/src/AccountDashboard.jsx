@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { REGION_OPTIONS } from './regions';
 
+import { BackButton } from './CrexusShell';
 const readStorage = (key, fallback) => {
   try {
     const value = localStorage.getItem(key);
@@ -217,10 +218,10 @@ export default function AccountDashboard({ onBack, onOpenAccount, onCompareClick
             <img src="/crexus-logo.png" alt="Crexus logo" className="h-12 w-12 rounded-2xl object-contain shadow-[0_0_28px_rgba(239,68,68,0.18)]" />
             <div>
               <h1 className="text-3xl font-black uppercase tracking-[0.18em] text-white md:text-4xl">Crexus</h1>
-              <div className="mt-1 text-[11px] font-black uppercase tracking-[0.28em] text-red-300">v0.7 · Account Tracking</div>
+              <div className="mt-1 text-[11px] font-black uppercase tracking-[0.28em] text-red-300">v0.7.1 · Account Tracking</div>
             </div>
           </div>
-          <button onClick={onBack} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 text-sm font-black uppercase tracking-[0.18em] text-gray-300 hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">Back</button>
+          <BackButton onClick={onBack} />
         </header>
 
         <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-4">
