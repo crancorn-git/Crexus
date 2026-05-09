@@ -13,6 +13,11 @@ import PlayerIntelligenceCard from './PlayerIntelligenceCard';
 import PerformanceTrends from './PerformanceTrends';
 import ChampionPool from './ChampionPool';
 import ObjectiveControl from './ObjectiveControl';
+import LanePhaseAnalysis from './LanePhaseAnalysis';
+import TimelineIntelligence from './TimelineIntelligence';
+import CrexusReport from './CrexusReport';
+import MatchDetailRead from './MatchDetailRead';
+import MatchInsightMini from './MatchInsightMini';
 import { analyzePlayerIntelligence } from './intelligence';
 
 const DDRAGON_IMG = `https://ddragon.leagueoflegends.com/cdn/img`;
@@ -30,6 +35,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
   const [expandedMatch, setExpandedMatch] = useState(null);
   const [recentSearches, setRecentSearches] = useState([]);
   const [serverData, setServerData] = useState(null);
+  const [profileTab, setProfileTab] = useState('overview');
 
   // Static Data
   const [queues, setQueues] = useState({});
@@ -157,7 +163,8 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
 
   const searchPlayer = async (manualName, manualTag, manualRegion) => {
     setLoading(true);
-    setExpandedMatch(null); 
+    setExpandedMatch(null);
+    setProfileTab('overview'); 
     
     let searchName, searchTag, searchRegion;
 
@@ -396,13 +403,39 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
 
           </div>
 
-          {/* RIGHT COL: INTELLIGENCE + MATCH HISTORY */}
+          {/* RIGHT COL: PROFILE TABS */}
           <div className="lg:col-span-3 space-y-4">
-            <PlayerIntelligenceCard intelligence={intelligence} />
-            <PerformanceTrends matches={matches} puuid={data.account.puuid} />
-            <ChampionPool matches={matches} puuid={data.account.puuid} ddragonBase={ddragonBase} />
-            <ObjectiveControl matches={matches} puuid={data.account.puuid} />
-            <h2 className="text-xl font-bold mb-4 text-gray-400 uppercase tracking-wider pl-1">Recent Matches</h2>
+            <div className="bg-[#161d23] border border-gray-800 rounded-2xl p-2 flex gap-2 sticky top-4 z-20 shadow-xl">
+              <button
+                onClick={() => setProfileTab('overview')}
+                className={`flex-1 px-4 py-3 rounded-xl font-black uppercase tracking-wide text-sm transition ${profileTab === 'overview' ? 'bg-red-600 text-white shadow-[0_0_18px_rgba(220,38,38,0.35)]' : 'bg-transparent text-gray-400 hover:bg-[#1f2933] hover:text-white'}`}
+              >
+                Overview Intelligence
+              </button>
+              <button
+                onClick={() => setProfileTab('matches')}
+                className={`flex-1 px-4 py-3 rounded-xl font-black uppercase tracking-wide text-sm transition ${profileTab === 'matches' ? 'bg-red-600 text-white shadow-[0_0_18px_rgba(220,38,38,0.35)]' : 'bg-transparent text-gray-400 hover:bg-[#1f2933] hover:text-white'}`}
+              >
+                Previous Matches
+              </button>
+            </div>
+
+            {profileTab === 'overview' && (
+              <div className="space-y-4">
+                <CrexusReport intelligence={intelligence} matches={matches} puuid={data.account.puuid} />
+                <PlayerIntelligenceCard intelligence={intelligence} />
+                <LanePhaseAnalysis matches={matches} puuid={data.account.puuid} />
+                <TimelineIntelligence matches={matches} puuid={data.account.puuid} />
+                <PerformanceTrends matches={matches} puuid={data.account.puuid} />
+                <ChampionPool matches={matches} puuid={data.account.puuid} ddragonBase={ddragonBase} />
+                <ObjectiveControl matches={matches} puuid={data.account.puuid} />
+              </div>
+            )}
+
+            {profileTab === 'matches' && (
+              <div className="space-y-4">
+            <h2 className="text-xl font-bold mb-4 text-gray-400 uppercase tracking-wider pl-1">Previous Matches</h2>
+            <MatchDetailRead matches={matches} puuid={data.account.puuid} />
             
             {matches.map((match) => {
               const participant = match.info.participants.find(p => p.puuid === data.account.puuid);
@@ -462,6 +495,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                         <div className="flex-1 text-center md:text-left pl-4">
                             {/* MATCH BADGES */}
                             <MatchBadges match={match} puuid={data.account.puuid} />
+                            <MatchInsightMini matches={matches} puuid={data.account.puuid} matchId={match.metadata.matchId} />
 
                             <div className="text-white font-bold text-xl tracking-wide leading-none">
                                 {participant.kills} <span className="text-gray-600">/</span> <span className="text-red-400">{participant.deaths}</span> <span className="text-gray-600">/</span> {participant.assists}
@@ -534,6 +568,8 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                 </div>
               );
             })}
+              </div>
+            )}
           </div>
         </div>
       )}
