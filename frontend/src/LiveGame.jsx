@@ -6,6 +6,7 @@ import { getMatchupTip } from './MatchupTips'; // Import your tips
 import { analyzePlayerIntelligence } from './intelligence';
 import { IntelligencePills, IntelligenceMiniRead } from './IntelligencePills';
 import { LiveTeamComparison } from './ScoutTeamRead';
+import { EnemyMatchupRead, DuoSynergyRead } from './LiveVersusTools';
 
 
 
@@ -48,8 +49,9 @@ export default function LiveGame({ puuid, region, onBack }) {
               ranks: participant.ranks || [],
               mastery: participant.mastery ? [{ championPoints: participant.mastery }] : []
             };
-            const intelligence = analyzePlayerIntelligence({ matches: matchRes.data || [], playerData });
-            return { ...participant, intelligence };
+            const recentMatches = matchRes.data || [];
+            const intelligence = analyzePlayerIntelligence({ matches: recentMatches, playerData });
+            return { ...participant, intelligence, recentMatches };
           } catch {
             return { ...participant, intelligence: null };
           }
@@ -96,6 +98,9 @@ export default function LiveGame({ puuid, region, onBack }) {
       <MatchupTipsBox participants={game.participants} userChamp={userChampName} champs={champs} ddragonImg={ddragonImg} />
 
       <LiveTeamComparison participants={game.participants} />
+
+      <EnemyMatchupRead participants={game.participants} />
+      <DuoSynergyRead participants={game.participants} />
 
       {/* TEAMS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">

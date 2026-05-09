@@ -3,10 +3,11 @@ import PlayerProfile from './PlayerProfile';
 import LiveGame from './LiveGame';
 import Lobby from './Lobby';
 import Leaderboard from './Leaderboard';
+import PlayerCompare from './PlayerCompare';
 import BackendStatus from './BackendStatus';
 
 function App() {
-  const [view, setView] = useState('profile'); // profile, live, lobby, leaderboard
+  const [view, setView] = useState('profile'); // profile, live, lobby, leaderboard, compare
   const [liveData, setLiveData] = useState(null); 
 
   const handleOpenLive = (puuid, region) => {
@@ -21,7 +22,8 @@ function App() {
         <PlayerProfile 
             onLiveClick={handleOpenLive} 
             onLobbyClick={() => setView('lobby')}
-            onLeaderboardClick={() => setView('leaderboard')} // <-- Pass new prop
+            onLeaderboardClick={() => setView('leaderboard')}
+            onCompareClick={() => setView('compare')}
         />
       )}
 
@@ -37,6 +39,8 @@ function App() {
       
       {/* NEW VIEW */}
       {view === 'leaderboard' && <Leaderboard onBack={() => setView('profile')} />}
+
+      {view === 'compare' && <PlayerCompare onBack={() => setView('profile')} />}
     </div>
   );
 }

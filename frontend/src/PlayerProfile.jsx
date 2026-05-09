@@ -32,7 +32,7 @@ const readStorage = (key, fallback) => {
   }
 };
 
-export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboardClick }) {
+export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboardClick, onCompareClick }) {
   const ddragonVersion = useDDragonVersion();
   const ddragonBase = `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}`;
 
@@ -290,11 +290,11 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
       displayRank ? `Rank: ${displayRank.tier} ${displayRank.rank} · ${displayRank.leaguePoints} LP` : 'Rank: Unranked',
       `Crexus Score: ${intelligence.crexusScore}/100`,
       `Recent Form: ${intelligence.recentForm}`,
-      `Tilt Risk: ${intelligence.tiltRisk}`,
-      `Smurf Signal: ${intelligence.smurfSignal}`,
-      `One-Trick Risk: ${intelligence.oneTrickRisk}`,
-      `Early Death Risk: ${intelligence.earlyDeathRisk}`,
-      `Main Role: ${intelligence.mainRole}`,
+      `Tilt Risk: ${intelligence.tiltRisk?.label || intelligence.tiltRisk}`,
+      `Smurf Signal: ${intelligence.smurfSignal?.label || intelligence.smurfSignal}`,
+      `One-Trick Risk: ${intelligence.oneTrickRisk?.label || intelligence.oneTrickRisk}`,
+      `Early Death Risk: ${intelligence.earlyDeathRisk?.label || intelligence.earlyDeathRisk}`,
+      `Main Role: ${intelligence.mainRole?.role || intelligence.mainRole}`,
       `Playstyle Tags: ${intelligence.playstyleTags.join(', ')}`,
       '',
       `Summary: ${intelligence.summary}`
@@ -385,21 +385,24 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                 <img src="/crexus-logo.png" alt="Crexus logo" className="h-14 w-14 rounded-2xl object-contain" />
               </div>
               <div>
-                <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Crexus v0.4.4</div>
+                <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Crexus v0.5</div>
                 <h1 className="mt-2 text-3xl font-black tracking-tight text-white md:text-4xl">Game Stats & Information Platform</h1>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-400 md:text-base">
-                  A dark, red-accented hub for game stats, player profiles, lobby scouting, live match reads, match details,
+                  A dark, red-accented hub for game stats, player profiles, lobby scouting, live match reads, versus tools, match details,
                   and shareable Crexus reports.
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
               <button onClick={() => jumpToProfileTab('overview')} className={`rounded-2xl border px-4 py-3 text-sm font-black uppercase tracking-[0.16em] transition ${profileTab === 'overview' ? 'border-red-500/40 bg-red-600/20 text-white shadow-[0_0_18px_rgba(239,68,68,0.18)]' : 'border-white/10 bg-white/5 text-gray-200 hover:border-red-500/30 hover:bg-red-500/10 hover:text-white'}`}>
                 Overview
               </button>
               <button onClick={() => jumpToProfileTab('matches')} className={`rounded-2xl border px-4 py-3 text-sm font-black uppercase tracking-[0.16em] transition ${profileTab === 'matches' ? 'border-red-500/40 bg-red-600/20 text-white shadow-[0_0_18px_rgba(239,68,68,0.18)]' : 'border-white/10 bg-white/5 text-gray-200 hover:border-red-500/30 hover:bg-red-500/10 hover:text-white'}`}>
                 Matches
+              </button>
+              <button onClick={onCompareClick} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
+                Compare
               </button>
               <button onClick={onLobbyClick} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
                 Lobby Scout
@@ -433,6 +436,9 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
 
             <button onClick={() => searchPlayer()} className="rounded-2xl bg-red-600 px-8 py-4 text-sm font-black uppercase tracking-[0.2em] text-white shadow-[0_0_26px_rgba(239,68,68,0.35)] transition hover:bg-red-500">
               Scout
+            </button>
+            <button onClick={onCompareClick} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
+              Compare
             </button>
             <button onClick={onLobbyClick} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
               Lobby
@@ -489,9 +495,9 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                     <div className="mt-1 text-sm text-gray-300">Open a focused match page with timeline, death map, and scoreboards.</div>
                   </div>
                   <div className="rounded-2xl border border-red-500/15 bg-red-500/10 p-4">
-                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-200">0.4.4</div>
-                    <div className="mt-2 text-lg font-black text-white">Share Reports</div>
-                    <div className="mt-1 text-sm text-gray-300">Copy a scout summary or open a printable report card.</div>
+                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-200">0.5.0</div>
+                    <div className="mt-2 text-lg font-black text-white">Player Compare</div>
+                    <div className="mt-1 text-sm text-gray-300">Compare two players using score, form, champion pool, lane and objective reads.</div>
                   </div>
                 </div>
               </div>
