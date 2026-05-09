@@ -6,11 +6,12 @@ import Leaderboard from './Leaderboard';
 import PlayerCompare from './PlayerCompare';
 import ChampionInsights from './ChampionInsights';
 import AccountDashboard from './AccountDashboard';
+import CoachLanding from './CoachLanding';
 import BackendStatus from './BackendStatus';
 import CrexusShell from './CrexusShell';
 
 function App() {
-  const [view, setView] = useState('profile'); // profile, live, lobby, leaderboard, compare, champions, dashboard
+  const [view, setView] = useState('profile'); // profile, live, lobby, leaderboard, compare, champions, dashboard, coach
   const [liveData, setLiveData] = useState(null);
   const [profileTarget, setProfileTarget] = useState(null); 
 
@@ -66,6 +67,13 @@ function App() {
           onBack={() => setView('profile')}
           onOpenAccount={openTrackedAccount}
           onCompareClick={() => setView('compare')}
+        />
+      )}
+
+      {view === 'coach' && (
+        <CoachLanding
+          onBack={() => setView('profile')}
+          onScoutClick={() => setView('profile')}
         />
       )}
     </CrexusShell>

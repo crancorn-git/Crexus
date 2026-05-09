@@ -20,6 +20,7 @@ import MatchInsightMini from './MatchInsightMini';
 import MatchDetailPage from './MatchDetailPage';
 import ShareableReportCard from './ShareableReportCard';
 import ChampionInsights from './ChampionInsights';
+import CoachingLayer from './CoachingLayer';
 import { analyzePlayerIntelligence } from './intelligence';
 import { REGION_OPTIONS } from './regions';
 
@@ -429,7 +430,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
     <div className="min-h-screen text-gray-200">
       <div className="crexus-page">
         <header className="mb-5 px-1 py-2">
-          <div className="crexus-kicker">v0.7.1 · Game Stats & Information</div>
+          <div className="crexus-kicker">v0.8.0 · Game Stats & Information</div>
           <h1 className="crexus-page-title mt-2">Scout Search</h1>
           <p className="crexus-copy mt-2 max-w-3xl">Search a player, review their profile, then use the sidebar for Dashboard, Compare, Champions, Lobby Scout, and Ladder.</p>
         </header>
@@ -723,7 +724,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
             </div>
 
             <div ref={profileContentRef} className="scroll-mt-6 lg:col-span-3 space-y-4">
-              <div className="crexus-card rounded-[28px] p-2 sticky top-4 z-20 flex gap-2">
+              <div className="crexus-card rounded-[28px] p-2 sticky top-4 z-20 flex flex-wrap gap-2">
                 <button
                   onClick={() => jumpToProfileTab('overview')}
                   className={`flex-1 rounded-2xl px-4 py-3 text-sm font-black uppercase tracking-[0.18em] transition ${profileTab === 'overview' ? 'bg-red-600 text-white shadow-[0_0_18px_rgba(239,68,68,0.35)]' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
@@ -742,6 +743,12 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                 >
                   Champion Insights
                 </button>
+                <button
+                  onClick={() => jumpToProfileTab('coach')}
+                  className={`flex-1 rounded-2xl px-4 py-3 text-sm font-black uppercase tracking-[0.18em] transition ${profileTab === 'coach' ? 'bg-red-600 text-white shadow-[0_0_18px_rgba(239,68,68,0.35)]' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
+                >
+                  Coach
+                </button>
               </div>
 
               {profileTab === 'overview' && (
@@ -758,6 +765,10 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
 
               {profileTab === 'champions' && (
                 <ChampionInsights playerData={data} matches={matches} region={region} />
+              )}
+
+              {profileTab === 'coach' && (
+                <CoachingLayer playerData={data} matches={matches} />
               )}
 
               {profileTab === 'matches' && (
