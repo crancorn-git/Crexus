@@ -19,6 +19,7 @@ import MatchDetailRead from './MatchDetailRead';
 import MatchInsightMini from './MatchInsightMini';
 import MatchDetailPage from './MatchDetailPage';
 import ShareableReportCard from './ShareableReportCard';
+import ChampionInsights from './ChampionInsights';
 import { analyzePlayerIntelligence } from './intelligence';
 import { REGION_OPTIONS } from './regions';
 
@@ -32,7 +33,7 @@ const readStorage = (key, fallback) => {
   }
 };
 
-export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboardClick, onCompareClick }) {
+export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboardClick, onCompareClick, onChampionsClick }) {
   const ddragonVersion = useDDragonVersion();
   const ddragonBase = `https://ddragon.leagueoflegends.com/cdn/${ddragonVersion}`;
 
@@ -382,7 +383,7 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
           <img src="/crexus-logo.png" alt="Crexus logo" className="h-12 w-12 rounded-2xl object-contain shadow-[0_0_28px_rgba(239,68,68,0.18)]" />
           <div>
             <h1 className="text-3xl font-black uppercase tracking-[0.18em] text-white md:text-4xl">Crexus</h1>
-            <div className="mt-1 text-[11px] font-black uppercase tracking-[0.28em] text-red-300">v0.5.3 · Game Stats & Information</div>
+            <div className="mt-1 text-[11px] font-black uppercase tracking-[0.28em] text-red-300">v0.6 · Game Stats & Information</div>
           </div>
         </header>
 
@@ -411,6 +412,9 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
             </button>
             <button onClick={onCompareClick} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
               Compare
+            </button>
+            <button onClick={onChampionsClick} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
+              Champions
             </button>
             <button onClick={onLobbyClick} className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm font-black uppercase tracking-[0.18em] text-gray-200 transition hover:border-red-500/30 hover:bg-red-500/10 hover:text-white">
               Lobby
@@ -467,9 +471,9 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                     <div className="mt-1 text-sm text-gray-300">Open a focused match page with timeline, death map, and scoreboards.</div>
                   </div>
                   <div className="rounded-2xl border border-red-500/15 bg-red-500/10 p-4">
-                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-200">0.5.0</div>
-                    <div className="mt-2 text-lg font-black text-white">Player Compare</div>
-                    <div className="mt-1 text-sm text-gray-300">Compare two players using score, form, champion pool, lane and objective reads.</div>
+                    <div className="text-[10px] font-black uppercase tracking-[0.2em] text-red-200">0.6</div>
+                    <div className="mt-2 text-lg font-black text-white">Champion Insights</div>
+                    <div className="mt-1 text-sm text-gray-300">Champion profiles, matchup memory, and draft pick-ban helper are ready before account tracking.</div>
                   </div>
                 </div>
               </div>
@@ -692,6 +696,12 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                 >
                   Previous Matches
                 </button>
+                <button
+                  onClick={() => jumpToProfileTab('champions')}
+                  className={`flex-1 rounded-2xl px-4 py-3 text-sm font-black uppercase tracking-[0.18em] transition ${profileTab === 'champions' ? 'bg-red-600 text-white shadow-[0_0_18px_rgba(239,68,68,0.35)]' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}
+                >
+                  Champion Insights
+                </button>
               </div>
 
               {profileTab === 'overview' && (
@@ -704,6 +714,10 @@ export default function PlayerProfile({ onLiveClick, onLobbyClick, onLeaderboard
                   <ChampionPool matches={matches} puuid={data.account.puuid} ddragonBase={ddragonBase} />
                   <ObjectiveControl matches={matches} puuid={data.account.puuid} />
                 </div>
+              )}
+
+              {profileTab === 'champions' && (
+                <ChampionInsights playerData={data} matches={matches} region={region} />
               )}
 
               {profileTab === 'matches' && (
