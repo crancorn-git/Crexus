@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
 import { API_BASE } from './config';
+import { analyzePlayerIntelligence } from './intelligence';
+import { IntelligencePills, IntelligenceMiniRead } from './IntelligencePills';
 
 // Smart URL detection for localhost vs production
 
@@ -27,7 +29,16 @@ export default function Lobby({ onBack }) {
         try {
             // FIXED URL HERE:
             const res = await axios.get(`${API_BASE}/api/player/${name.trim()}/${tag.trim()}?region=${region}`);
-            return { name: line, data: res.data };
+            let matches = [];
+            try {
+                const matchRes = await axios.get(`${API_BASE}/api/matches/${res.data.account.puuid}?region=${region}`);
+                matches = matchRes.data || [];
+            } catch {
+                matches = [];
+            }
+
+            const intelligence = analyzePlayerIntelligence({ matches, playerData: res.data });
+            return { name: line, data: res.data, intelligence };
         } catch {
             return { name: line, error: "Not Found" };
         }
@@ -80,12 +91,18 @@ export default function Lobby({ onBack }) {
                 {res.error ? (
                     <span className="text-red-500 font-bold">{res.error}</span>
                 ) : (
-                    <div className="text-right">
-                        <div className="text-green-400 font-bold text-xl">
-                            {res.data.ranks[0] ? `${res.data.ranks[0].tier} ${res.data.ranks[0].rank}` : "Unranked"}
+                    <div className="flex flex-col md:flex-row md:items-center gap-4 w-full justify-between">
+                        <div className="min-w-0">
+                            <IntelligencePills intelligence={res.intelligence} />
+                            <IntelligenceMiniRead intelligence={res.intelligence} />
                         </div>
-                        <div className="text-xs text-gray-500">
-                            Level {res.data.summoner.summonerLevel}
+                        <div className="text-right shrink-0">
+                            <div className="text-green-400 font-bold text-xl">
+                                {res.data.ranks[0] ? `${res.data.ranks[0].tier} ${res.data.ranks[0].rank}` : "Unranked"}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                                Level {res.data.summoner.summonerLevel}
+                            </div>
                         </div>
                     </div>
                 )}

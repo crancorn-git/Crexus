@@ -3,6 +3,8 @@ import axios from 'axios';
 import { API_BASE } from './config';
 import { useDDragonVersion } from './ddragon';
 import { getMatchupTip } from './MatchupTips'; // Import your tips
+import { analyzePlayerIntelligence } from './intelligence';
+import { IntelligencePills, IntelligenceMiniRead } from './IntelligencePills';
 
 
 
@@ -16,6 +18,7 @@ export default function LiveGame({ puuid, region, onBack }) {
   const [spells, setSpells] = useState({});
   const [champs, setChamps] = useState({});
   const [userChampName, setUserChampName] = useState("");
+  const [scoutStatus, setScoutStatus] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,10 +37,29 @@ export default function LiveGame({ puuid, region, onBack }) {
         setChamps(champMap);
 
         const res = await axios.get(`${API_BASE}/api/live/${puuid}?region=${region}`);
-        setGame(res.data);
+        setScoutStatus("Building intelligence tags...");
+
+        const enrichedParticipants = await Promise.all(res.data.participants.map(async (participant) => {
+          try {
+            const matchRes = await axios.get(`${API_BASE}/api/matches/${participant.puuid}?region=${region}`);
+            const playerData = {
+              summoner: { summonerLevel: participant.summonerLevel || null },
+              ranks: participant.ranks || [],
+              mastery: participant.mastery ? [{ championPoints: participant.mastery }] : []
+            };
+            const intelligence = analyzePlayerIntelligence({ matches: matchRes.data || [], playerData });
+            return { ...participant, intelligence };
+          } catch {
+            return { ...participant, intelligence: null };
+          }
+        }));
+
+        const enrichedGame = { ...res.data, participants: enrichedParticipants };
+        setGame(enrichedGame);
+        setScoutStatus("");
 
         // Find USER Champion Name for Tips
-        const me = res.data.participants.find(p => p.puuid === puuid);
+        const me = enrichedGame.participants.find(p => p.puuid === puuid);
         if (me) setUserChampName(idToNameMap[me.championId]);
 
       } catch (err) {
@@ -54,7 +76,7 @@ export default function LiveGame({ puuid, region, onBack }) {
   };
 
   // --- RENDER ---
-  if (loading) return <div className="text-center text-blue-400 animate-pulse mt-20 text-2xl font-bold">SCOUTING RIFT...</div>;
+  if (loading) return <div className="text-center text-blue-400 animate-pulse mt-20 text-2xl font-bold">SCOUTING RIFT...{scoutStatus && <div className="text-sm text-gray-400 mt-2">{scoutStatus}</div>}</div>;
   if (error) return <div className="text-center mt-20 text-red-500 font-bold text-xl">{error}</div>;
 
   return (
@@ -74,8 +96,8 @@ export default function LiveGame({ puuid, region, onBack }) {
 
       {/* TEAMS */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
-        <TeamList teamId={100} participants={game.participants} color="blue" spells={spells} getSpellIcon={getSpellIcon} champs={champs} ddragonImg={ddragonImg} />
-        <TeamList teamId={200} participants={game.participants} color="red" spells={spells} getSpellIcon={getSpellIcon} champs={champs} ddragonImg={ddragonImg} />
+        <TeamList teamId={100} participants={game.participants} color="blue" getSpellIcon={getSpellIcon} champs={champs} ddragonImg={ddragonImg} />
+        <TeamList teamId={200} participants={game.participants} color="red" getSpellIcon={getSpellIcon} champs={champs} ddragonImg={ddragonImg} />
       </div>
     </div>
   );
@@ -135,11 +157,14 @@ function TeamList({ teamId, participants, color, getSpellIcon, champs, ddragonIm
              </div>
           </div>
 
-          <div className="flex-1 pl-2">
+          <div className="flex-1 pl-2 min-w-0">
             <div className="text-white font-bold text-lg truncate">{p.riotId}</div>
+            <div className="mt-2">
+              <IntelligencePills intelligence={p.intelligence} compact />
+              <IntelligenceMiniRead intelligence={p.intelligence} />
+            </div>
             
-            {/* NEW: DANGER TAGS */}
-            <div className="flex gap-1 mt-1 flex-wrap">
+            <div className="flex gap-1 mt-2 flex-wrap">
                 {p.tags && p.tags.map(tag => {
                     let colorClass = "bg-gray-700 text-gray-300";
                     if (tag === "SMURF") colorClass = "bg-blue-600 text-white";
