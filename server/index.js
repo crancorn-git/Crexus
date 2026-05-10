@@ -5,16 +5,18 @@ const cors = require('cors');
 require('dotenv').config();
 
 app.use(cors({
-    origin: "*", 
-    methods: ["GET", "POST", "OPTIONS"], 
-    allowedHeaders: ["Content-Type", "Authorization"]
+    origin: true,
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: false,
+    optionsSuccessStatus: 204
 }));
 
 const API_KEY = process.env.RIOT_API_KEY;
 
-const APP_VERSION = process.env.APP_VERSION || '1.1.3';
+const APP_VERSION = process.env.APP_VERSION || '1.1.4';
 const DEPLOY_TIME = process.env.VERCEL_GIT_COMMIT_SHA ? 'vercel' : new Date().toISOString();
-const DEBUG_TOKEN = process.env.CRANIX SCOUT_DEBUG_TOKEN;
+const DEBUG_TOKEN = process.env.CRANIX_SCOUT_DEBUG_TOKEN || process.env.CREXUS_DEBUG_TOKEN;
 
 if (!API_KEY) {
     console.warn('RIOT_API_KEY is missing. Riot-backed routes will fail until it is configured.');
@@ -155,7 +157,7 @@ app.get('/api/launch-check', async (req, res) => {
         checks: {
             backend: true,
             riotKey: Boolean(API_KEY),
-            versionPinned: APP_VERSION === '1.1.3',
+            versionPinned: APP_VERSION === '1.1.4',
             regionRouting: true,
             publicReports: true,
             streamerMode: true

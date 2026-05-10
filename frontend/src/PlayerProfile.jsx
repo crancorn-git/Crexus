@@ -346,7 +346,7 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
   const buildPublicReportPayload = (displayRank, intelligence) => {
     if (!data || !intelligence) return null;
     return {
-      version: '1.1.3',
+      version: '1.1.4',
       generatedAt: new Date().toISOString(),
       playerName: data.account.gameName,
       tagLine: data.account.tagLine,
@@ -485,7 +485,7 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
     <div className="min-h-screen text-gray-200">
       <div className="crexus-page">
         <header className="mb-5 px-1 py-2">
-          <div className="crexus-kicker">v1.1.3 · Game Stats & Information</div>
+          <div className="crexus-kicker">v1.1.4 · Game Stats & Information</div>
           <h1 className="crexus-page-title mt-2">Player Search</h1>
           <p className="crexus-copy mt-2 max-w-2xl">Search any Riot ID, open a live game, or use your linked account as the default across Cranix Scout.</p>
         </header>

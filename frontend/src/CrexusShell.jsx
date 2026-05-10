@@ -47,7 +47,7 @@ export default function CrexusShell({ activeView, onNavigate, children }) {
           <img src="/cranix-scout-logo.png" alt="Cranix Scout logo" className="h-9 w-9 object-contain" />
           <div className="min-w-0">
             <div className="text-base font-black uppercase tracking-[0.16em] text-white">Cranix Scout</div>
-            <div className="text-[10px] font-black uppercase tracking-[0.18em] text-red-300">v1.1.3</div>
+            <div className="text-[10px] font-black uppercase tracking-[0.18em] text-red-300">v1.1.4</div>
           </div>
         </button>
 
