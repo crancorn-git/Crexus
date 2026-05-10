@@ -16,5 +16,6 @@ build/
 .env.local
 **/.env.local
 dist_electron/
+release/
 *.log
 auth.js

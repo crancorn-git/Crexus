@@ -51,10 +51,10 @@ export default function Leaderboard({ onBack }) {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <BackButton onClick={onBack} />
-              <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Crexus Ladder</div>
+              <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Cranix Scout Ladder</div>
               <h1 className="mt-2 text-3xl font-black tracking-tight text-white md:text-4xl">Top ranked players</h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-400">
-                Region-aware ranked ladder for the broader Crexus game stats platform. Change region to pull the top players from that platform shard.
+                Region-aware ranked ladder for the broader Cranix Scout game stats platform. Change region to pull the top players from that platform shard.
               </p>
             </div>
 

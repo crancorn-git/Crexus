@@ -37,8 +37,8 @@ export function IntelligencePills({ intelligence, compact = false }) {
 
   return (
     <div className="flex flex-wrap gap-1.5 text-[10px] font-black uppercase tracking-wider">
-      <span className={`px-2 py-1 rounded border ${compactScoreTone(intelligence.crexusScore)}`} title="Crexus Score">
-        CXS {intelligence.crexusScore}
+      <span className={`px-2 py-1 rounded border ${compactScoreTone(intelligence.crexusScore)}`} title="Cranix Scout Score">
+        SCOUT {intelligence.crexusScore}
       </span>
       {!compact && intelligence.mainRole?.role && intelligence.mainRole.role !== 'Unknown' && (
         <span className="px-2 py-1 rounded border bg-red-500/10 text-red-200 border-red-500/30" title="Detected Main Role">

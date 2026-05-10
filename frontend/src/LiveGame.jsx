@@ -106,7 +106,7 @@ export default function LiveGame({ puuid, region, onBack }) {
         <BackButton onClick={onBack} />
         <div className="mt-4 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
           <div>
-            <div className="crexus-kicker">Crexus Live Game</div>
+            <div className="crexus-kicker">Cranix Scout Live Game</div>
             <h1 className="crexus-page-title mt-2">Live game</h1>
             <p className="crexus-copy mt-2">Current match read, matchup notes, team comparison, and player risk tags.</p>
           </div>

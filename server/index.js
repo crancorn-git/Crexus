@@ -12,9 +12,9 @@ app.use(cors({
 
 const API_KEY = process.env.RIOT_API_KEY;
 
-const APP_VERSION = process.env.APP_VERSION || '1.1.2';
+const APP_VERSION = process.env.APP_VERSION || '1.1.3';
 const DEPLOY_TIME = process.env.VERCEL_GIT_COMMIT_SHA ? 'vercel' : new Date().toISOString();
-const DEBUG_TOKEN = process.env.CREXUS_DEBUG_TOKEN;
+const DEBUG_TOKEN = process.env.CRANIX SCOUT_DEBUG_TOKEN;
 
 if (!API_KEY) {
     console.warn('RIOT_API_KEY is missing. Riot-backed routes will fail until it is configured.');
@@ -110,7 +110,7 @@ app.get('/api/health', (req, res) => {
 app.get('/api/version', async (req, res) => {
     const ddragonVersion = await getDataDragonVersion();
     res.json({
-        app: 'Crexus',
+        app: 'Cranix Scout',
         version: APP_VERSION,
         ddragonVersion,
         deploy: {
@@ -128,7 +128,7 @@ app.get('/api/version', async (req, res) => {
 app.get('/api/launch-check', async (req, res) => {
     const ddragonVersion = await getDataDragonVersion();
     res.json({
-        app: 'Crexus',
+        app: 'Cranix Scout',
         version: APP_VERSION,
         status: 'launch-ready',
         identity: 'Game stats and information platform',
@@ -142,7 +142,7 @@ app.get('/api/launch-check', async (req, res) => {
             'live_game_read',
             'ladder',
             'match_details',
-            'crexus_score',
+            'cranix_scout_score',
             'player_compare',
             'champion_insights',
             'draft_tools',
@@ -155,7 +155,7 @@ app.get('/api/launch-check', async (req, res) => {
         checks: {
             backend: true,
             riotKey: Boolean(API_KEY),
-            versionPinned: APP_VERSION === '1.1.2',
+            versionPinned: APP_VERSION === '1.1.3',
             regionRouting: true,
             publicReports: true,
             streamerMode: true
@@ -166,13 +166,13 @@ app.get('/api/launch-check', async (req, res) => {
 
 app.get('/api/discord/commands', (req, res) => {
     res.json({
-        app: 'Crexus',
+        app: 'Cranix Scout',
         version: APP_VERSION,
         commands: [
-            { name: '/crexus player', usage: '/crexus player Ciaran#EUW', description: 'Return a player scout summary and public report link.' },
-            { name: '/crexus live', usage: '/crexus live Ciaran#EUW', description: 'Return live-game scout details when the player is currently in game.' },
-            { name: '/crexus compare', usage: '/crexus compare PlayerA#EUW PlayerB#EUW', description: 'Compare two players side by side.' },
-            { name: '/crexus report', usage: '/crexus report PlayerName#TAG', description: 'Generate a clean public report card for sharing.' }
+            { name: '/scout player', usage: '/scout player Ciaran#EUW', description: 'Return a player scout summary and public report link.' },
+            { name: '/scout live', usage: '/scout live Ciaran#EUW', description: 'Return live-game scout details when the player is currently in game.' },
+            { name: '/scout compare', usage: '/scout compare PlayerA#EUW PlayerB#EUW', description: 'Compare two players side by side.' },
+            { name: '/scout report', usage: '/scout report PlayerName#TAG', description: 'Generate a clean public report card for sharing.' }
         ]
     });
 });
@@ -461,7 +461,7 @@ app.get('/api/match/:matchId/timeline', async (req, res) => {
 });
 
 app.get('/', (req, res) => {
-    res.send('Crexus Backend is Online!');
+    res.send('Cranix Scout Backend is Online!');
 });
 
 if (process.env.NODE_ENV !== 'production') {

@@ -25,7 +25,7 @@ export default function BackendStatus() {
         if (cancelled) return;
 
         if (healthRes.status !== 'fulfilled') {
-          setStatus({ state: 'offline', label: 'Backend offline', detail: 'Crexus API is not responding.' });
+          setStatus({ state: 'offline', label: 'Backend offline', detail: 'Cranix Scout API is not responding.' });
           return;
         }
 
@@ -48,7 +48,7 @@ export default function BackendStatus() {
         });
       } catch {
         if (!cancelled) {
-          setStatus({ state: 'offline', label: 'Backend offline', detail: 'Crexus API is not responding.' });
+          setStatus({ state: 'offline', label: 'Backend offline', detail: 'Cranix Scout API is not responding.' });
         }
       }
     };

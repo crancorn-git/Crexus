@@ -258,7 +258,7 @@ export function buildMatchDetailRead(matches = [], puuid) {
 
 export function buildCrexusReport({ intelligence, laneRead, timelineRead, matchRead }) {
   if (!intelligence?.ready) {
-    return 'Crexus needs recent match data before writing a scouting report.';
+    return 'Cranix Scout needs recent match data before writing a scouting report.';
   }
 
   const strengths = [];
@@ -284,5 +284,5 @@ export function buildCrexusReport({ intelligence, laneRead, timelineRead, matchR
   if (intelligence.tiltRisk?.score >= 50) plan.push('slow the game down after their mistakes instead of forcing coinflip fights');
   if (timelineRead?.lateWinRate !== null && timelineRead?.lateWinRate >= 60) plan.push('avoid giving them a clean scaling game');
 
-  return `This player looks ${intelligence.recentForm.toLowerCase()} across ${intelligence.games} recent games with a Crexus Score of ${intelligence.crexusScore}/100. Their strongest signals are ${strengths.length ? strengths.join(', ') : 'balanced fundamentals'}. The main risks are ${risks.length ? risks.join(', ') : 'not strongly exposed in recent games'}. Recommended read: ${plan.join('; ')}.`;
+  return `This player looks ${intelligence.recentForm.toLowerCase()} across ${intelligence.games} recent games with a Cranix Scout Score of ${intelligence.crexusScore}/100. Their strongest signals are ${strengths.length ? strengths.join(', ') : 'balanced fundamentals'}. The main risks are ${risks.length ? risks.join(', ') : 'not strongly exposed in recent games'}. Recommended read: ${plan.join('; ')}.`;
 }

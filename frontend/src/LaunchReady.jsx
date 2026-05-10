@@ -20,7 +20,7 @@ const readinessItems = [
   'Player profiles and live scout',
   'Lobby scout and regional ladder',
   'Match detail pages and review tools',
-  'Crexus Score and scouting reads',
+  'Cranix Scout Score and scouting reads',
   'Player compare and champion pool reads',
   'Objective control and lane phase cards',
   'Shareable reports and streamer pages',
@@ -75,18 +75,18 @@ export default function LaunchReady({ onBack }) {
       <BackButton onClick={onBack} />
 
       <header className="mt-5 rounded-[30px] border border-red-500/15 bg-gradient-to-br from-red-500/12 via-[#12141b] to-[#090a0e] p-6 shadow-2xl md:p-8">
-        <div className="crexus-kicker">v1.1.2 launch version</div>
+        <div className="crexus-kicker">v1.1.3 launch version</div>
         <div className="mt-3 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <h1 className="crexus-page-title">Crexus Launch Build</h1>
+            <h1 className="crexus-page-title">Cranix Scout Launch Build</h1>
             <p className="crexus-copy mt-3 max-w-3xl">
-              Crexus is now framed as a game stats and information platform, with League of Legends as the first supported game. This page pulls together launch readiness, diagnostics, and the full feature set for the first proper release.
+              Cranix Scout is now framed as a game stats and information platform, with League of Legends as the first supported game. This page pulls together launch readiness, diagnostics, and the full feature set for the first proper release.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
             <StatePill ok={online}>{online ? 'Backend online' : 'Backend check'}</StatePill>
             <StatePill ok={riotReady}>{riotReady ? 'Riot key loaded' : 'Riot key needed'}</StatePill>
-            <StatePill ok>{health?.version ? `v${health.version}` : 'v1.1.2'}</StatePill>
+            <StatePill ok>{health?.version ? `v${health.version}` : 'v1.1.3'}</StatePill>
           </div>
         </div>
       </header>
@@ -108,7 +108,7 @@ export default function LaunchReady({ onBack }) {
             </div>
             <div className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/5 p-4">
               <span className="text-gray-400">App version</span>
-              <span className="font-black text-white">v{health?.version || '1.1.2'}</span>
+              <span className="font-black text-white">v{health?.version || '1.1.3'}</span>
             </div>
             <div className="flex items-center justify-between rounded-2xl border border-white/8 bg-white/5 p-4">
               <span className="text-gray-400">Riot key</span>
