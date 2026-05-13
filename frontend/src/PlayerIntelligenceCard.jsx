@@ -27,13 +27,13 @@ export default function PlayerIntelligenceCard({ intelligence }) {
       <div className="p-5 border-b border-gray-800 bg-gradient-to-r from-red-950/30 via-[#161d23] to-[#10151b]">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
-            <div className="text-xs text-red-300 font-black uppercase tracking-[0.25em]">Crexus Player Read</div>
+            <div className="text-xs text-red-300 font-black uppercase tracking-[0.25em]">Cranix Scout Player Read</div>
             <h2 className="text-2xl font-black text-white mt-1">Player Read</h2>
             <p className="text-sm text-gray-400 mt-2 max-w-2xl">{intelligence.summary}</p>
           </div>
 
           <div className={`min-w-32 text-center rounded-2xl border p-4 ${scoreColor(intelligence.crexusScore)}`}>
-            <div className="text-[10px] uppercase tracking-widest font-black opacity-70">Crexus Score</div>
+            <div className="text-[10px] uppercase tracking-widest font-black opacity-70">Cranix Scout Score</div>
             <div className="text-4xl font-black leading-none mt-1">{intelligence.crexusScore}</div>
             <div className="text-xs opacity-70 mt-1">/ 100</div>
           </div>
@@ -84,7 +84,7 @@ export default function PlayerIntelligenceCard({ intelligence }) {
 
           {intelligence.reasons.length > 0 && (
             <div className="bg-[#0a0e13] rounded-xl border border-gray-800 p-4">
-              <div className="text-xs text-gray-500 font-black uppercase tracking-widest mb-3">Why Crexus thinks this</div>
+              <div className="text-xs text-gray-500 font-black uppercase tracking-widest mb-3">Why Cranix Scout thinks this</div>
               <div className="space-y-2">
                 {intelligence.reasons.map((reason) => (
                   <div key={reason} className="flex gap-2 text-sm text-gray-300">

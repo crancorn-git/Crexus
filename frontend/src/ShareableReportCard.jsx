@@ -27,7 +27,7 @@ export default function ShareableReportCard({
         <div className="mb-5 flex items-start justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-3">
-              <img src="/crexus-logo.png" alt="Crexus" className="h-12 w-12 rounded-xl object-contain" />
+              <img src="/cranix-scout-logo.png" alt="Cranix Scout" className="h-12 w-12 rounded-xl object-contain" />
             </div>
             <div>
               <div className="text-[11px] font-black uppercase tracking-[0.25em] text-red-300">Shareable Player Report</div>
@@ -41,12 +41,12 @@ export default function ShareableReportCard({
         <div id="crexus-share-card" className="rounded-[28px] border border-white/8 bg-gradient-to-br from-[#120b0b] via-[#13151c] to-[#0e1116] p-6">
           <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
             <div>
-              <div className="text-[11px] uppercase tracking-[0.22em] text-red-300">Crexus v1.1.1</div>
+              <div className="text-[11px] uppercase tracking-[0.22em] text-red-300">Cranix Scout v1.1.4</div>
               <div className="mt-2 text-3xl font-black text-white">Player Read Snapshot</div>
               <p className="mt-2 max-w-xl text-sm leading-6 text-gray-300">{intelligence.summary}</p>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <InfoRow label="Crexus Score" value={`${intelligence.crexusScore}/100`} />
+              <InfoRow label="Cranix Scout Score" value={`${intelligence.crexusScore}/100`} />
               <InfoRow label="Recent Form" value={intelligence.recentForm} />
               <InfoRow label="Tilt Risk" value={intelligence.tiltRisk} />
               <InfoRow label="Smurf Signal" value={intelligence.smurfSignal} />

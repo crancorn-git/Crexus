@@ -18,8 +18,8 @@ export default function PublicReport({ encodedReport, onBack }) {
         <div className="crexus-card rounded-3xl p-8 text-center">
           <div className="crexus-kicker">Public Report</div>
           <h1 className="crexus-page-title mt-2">Report link could not be opened</h1>
-          <p className="crexus-copy mx-auto mt-3 max-w-xl">The shared report data is missing or invalid. Open Crexus and generate a fresh public report link from a player profile.</p>
-          <button type="button" onClick={onBack} className="crexus-btn crexus-btn-primary mt-6">Back to Crexus</button>
+          <p className="crexus-copy mx-auto mt-3 max-w-xl">The shared report data is missing or invalid. Open Cranix Scout and generate a fresh public report link from a player profile.</p>
+          <button type="button" onClick={onBack} className="crexus-btn crexus-btn-primary mt-6">Back to Cranix Scout</button>
         </div>
       </div>
     );
@@ -30,10 +30,10 @@ export default function PublicReport({ encodedReport, onBack }) {
       <div className="crexus-page">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <img src="/crexus-logo.png" alt="Crexus" className="h-12 w-12 rounded-2xl object-contain shadow-[0_0_28px_rgba(239,68,68,0.24)]" />
+            <img src="/cranix-scout-logo.png" alt="Cranix Scout" className="h-12 w-12 rounded-2xl object-contain shadow-[0_0_28px_rgba(239,68,68,0.24)]" />
             <div>
-              <div className="text-xl font-black uppercase tracking-[0.16em] text-white">Crexus</div>
-              <div className="text-[10px] font-black uppercase tracking-[0.22em] text-red-300">Public Report · v1.1.1</div>
+              <div className="text-xl font-black uppercase tracking-[0.16em] text-white">Cranix Scout</div>
+              <div className="text-[10px] font-black uppercase tracking-[0.22em] text-red-300">Public Report · v1.1.4</div>
             </div>
           </div>
           <button type="button" onClick={onBack} className="crexus-btn crexus-btn-secondary">Open App</button>
@@ -50,7 +50,7 @@ export default function PublicReport({ encodedReport, onBack }) {
               <div className="mt-4 text-sm font-bold uppercase tracking-[0.18em] text-gray-500">{report.region?.toUpperCase()} · {report.rank || 'Unranked'}</div>
             </div>
             <div className="rounded-[28px] border border-red-500/20 bg-red-500/10 p-6 text-center shadow-[0_0_32px_rgba(239,68,68,0.18)]">
-              <div className="text-[10px] font-black uppercase tracking-[0.22em] text-red-200">Crexus Score</div>
+              <div className="text-[10px] font-black uppercase tracking-[0.22em] text-red-200">Cranix Scout Score</div>
               <div className="mt-1 text-6xl font-black text-white">{report.crexusScore}</div>
               <div className="mt-1 text-xs uppercase tracking-[0.18em] text-red-100/70">out of 100</div>
             </div>

@@ -42,12 +42,12 @@ export default function CrexusShell({ activeView, onNavigate, children }) {
           type="button"
           onClick={() => onNavigate('profile')}
           className="flex w-full items-center gap-3 rounded-xl px-1 py-1 text-left transition hover:bg-white/[0.03]"
-          aria-label="Open Crexus player search"
+          aria-label="Open Cranix Scout player search"
         >
-          <img src="/crexus-logo.png" alt="Crexus logo" className="h-9 w-9 object-contain" />
+          <img src="/cranix-scout-logo.png" alt="Cranix Scout logo" className="h-9 w-9 object-contain" />
           <div className="min-w-0">
-            <div className="text-base font-black uppercase tracking-[0.16em] text-white">Crexus</div>
-            <div className="text-[10px] font-black uppercase tracking-[0.18em] text-red-300">v1.1.1</div>
+            <div className="text-base font-black uppercase tracking-[0.16em] text-white">Cranix Scout</div>
+            <div className="text-[10px] font-black uppercase tracking-[0.18em] text-red-300">v1.1.4</div>
           </div>
         </button>
 
@@ -63,7 +63,7 @@ export default function CrexusShell({ activeView, onNavigate, children }) {
           </button>
         )}
 
-        <nav className="mt-4 flex gap-2 overflow-x-auto pb-1 lg:mt-5 lg:flex-col lg:overflow-visible lg:pb-0" aria-label="Crexus tools">
+        <nav className="mt-4 flex gap-2 overflow-x-auto pb-1 lg:mt-5 lg:flex-col lg:overflow-visible lg:pb-0" aria-label="Cranix Scout tools">
           {navItems.map((item) => {
             const active = activeView === item.key || (activeView === 'live' && item.key === 'lobby');
             return (

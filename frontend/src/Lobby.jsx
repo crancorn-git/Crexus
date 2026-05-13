@@ -63,7 +63,7 @@ export default function Lobby({ onBack }) {
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <BackButton onClick={onBack} />
-              <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Crexus Live Game</div>
+              <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Cranix Scout Live Game</div>
               <h1 className="mt-2 text-3xl font-black tracking-tight text-white md:text-4xl">Live game team read</h1>
               <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-400">
                 Paste Riot IDs from a lobby or live game to build a clean team read with ranks, recent form, and risk tags. Your linked account is used by default when set.

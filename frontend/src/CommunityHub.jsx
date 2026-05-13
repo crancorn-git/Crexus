@@ -1,10 +1,10 @@
 import { BackButton } from './CrexusShell';
 
 const commandRows = [
-  ['/crexus player Ciaran#EUW', 'Show a public-ready player report.'],
-  ['/crexus live Ciaran#EUW', 'Open live scout for a player currently in game.'],
-  ['/crexus compare PlayerA#EUW PlayerB#EUW', 'Compare two players side by side.'],
-  ['/crexus report PlayerName#TAG', 'Generate a shareable report link.']
+  ['/scout player Ciaran#EUW', 'Show a public-ready player report.'],
+  ['/scout live Ciaran#EUW', 'Open live scout for a player currently in game.'],
+  ['/scout compare PlayerA#EUW PlayerB#EUW', 'Compare two players side by side.'],
+  ['/scout report PlayerName#TAG', 'Generate a shareable report link.']
 ];
 
 function FeatureCard({ title, eyebrow, children }) {
@@ -22,13 +22,13 @@ export default function CommunityHub({ onBack, onScoutClick }) {
     <div className="crexus-page">
       <BackButton onClick={onBack} />
       <header className="mt-5 mb-8">
-        <div className="crexus-kicker">v1.1.1 · Community & Content</div>
-        <h1 className="crexus-page-title mt-2">Share Crexus outside the app</h1>
-        <p className="crexus-copy mt-3 max-w-3xl">Public report links, streamer-friendly cards, and Discord command planning are now wired into the product so Crexus is ready for the v1.0 launch pass.</p>
+        <div className="crexus-kicker">v1.1.4 · Community & Content</div>
+        <h1 className="crexus-page-title mt-2">Share Cranix Scout outside the app</h1>
+        <p className="crexus-copy mt-3 max-w-3xl">Public report links, streamer-friendly cards, and Discord command planning are now wired into the product so Cranix Scout is ready for the v1.0 launch pass.</p>
       </header>
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <FeatureCard eyebrow="v1.1.1" title="Public Report Links">
+        <FeatureCard eyebrow="v1.1.4" title="Public Report Links">
           Generate shareable player reports from a loaded profile. Links encode a clean report snapshot so they can be copied into Discord, socials, or sent directly to someone without needing them to search the player again.
           <button type="button" onClick={onScoutClick} className="crexus-btn crexus-btn-primary mt-5">Open Player Search</button>
         </FeatureCard>

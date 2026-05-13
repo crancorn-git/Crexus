@@ -228,7 +228,7 @@ export default function AccountDashboard({ onBack, onOpenAccount, onCompareClick
         <header className="crexus-card mb-6 rounded-2xl p-5 md:p-7">
           <BackButton onClick={onBack} />
           <div className="mt-4">
-            <div className="crexus-kicker">Crexus Dashboard</div>
+            <div className="crexus-kicker">Cranix Scout Dashboard</div>
             <h1 className="crexus-page-title mt-2">Dashboard</h1>
             <p className="crexus-copy mt-2 max-w-3xl">Saved players, linked account, progress history, and quick refresh controls.</p>
           </div>

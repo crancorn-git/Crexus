@@ -84,15 +84,15 @@ export function ScoutTeamRead({ entries = [], title = 'Scout Read' }) {
   const summary = summarizeGroup(entries);
 
   return (
-    <div className="bg-[#111820] border border-emerald-500/20 rounded-2xl p-5 mb-6 shadow-xl shadow-emerald-950/20">
+    <div className="bg-[#121016] border border-red-500/20 rounded-2xl p-5 mb-6 shadow-xl shadow-red-950/20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
         <div>
-          <div className="text-[10px] uppercase tracking-[0.25em] text-emerald-400 font-black">Crexus Team Read</div>
+          <div className="text-[10px] uppercase tracking-[0.25em] text-red-300 font-black">Cranix Scout Team Read</div>
           <h2 className="text-2xl font-black text-white italic">{title}</h2>
         </div>
         <div className="text-right">
           <div className="text-xs text-gray-500 uppercase font-black tracking-widest">Avg Score</div>
-          <div className="text-3xl font-black text-emerald-300">{summary.ready ? summary.averageScore : '--'}</div>
+          <div className="text-3xl font-black text-red-300">{summary.ready ? summary.averageScore : '--'}</div>
         </div>
       </div>
 
@@ -105,7 +105,7 @@ export function ScoutTeamRead({ entries = [], title = 'Scout Read' }) {
           <Highlight
             label="Carry Profile"
             player={summary.carryThreat}
-            metric={`Crexus ${summary.carryThreat.intelligence.crexusScore} · ${summary.carryThreat.intelligence.recentForm}`}
+            metric={`Scout ${summary.carryThreat.intelligence.crexusScore} · ${summary.carryThreat.intelligence.recentForm}`}
           />
           <Highlight
             label="Instability Risk"

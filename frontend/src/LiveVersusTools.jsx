@@ -54,7 +54,7 @@ export function EnemyMatchupRead({ participants = [] }) {
         <div>
           <div className="text-[10px] font-black uppercase tracking-[0.24em] text-red-300">Enemy Matchup Read</div>
           <h2 className="mt-2 text-2xl font-black text-white">Lane-by-lane live read</h2>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-400">Compares matching live-game slots and highlights who has the stronger recent profile. Riot live data does not always expose exact assigned roles, so Crexus treats this as a scouting read instead of a guaranteed draft order.</p>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-400">Compares matching live-game slots and highlights who has the stronger recent profile. Riot live data does not always expose exact assigned roles, so Cranix Scout treats this as a scouting read instead of a guaranteed draft order.</p>
         </div>
         {biggestEdge && (
           <div className="rounded-2xl border border-red-500/25 bg-red-500/10 px-4 py-3 text-sm text-red-100">
@@ -232,7 +232,7 @@ export function DuoSynergyRead({ participants = [] }) {
             </div>
           );
         }) : (
-          <div className="rounded-3xl border border-white/10 bg-[#10131a] p-5 text-sm leading-6 text-gray-400">No repeated duo pattern found in the loaded sample. This does not mean there is no duo, only that Crexus has not found enough recent overlap yet.</div>
+          <div className="rounded-3xl border border-white/10 bg-[#10131a] p-5 text-sm leading-6 text-gray-400">No repeated duo pattern found in the loaded sample. This does not mean there is no duo, only that Cranix Scout has not found enough recent overlap yet.</div>
         )}
       </div>
     </div>

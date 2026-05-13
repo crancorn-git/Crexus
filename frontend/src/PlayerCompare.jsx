@@ -262,7 +262,7 @@ function ComparisonSummary({ a, b }) {
     };
 
     const parts = [];
-    parts.push(`${edges.overall} has the stronger overall Crexus Score profile.`);
+    parts.push(`${edges.overall} has the stronger overall Cranix Scout Score profile.`);
     parts.push(`${edges.form} has the better recent form edge.`);
     parts.push(`${edges.pool} shows the broader recent champion pool.`);
     parts.push(`${edges.objective} controls objectives better in the recent sample.`);
@@ -322,7 +322,7 @@ export default function PlayerCompare({ onBack }) {
       <div className="crexus-card mb-6 rounded-2xl p-5 md:p-7">
         <BackButton onClick={onBack} />
         <div className="mt-4">
-          <div className="crexus-kicker">Crexus Compare</div>
+          <div className="crexus-kicker">Cranix Scout Compare</div>
           <h1 className="crexus-page-title mt-2">Player Compare</h1>
           <p className="crexus-copy mt-2 max-w-3xl">Compare two players side by side using score, champion pool, recent form, lane phase, objective control, and match consistency.</p>
         </div>
@@ -350,7 +350,7 @@ export default function PlayerCompare({ onBack }) {
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <MetricDuel title="Crexus Score" a={resultA?.insight?.crexusScore} b={resultB?.insight?.crexusScore} detailA={resultA?.insight?.recentForm} detailB={resultB?.insight?.recentForm} />
+        <MetricDuel title="Cranix Scout Score" a={resultA?.insight?.crexusScore} b={resultB?.insight?.crexusScore} detailA={resultA?.insight?.recentForm} detailB={resultB?.insight?.recentForm} />
         <MetricDuel title="Recent Form" a={resultA?.insight?.winRate} b={resultB?.insight?.winRate} detailA={`${resultA?.insight?.games ?? 0} games`} detailB={`${resultB?.insight?.games ?? 0} games`} />
         <MetricDuel title="Lane Phase" a={resultA?.lane?.score} b={resultB?.lane?.score} detailA={resultA?.lane?.label} detailB={resultB?.lane?.label} />
         <MetricDuel title="Objective Control" a={resultA?.objective?.score} b={resultB?.objective?.score} detailA={`${resultA?.objective?.dragons ?? 0} drakes · ${resultA?.objective?.vision ?? 0} vision`} detailB={`${resultB?.objective?.dragons ?? 0} drakes · ${resultB?.objective?.vision ?? 0} vision`} />

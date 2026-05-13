@@ -191,9 +191,9 @@ export default function CoachingLayer({ playerData, matches = [] }) {
   if (!puuid || !rows.length) {
     return (
       <div className="crexus-card rounded-[28px] p-6">
-        <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">Crexus Coach</div>
+        <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">Cranix Scout Coach</div>
         <h3 className="mt-2 text-2xl font-black text-white">Search a player to generate coaching reads</h3>
-        <p className="mt-2 text-sm leading-6 text-gray-400">Crexus Coach uses the loaded match sample to produce strengths, weaknesses, role-specific advice, and recent match reviews.</p>
+        <p className="mt-2 text-sm leading-6 text-gray-400">Cranix Scout Coach uses the loaded match sample to produce strengths, weaknesses, role-specific advice, and recent match reviews.</p>
       </div>
     );
   }
@@ -212,7 +212,7 @@ export default function CoachingLayer({ playerData, matches = [] }) {
         <div className="flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div>
             <div className="text-[11px] font-black uppercase tracking-[0.24em] text-red-300">v0.8 Coaching Layer</div>
-            <h3 className="mt-2 text-3xl font-black text-white">Crexus Coach</h3>
+            <h3 className="mt-2 text-3xl font-black text-white">Cranix Scout Coach</h3>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-gray-400">Actionable advice built from recent match patterns, role habits, deaths, economy, vision, objective setup, and fight involvement.</p>
           </div>
           <div className="rounded-3xl border border-red-500/20 bg-red-500/10 px-5 py-4 text-left xl:min-w-[260px]">

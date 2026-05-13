@@ -204,7 +204,7 @@ export default function ChampionInsights({ onBack, playerData = null, matches = 
         <header className="crexus-card mb-6 rounded-2xl p-5 md:p-7">
           <BackButton onClick={onBack} />
           <div className="mt-4">
-            <div className="crexus-kicker">Crexus Champions</div>
+            <div className="crexus-kicker">Cranix Scout Champions</div>
             <h1 className="crexus-page-title mt-2">Champions</h1>
             <p className="crexus-copy mt-2 max-w-3xl">Champion profiles, matchup notes, and draft checks for the selected player sample.</p>
           </div>
@@ -299,7 +299,7 @@ export default function ChampionInsights({ onBack, playerData = null, matches = 
                   </div>
                 </div>
               )) : (
-                <div className="rounded-2xl border border-dashed border-white/10 bg-white/5 p-5 text-sm leading-6 text-gray-400">Load a player profile first. Crexus will use their recent matches to build champion matchup memory.</div>
+                <div className="rounded-2xl border border-dashed border-white/10 bg-white/5 p-5 text-sm leading-6 text-gray-400">Load a player profile first. Cranix Scout will use their recent matches to build champion matchup memory.</div>
               )}
             </div>
           </div>

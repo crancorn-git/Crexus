@@ -328,9 +328,9 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
   const buildShareText = (displayRank, intelligence) => {
     if (!data || !intelligence) return '';
     return [
-      `Crexus Player Report — ${data.account.gameName}#${data.account.tagLine} (${region.toUpperCase()})`,
+      `Cranix Scout Player Report — ${data.account.gameName}#${data.account.tagLine} (${region.toUpperCase()})`,
       displayRank ? `Rank: ${displayRank.tier} ${displayRank.rank} · ${displayRank.leaguePoints} LP` : 'Rank: Unranked',
-      `Crexus Score: ${intelligence.crexusScore}/100`,
+      `Cranix Scout Score: ${intelligence.crexusScore}/100`,
       `Recent Form: ${intelligence.recentForm}`,
       `Tilt Risk: ${intelligence.tiltRisk?.label || intelligence.tiltRisk}`,
       `Smurf Signal: ${intelligence.smurfSignal?.label || intelligence.smurfSignal}`,
@@ -346,7 +346,7 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
   const buildPublicReportPayload = (displayRank, intelligence) => {
     if (!data || !intelligence) return null;
     return {
-      version: '1.1.1',
+      version: '1.1.4',
       generatedAt: new Date().toISOString(),
       playerName: data.account.gameName,
       tagLine: data.account.tagLine,
@@ -372,7 +372,7 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
     printWindow.document.write(`
       <html>
         <head>
-          <title>Crexus Report</title>
+          <title>Cranix Scout Report</title>
           <style>
             body { background: #0b0b0d; color: #e5e7eb; font-family: Inter, Arial, sans-serif; margin: 0; padding: 32px; }
             .card { max-width: 820px; margin: 0 auto; background: linear-gradient(180deg, #13151c, #0f1117); border: 1px solid rgba(255,255,255,0.08); border-radius: 28px; padding: 32px; box-shadow: 0 24px 60px rgba(0,0,0,0.45); }
@@ -393,16 +393,16 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
         <body>
           <div class="card">
             <div class="brand">
-              <img src="${window.location.origin}/crexus-logo.png" alt="Crexus" />
+              <img src="${window.location.origin}/cranix-scout-logo.png" alt="Cranix Scout" />
               <div>
-                <div class="eyebrow">Crexus Shareable Report</div>
+                <div class="eyebrow">Cranix Scout Shareable Report</div>
                 <h1>${data.account.gameName}#${data.account.tagLine}</h1>
                 <p>${displayRank ? `${displayRank.tier} ${displayRank.rank} · ${displayRank.leaguePoints} LP` : 'Unranked'} · ${region.toUpperCase()}</p>
               </div>
             </div>
             <p>${intelligence.summary}</p>
             <div class="grid">
-              <div class="stat"><div class="label">Crexus Score</div><div class="value">${intelligence.crexusScore}/100</div></div>
+              <div class="stat"><div class="label">Cranix Scout Score</div><div class="value">${intelligence.crexusScore}/100</div></div>
               <div class="stat"><div class="label">Recent Form</div><div class="value">${intelligence.recentForm}</div></div>
               <div class="stat"><div class="label">Tilt Risk</div><div class="value">${intelligence.tiltRisk}</div></div>
               <div class="stat"><div class="label">Smurf Signal</div><div class="value">${intelligence.smurfSignal}</div></div>
@@ -485,9 +485,9 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
     <div className="min-h-screen text-gray-200">
       <div className="crexus-page">
         <header className="mb-5 px-1 py-2">
-          <div className="crexus-kicker">v1.1.1 · Game Stats & Information</div>
+          <div className="crexus-kicker">v1.1.4 · Game Stats & Information</div>
           <h1 className="crexus-page-title mt-2">Player Search</h1>
-          <p className="crexus-copy mt-2 max-w-2xl">Search any Riot ID, open a live game, or use your linked account as the default across Crexus.</p>
+          <p className="crexus-copy mt-2 max-w-2xl">Search any Riot ID, open a live game, or use your linked account as the default across Cranix Scout.</p>
         </header>
 
         <div className="mb-8 rounded-2xl border border-white/8 bg-[#111318] p-4 shadow-xl md:p-5">
@@ -568,7 +568,7 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
                 <div className="text-[11px] font-black uppercase tracking-[0.28em] text-red-300">Get Started</div>
                 <h2 className="mt-2 text-2xl font-black text-white md:text-3xl">Search, pin, favourite, and report</h2>
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-gray-400">
-                  Crexus now includes saved accounts, a pinned dashboard, progress snapshots, quick refresh controls, profile reports, live tools, and champion/draft reads.
+                  Cranix Scout now includes saved accounts, a pinned dashboard, progress snapshots, quick refresh controls, profile reports, live tools, and champion/draft reads.
                 </p>
 
                 <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -1030,7 +1030,7 @@ export default function PlayerProfile({ onLiveClick, initialAccount }) {
           onCopy={async () => {
             try {
               await navigator.clipboard.writeText(buildShareText(displayRank, intelligence));
-              alert('Crexus report copied.');
+              alert('Cranix Scout report copied.');
             } catch {
               alert('Could not copy report text.');
             }

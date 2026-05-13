@@ -182,7 +182,7 @@ export default function ChampionPool({ matches = [], puuid, ddragonBase }) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
         <div className="md:col-span-2 bg-[#0a0e13] border border-gray-800 rounded-xl p-4">
-          <div className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">Crexus Read</div>
+          <div className="text-[10px] text-gray-500 uppercase tracking-widest font-bold mb-2">Cranix Scout Read</div>
           <p className="text-sm text-gray-300 leading-relaxed">{comfortRead}</p>
         </div>
 
