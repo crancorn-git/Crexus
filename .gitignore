@@ -1,0 +1,12 @@
+.env
+**/.env
+.env.local
+**/.env.local
+node_modules/
+dist/
+dist_electron/
+release/
+*.log
+auth.js
+.DS_Store
+.git/
