@@ -19,3 +19,4 @@ dist_electron/
 release/
 *.log
 auth.js
+.git/
